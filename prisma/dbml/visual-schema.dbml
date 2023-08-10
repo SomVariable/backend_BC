@@ -1,0 +1,288 @@
+//// ------------------------------------------------------
+//// THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+//// ------------------------------------------------------
+
+Project "Im Legal" {
+  database_type: 'PostgreSQL'
+  Note: 'test description'
+}
+
+Table Area {
+  area_id Int [pk, increment]
+  title_ru String [not null]
+  text_ru String [not null]
+  title_eng String [not null]
+  text_eng String [not null]
+  created_at DateTime [default: `now()`, not null]
+  updated_at DateTime [not null]
+  practices_ids Practice [not null]
+}
+
+Table Practice {
+  practice_id Int [pk, increment]
+  title_ru String [not null]
+  text_ru String [not null]
+  title_eng String [not null]
+  text_eng String [not null]
+  created_at DateTime [default: `now()`, not null]
+  updated_at DateTime [not null]
+  cases Case [not null]
+  publications Publication [not null]
+  tag Tag [not null]
+  areas_ids Area [not null]
+  services_ids Service [not null]
+}
+
+Table Tag {
+  tag_id Int [pk, increment]
+  tag_ru String [unique, not null]
+  tag_eng String [unique, not null]
+  practice Practice [not null]
+  practice_id Int [unique, not null]
+  TagToCase TagToCase [not null]
+  TagToPublication TagToPublication [not null]
+}
+
+Table TagToCase {
+  id Int [increment, not null]
+  tag Tag [not null]
+  tag_id Int [not null]
+  case Case [not null]
+  case_id Int [not null]
+
+  indexes {
+    (id, case_id, tag_id) [pk]
+  }
+}
+
+Table TagToPublication {
+  id Int [increment, not null]
+  tag Tag [not null]
+  tag_id Int [not null]
+  publication Publication [not null]
+  publication_id Int [not null]
+
+  indexes {
+    (id, publication_id, tag_id) [pk]
+  }
+}
+
+Table Service {
+  services_id Int [pk, increment]
+  title_ru String [not null]
+  text_ru String [not null]
+  title_eng String [not null]
+  text_eng String [not null]
+  created_at DateTime [default: `now()`, not null]
+  updated_at DateTime [not null]
+  practices_ids Practice [not null]
+}
+
+Table Case {
+  case_id Int [pk, increment]
+  title_rus String [not null]
+  description_rus String [not null]
+  content_rus String [not null]
+  title_eng String [not null]
+  description_eng String [not null]
+  content_eng String [not null]
+  video_link String [not null]
+  publication_date DateTime [not null]
+  created_at DateTime [default: `now()`, not null]
+  updated_at DateTime [not null]
+  person Person [not null]
+  CasePhotos CasePhoto [not null]
+  practices Practice [not null]
+  TagToCase TagToCase [not null]
+}
+
+Table CasePhoto {
+  photo_id Int [pk, increment]
+  file_name String [not null]
+  size Int [not null]
+  mimetype String [not null]
+  original_name String [not null]
+  created_at DateTime [default: `now()`, not null]
+  updated_at DateTime [not null]
+  case Case [not null]
+  case_id Int [not null]
+}
+
+Table Publication {
+  publication_id Int [pk, increment]
+  title_rus String [not null]
+  description_rus String [not null]
+  content_rus String [not null]
+  title_eng String [not null]
+  description_eng String [not null]
+  content_eng String [not null]
+  video_link String [not null]
+  publication_date DateTime [not null]
+  created_at DateTime [default: `now()`, not null]
+  updated_at DateTime [not null]
+  person Person [not null]
+  publication_photos PublicationPhoto [not null]
+  practices Practice [not null]
+  TagToPublication TagToPublication [not null]
+}
+
+Table PublicationPhoto {
+  photo_id Int [pk, increment]
+  file_name String [not null]
+  size Int [not null]
+  mimetype String [not null]
+  original_name String [not null]
+  created_at DateTime [default: `now()`, not null]
+  updated_at DateTime [not null]
+  publication Publication [not null]
+  publication_id Int [not null]
+}
+
+Table Person {
+  person_id Int [pk, increment]
+  email String [unique, not null]
+  hash String [not null]
+  first_name_ru String [not null]
+  surname_name_ru String [not null]
+  middle_name_ru String [not null]
+  description_ru String [not null]
+  small_description_ru String [not null]
+  status_ru String [not null]
+  position_ru String [not null]
+  first_name_eng String [not null]
+  surname_name_eng String [not null]
+  middle_name_eng String [not null]
+  description_eng String [not null]
+  small_description_eng String [not null]
+  status_eng String [not null]
+  position_eng String [not null]
+  role Role [not null]
+  created_at DateTime [default: `now()`, not null]
+  updated_at DateTime [not null]
+  avatar Avatar
+  professional_interests ProfessionalInterest [not null]
+  awards Award [not null]
+  news News [not null]
+  education Education
+  case Case [not null]
+  publication Publication [not null]
+  partner Partner
+  practiceManager PracticeManager
+  employee Employee
+}
+
+Table Partner {
+  partner_id Int [pk, increment]
+  quote_ru String [not null]
+  quote_eng String [not null]
+  person Person [not null]
+  person_id Int [unique, not null]
+}
+
+Table PracticeManager {
+  manager_id Int [pk, increment]
+  person Person [not null]
+  person_id Int [unique, not null]
+}
+
+Table Employee {
+  employee_id Int [pk, increment]
+  person Person [not null]
+  person_id Int [unique, not null]
+}
+
+Table Avatar {
+  photo_id Int [pk, increment]
+  file_name String [not null]
+  size Int [not null]
+  mimetype String [not null]
+  original_name String [not null]
+  created_at DateTime [default: `now()`, not null]
+  updated_at DateTime [not null]
+  person Person [not null]
+  person_id Int [unique, not null]
+}
+
+Table EducationLevel {
+  education_level_id Int [pk, increment]
+  title_ru String [not null]
+  title_eng String [not null]
+  Education Education [not null]
+}
+
+Table Education {
+  education_id Int [pk, increment]
+  study_year DateTime [not null]
+  graduation_year DateTime [not null]
+  university String [not null]
+  specialty String [not null]
+  qualification String [not null]
+  education_level EducationLevel [not null]
+  education_level_id Int [not null]
+  person Person [not null]
+  person_id Int [unique, not null]
+}
+
+Table ProfessionalInterest {
+  interest_id Int [pk, increment]
+  title_ru String [not null]
+  title_eng String [not null]
+  person Person [not null]
+  person_id Int [not null]
+}
+
+Table Award {
+  award_id Int [pk, increment]
+  title_ru String [not null]
+  title_eng String [not null]
+  person Person [not null]
+  person_id Int [not null]
+}
+
+Table News {
+  news_id Int [pk, increment]
+  title_ru String [not null]
+  title_eng String [not null]
+  text_ru String [not null]
+  text_eng String [not null]
+  person Person [not null]
+  person_id Int [not null]
+}
+
+Enum Role {
+  ADMIN
+  EMPLOYEE
+  REPORTER
+}
+
+Ref: Tag.practice_id > Practice.practice_id [delete: Cascade]
+
+Ref: TagToCase.tag_id > Tag.tag_id [delete: Cascade]
+
+Ref: TagToCase.case_id > Case.case_id [delete: Cascade]
+
+Ref: TagToPublication.tag_id > Tag.tag_id [delete: Cascade]
+
+Ref: TagToPublication.publication_id > Publication.publication_id [delete: Cascade]
+
+Ref: CasePhoto.case_id > Case.case_id [delete: Cascade]
+
+Ref: PublicationPhoto.publication_id > Publication.publication_id [delete: Cascade]
+
+Ref: Partner.person_id - Person.person_id
+
+Ref: PracticeManager.person_id - Person.person_id
+
+Ref: Employee.person_id - Person.person_id
+
+Ref: Avatar.person_id - Person.person_id [delete: Cascade]
+
+Ref: Education.education_level_id > EducationLevel.education_level_id [delete: Cascade]
+
+Ref: Education.person_id - Person.person_id [delete: Cascade]
+
+Ref: ProfessionalInterest.person_id > Person.person_id [delete: Cascade]
+
+Ref: Award.person_id > Person.person_id [delete: Cascade]
+
+Ref: News.person_id > Person.person_id [delete: Cascade]

@@ -1,0 +1,299 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+generator dbml {
+  provider            = "prisma-dbml-generator"
+  output              = "./dbml"
+  outputName          = "visual-schema.dbml"
+  projectName         = "Im Legal"
+  projectDatabaseType = "PostgreSQL"
+  projectNote         = "test description"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = "postgresql://variable:HxH787898HxH@hunter.com@localhost:5432/im_legal?schema=public"
+}
+
+model Area {
+  area_id   Int    @id @default(autoincrement())
+  title_ru  String @db.VarChar(30)
+  text_ru   String
+  title_eng String @db.VarChar(30)
+  text_eng  String
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  practices_ids Practice[]
+}
+
+model Practice {
+  practice_id Int    @id @default(autoincrement())
+  title_ru    String @db.VarChar(30)
+  text_ru     String
+  title_eng   String @db.VarChar(30)
+  text_eng    String
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  cases        Case[]
+  publications Publication[]
+  tag          Tag[]
+  areas_ids Area[]
+  services_ids Service[]
+}
+
+model Tag {
+  tag_id  Int    @id @default(autoincrement())
+  tag_ru  String @unique
+  tag_eng String @unique
+
+  practice         Practice           @relation(fields: [practice_id], references: [practice_id], onDelete: Cascade)
+  practice_id      Int                @unique
+  TagToCase        TagToCase[]
+  TagToPublication TagToPublication[]
+}
+
+model TagToCase {
+  id Int @default(autoincrement())
+
+  tag    Tag @relation(fields: [tag_id], references: [tag_id], onDelete: Cascade)
+  tag_id Int
+
+  case    Case @relation(fields: [case_id], references: [case_id], onDelete: Cascade)
+  case_id Int
+
+  @@id([id, case_id, tag_id])
+}
+
+model TagToPublication {
+  id Int @default(autoincrement())
+
+  tag    Tag @relation(fields: [tag_id], references: [tag_id], onDelete: Cascade)
+  tag_id Int
+
+  publication    Publication @relation(fields: [publication_id], references: [publication_id], onDelete: Cascade)
+  publication_id Int
+
+  @@id([id, publication_id, tag_id])
+}
+
+model Service {
+  services_id Int    @id @default(autoincrement())
+  title_ru    String @db.VarChar(30)
+  text_ru     String
+  title_eng   String @db.VarChar(30)
+  text_eng    String
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  practices_ids Practice[]
+}
+
+model Case {
+  case_id          Int      @id @default(autoincrement())
+  title_rus        String   @db.VarChar(30)
+  description_rus  String
+  content_rus      String
+  title_eng        String   @db.VarChar(30)
+  description_eng  String
+  content_eng      String
+  video_link       String
+  publication_date DateTime
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  person     Person[]
+  CasePhotos CasePhoto[]
+  practices  Practice[]
+
+  TagToCase TagToCase[]
+}
+
+model CasePhoto {
+  photo_id      Int    @id @default(autoincrement())
+  file_name     String
+  size          Int
+  mimetype      String
+  original_name String
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  case    Case @relation(fields: [case_id], references: [case_id], onDelete: Cascade)
+  case_id Int
+}
+
+model Publication {
+  publication_id  Int    @id @default(autoincrement())
+  title_rus       String @db.VarChar(30)
+  description_rus String
+  content_rus     String
+
+  title_eng        String   @db.VarChar(30)
+  description_eng  String
+  content_eng      String
+  video_link       String
+  publication_date DateTime
+  created_at       DateTime @default(now())
+  updated_at       DateTime @updatedAt
+
+  person             Person[]
+  publication_photos PublicationPhoto[]
+  practices          Practice[]
+  TagToPublication   TagToPublication[]
+}
+
+model PublicationPhoto {
+  photo_id      Int    @id @default(autoincrement())
+  file_name     String
+  size          Int
+  mimetype      String
+  original_name String
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  publication    Publication @relation(fields: [publication_id], references: [publication_id], onDelete: Cascade)
+  publication_id Int
+}
+
+model Person {
+  person_id Int    @id @default(autoincrement())
+  email     String @unique
+  hash      String
+
+  first_name_ru        String @db.VarChar(30)
+  surname_name_ru      String @db.VarChar(30)
+  middle_name_ru       String @db.VarChar(30)
+  description_ru       String
+  small_description_ru String @db.VarChar(200)
+  status_ru            String
+  position_ru          String
+
+  first_name_eng        String @db.VarChar(30)
+  surname_name_eng      String @db.VarChar(30)
+  middle_name_eng       String @db.VarChar(30)
+  description_eng       String
+  small_description_eng String @db.VarChar(200)
+  status_eng            String
+  position_eng          String
+  role                  Role
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  avatar                 Avatar?
+  professional_interests ProfessionalInterest[]
+  awards                 Award[]
+  news                   News[]
+  education              Education?
+  case                   Case[]
+  publication            Publication[]
+  partner                Partner?
+  practiceManager        PracticeManager?
+  employee               Employee?
+}
+
+model Partner {
+  partner_id Int    @id @default(autoincrement())
+  quote_ru   String
+  quote_eng  String
+
+  person    Person @relation(fields: [person_id], references: [person_id])
+  person_id Int    @unique
+}
+
+model PracticeManager {
+  manager_id Int @id @default(autoincrement())
+
+  person    Person @relation(fields: [person_id], references: [person_id])
+  person_id Int    @unique
+}
+
+model Employee {
+  employee_id Int @id @default(autoincrement())
+
+  person    Person @relation(fields: [person_id], references: [person_id])
+  person_id Int    @unique
+}
+
+model Avatar {
+  photo_id      Int    @id @default(autoincrement())
+  file_name     String
+  size          Int
+  mimetype      String
+  original_name String
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  person    Person @relation(fields: [person_id], references: [person_id], onDelete: Cascade)
+  person_id Int    @unique
+}
+
+model EducationLevel {
+  education_level_id Int    @id @default(autoincrement())
+  title_ru           String
+  title_eng          String
+
+  Education Education[]
+}
+
+model Education {
+  education_id    Int      @id @default(autoincrement())
+  study_year      DateTime
+  graduation_year DateTime
+  university      String
+  specialty       String
+  qualification   String
+
+  education_level    EducationLevel @relation(fields: [education_level_id], references: [education_level_id], onDelete: Cascade)
+  education_level_id Int
+
+  person    Person @relation(fields: [person_id], references: [person_id], onDelete: Cascade)
+  person_id Int    @unique
+}
+
+model ProfessionalInterest {
+  interest_id Int    @id @default(autoincrement())
+  title_ru    String @db.VarChar(30)
+  title_eng   String @db.VarChar(30)
+
+  person    Person @relation(fields: [person_id], references: [person_id], onDelete: Cascade)
+  person_id Int
+}
+
+model Award {
+  award_id  Int    @id @default(autoincrement())
+  title_ru  String @db.VarChar(30)
+  title_eng String @db.VarChar(30)
+
+  person    Person @relation(fields: [person_id], references: [person_id], onDelete: Cascade)
+  person_id Int
+}
+
+model News {
+  news_id   Int    @id @default(autoincrement())
+  title_ru  String @db.VarChar(30)
+  title_eng String @db.VarChar(30)
+  text_ru   String
+  text_eng  String
+
+  person    Person @relation(fields: [person_id], references: [person_id], onDelete: Cascade)
+  person_id Int
+}
+
+enum Role {
+  ADMIN
+  EMPLOYEE
+  REPORTER
+}
