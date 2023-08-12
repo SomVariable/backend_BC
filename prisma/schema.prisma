@@ -20,280 +20,256 @@ datasource db {
 }
 
 model Area {
-  area_id   Int    @id @default(autoincrement())
-  title_ru  String @db.VarChar(30)
-  text_ru   String
-  title_eng String @db.VarChar(30)
-  text_eng  String
+  id Int @id @default(autoincrement())
 
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
-  practices_ids Practice[]
+  practicesIds        Practice[]
+  CategoryTranslation CategoryTranslation[]
 }
 
 model Practice {
-  practice_id Int    @id @default(autoincrement())
-  title_ru    String @db.VarChar(30)
-  text_ru     String
-  title_eng   String @db.VarChar(30)
-  text_eng    String
+  id Int @id @default(autoincrement())
 
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
-  cases        Case[]
-  publications Publication[]
-  tag          Tag[]
-  areas_ids Area[]
-  services_ids Service[]
+  tag                 Tag[]
+  areasId             Area[]
+  servicesIds         Service[]
+  CategoryTranslation CategoryTranslation[]
 }
 
 model Tag {
-  tag_id  Int    @id @default(autoincrement())
-  tag_ru  String @unique
-  tag_eng String @unique
+  id     Int    @id @default(autoincrement())
+  tag_ru String @unique
+  tag_en String @unique
 
-  practice         Practice           @relation(fields: [practice_id], references: [practice_id], onDelete: Cascade)
-  practice_id      Int                @unique
-  TagToCase        TagToCase[]
-  TagToPublication TagToPublication[]
-}
-
-model TagToCase {
-  id Int @default(autoincrement())
-
-  tag    Tag @relation(fields: [tag_id], references: [tag_id], onDelete: Cascade)
-  tag_id Int
-
-  case    Case @relation(fields: [case_id], references: [case_id], onDelete: Cascade)
-  case_id Int
-
-  @@id([id, case_id, tag_id])
-}
-
-model TagToPublication {
-  id Int @default(autoincrement())
-
-  tag    Tag @relation(fields: [tag_id], references: [tag_id], onDelete: Cascade)
-  tag_id Int
-
-  publication    Publication @relation(fields: [publication_id], references: [publication_id], onDelete: Cascade)
-  publication_id Int
-
-  @@id([id, publication_id, tag_id])
+  practice           Practice      @relation(fields: [practiceId], references: [id], onDelete: Cascade)
+  practiceId         Int           @unique
+  contentItemProfile ContentItem[]
 }
 
 model Service {
-  services_id Int    @id @default(autoincrement())
-  title_ru    String @db.VarChar(30)
-  text_ru     String
-  title_eng   String @db.VarChar(30)
-  text_eng    String
+  id Int @id @default(autoincrement())
 
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
-  practices_ids Practice[]
+  practicesIds        Practice[]
+  CategoryTranslation CategoryTranslation[]
 }
 
-model Case {
-  case_id          Int      @id @default(autoincrement())
-  title_rus        String   @db.VarChar(30)
-  description_rus  String
-  content_rus      String
-  title_eng        String   @db.VarChar(30)
-  description_eng  String
-  content_eng      String
-  video_link       String
-  publication_date DateTime
+model Photo {
+  id           Int       @id @default(autoincrement())
+  type         PhotoType
+  fileName     String
+  size         Int
+  mimetype     String
+  originalName String
 
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
-  person     Person[]
-  CasePhotos CasePhoto[]
-  practices  Practice[]
+  contentItem   ContentItem? @relation(fields: [contentItemId], references: [id], onDelete: Cascade)
+  contentItemId Int?
 
-  TagToCase TagToCase[]
+  person   Person? @relation(fields: [personId], references: [id], onDelete: Cascade)
+  personId Int?    @unique
 }
 
-model CasePhoto {
-  photo_id      Int    @id @default(autoincrement())
-  file_name     String
-  size          Int
-  mimetype      String
-  original_name String
+model ContentItem {
+  id   Int             @id @default(autoincrement())
+  type ContentItemType
 
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
+  videoLink       String
+  publicationDate DateTime
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
 
-  case    Case @relation(fields: [case_id], references: [case_id], onDelete: Cascade)
-  case_id Int
+  person                 Person[]
+  photos                 Photo[]
+  Tag                    Tag[]
+  ContentItemTranslation ContentItemTranslation[]
 }
 
-model Publication {
-  publication_id  Int    @id @default(autoincrement())
-  title_rus       String @db.VarChar(30)
-  description_rus String
-  content_rus     String
+model ContentItemTranslation {
+  id          Int    @default(autoincrement())
+  langCode    String
+  title       String
+  description String
+  content     String
 
-  title_eng        String   @db.VarChar(30)
-  description_eng  String
-  content_eng      String
-  video_link       String
-  publication_date DateTime
-  created_at       DateTime @default(now())
-  updated_at       DateTime @updatedAt
+  contentItem   ContentItem @relation(fields: [contentItemId], references: [id], onDelete: Cascade)
+  contentItemId Int
 
-  person             Person[]
-  publication_photos PublicationPhoto[]
-  practices          Practice[]
-  TagToPublication   TagToPublication[]
-}
-
-model PublicationPhoto {
-  photo_id      Int    @id @default(autoincrement())
-  file_name     String
-  size          Int
-  mimetype      String
-  original_name String
-
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
-
-  publication    Publication @relation(fields: [publication_id], references: [publication_id], onDelete: Cascade)
-  publication_id Int
+  @@id([langCode, contentItemId])
 }
 
 model Person {
-  person_id Int    @id @default(autoincrement())
-  email     String @unique
-  hash      String
-
-  first_name_ru        String @db.VarChar(30)
-  surname_name_ru      String @db.VarChar(30)
-  middle_name_ru       String @db.VarChar(30)
-  description_ru       String
-  small_description_ru String @db.VarChar(200)
-  status_ru            String
-  position_ru          String
-
-  first_name_eng        String @db.VarChar(30)
-  surname_name_eng      String @db.VarChar(30)
-  middle_name_eng       String @db.VarChar(30)
-  description_eng       String
-  small_description_eng String @db.VarChar(200)
-  status_eng            String
-  position_eng          String
-  role                  Role
+  id    Int              @id @default(autoincrement())
+  email String           @unique
+  hash  String
+  type  EmployeePosition
+  role  Role
 
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
-  avatar                 Avatar?
+  avatar                 Photo?
   professional_interests ProfessionalInterest[]
   awards                 Award[]
   news                   News[]
   education              Education?
-  case                   Case[]
-  publication            Publication[]
-  partner                Partner?
-  practiceManager        PracticeManager?
-  employee               Employee?
+  contentItemId          ContentItem[]
+  partnerProfile         PartnerProfile?
+  practiceManagerProfile PracticeManagerProfile?
+  employeeProfile        EmployeeProfile?
+  PersonTranslation      PersonTranslation[]
 }
 
-model Partner {
-  partner_id Int    @id @default(autoincrement())
-  quote_ru   String
-  quote_eng  String
+model PartnerProfile {
+  id       Int
+  quote_ru String
+  quote_en String
 
-  person    Person @relation(fields: [person_id], references: [person_id])
-  person_id Int    @unique
+  person   Person @relation(fields: [personId], references: [id])
+  personId Int    @unique
+
+  @@id([personId])
 }
 
-model PracticeManager {
-  manager_id Int @id @default(autoincrement())
+model PracticeManagerProfile {
+  id Int @default(autoincrement())
 
-  person    Person @relation(fields: [person_id], references: [person_id])
-  person_id Int    @unique
+  person   Person @relation(fields: [personId], references: [id])
+  personId Int    @unique
+
+  @@id([personId])
 }
 
-model Employee {
-  employee_id Int @id @default(autoincrement())
+model EmployeeProfile {
+  id Int @default(autoincrement())
 
-  person    Person @relation(fields: [person_id], references: [person_id])
-  person_id Int    @unique
-}
+  person   Person @relation(fields: [personId], references: [id])
+  personId Int    @unique
 
-model Avatar {
-  photo_id      Int    @id @default(autoincrement())
-  file_name     String
-  size          Int
-  mimetype      String
-  original_name String
-
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
-
-  person    Person @relation(fields: [person_id], references: [person_id], onDelete: Cascade)
-  person_id Int    @unique
+  @@id([personId])
 }
 
 model EducationLevel {
-  education_level_id Int    @id @default(autoincrement())
-  title_ru           String
-  title_eng          String
+  id       Int    @id @default(autoincrement())
+  title_ru String
+  title_en String
 
   Education Education[]
 }
 
 model Education {
-  education_id    Int      @id @default(autoincrement())
+  id              Int      @default(autoincrement())
   study_year      DateTime
   graduation_year DateTime
   university      String
   specialty       String
   qualification   String
 
-  education_level    EducationLevel @relation(fields: [education_level_id], references: [education_level_id], onDelete: Cascade)
-  education_level_id Int
+  educationLevel   EducationLevel @relation(fields: [educationLevelId], references: [id], onDelete: Cascade)
+  educationLevelId Int
 
-  person    Person @relation(fields: [person_id], references: [person_id], onDelete: Cascade)
-  person_id Int    @unique
+  person   Person @relation(fields: [personId], references: [id], onDelete: Cascade)
+  personId Int    @unique
+
+  @@id([personId, educationLevelId])
 }
 
 model ProfessionalInterest {
-  interest_id Int    @id @default(autoincrement())
-  title_ru    String @db.VarChar(30)
-  title_eng   String @db.VarChar(30)
+  id       Int    @id @default(autoincrement())
+  title_ru String
+  title_en String
 
-  person    Person @relation(fields: [person_id], references: [person_id], onDelete: Cascade)
-  person_id Int
+  person   Person @relation(fields: [personId], references: [id], onDelete: Cascade)
+  personId Int
 }
 
 model Award {
-  award_id  Int    @id @default(autoincrement())
-  title_ru  String @db.VarChar(30)
-  title_eng String @db.VarChar(30)
+  id       Int    @id @default(autoincrement())
+  title_ru String
+  title_en String
 
-  person    Person @relation(fields: [person_id], references: [person_id], onDelete: Cascade)
-  person_id Int
+  person   Person @relation(fields: [personId], references: [id], onDelete: Cascade)
+  personId Int
 }
 
 model News {
-  news_id   Int    @id @default(autoincrement())
-  title_ru  String @db.VarChar(30)
-  title_eng String @db.VarChar(30)
-  text_ru   String
-  text_eng  String
+  id       Int    @id @default(autoincrement())
+  title_ru String
+  title_en String
+  text_ru  String
+  text_en  String
 
-  person    Person @relation(fields: [person_id], references: [person_id], onDelete: Cascade)
+  person    Person @relation(fields: [person_id], references: [id], onDelete: Cascade)
   person_id Int
+}
+
+model CategoryTranslation {
+  id                      Int                     @default(autoincrement())
+  langCode                String
+  categoryTranslationType CategoryTranslationType
+  title                   String
+  text                    String
+
+  areaProfile     Area?     @relation(fields: [areaId], references: [id], onDelete: Cascade)
+  areaId          Int?
+  practiceProfile Practice? @relation(fields: [practiceId], references: [id], onDelete: Cascade)
+  practiceId      Int?
+  serviceProfile  Service?  @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  serviceId       Int?
+
+  @@id([langCode, categoryTranslationType])
+}
+
+model PersonTranslation {
+  id               Int    @default(autoincrement())
+  langCode         String
+  firstName        String
+  surnameName      String
+  middleName       String
+  description      String
+  smallDescription String
+  status           String
+  position         String
+
+  personProfile Person @relation(fields: [person_id], references: [id])
+  person_id     Int
+
+  @@id([langCode, person_id])
 }
 
 enum Role {
   ADMIN
   EMPLOYEE
   REPORTER
+}
+
+enum EmployeePosition {
+  Partner
+  PracticeManager
+  Employee
+}
+
+enum ContentItemType {
+  CASE
+  PUBLISH
+}
+
+enum PhotoType {
+  CONTENT
+  AVATAR
+}
+
+enum CategoryTranslationType {
+  Area
+  Practice
+  Service
 }
