@@ -43,12 +43,11 @@ model Practice {
 
 model Tag {
   id     Int    @id @default(autoincrement())
-  tag_ru String @unique
-  tag_en String @unique
 
-  practice           Practice      @relation(fields: [practiceId], references: [id], onDelete: Cascade)
-  practiceId         Int           @unique
+  practice           Practice         @relation(fields: [practiceId], references: [id], onDelete: Cascade)
+  practiceId         Int              @unique
   contentItemProfile ContentItem[]
+  TagTranslation     TagTranslation[]
 }
 
 model Service {
@@ -112,7 +111,7 @@ model Person {
   email String           @unique
   hash  String
   type  EmployeePosition
-  role  Role
+  role  Role             @default(EMPLOYEE)
 
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
@@ -184,32 +183,72 @@ model Education {
 }
 
 model ProfessionalInterest {
-  id       Int    @id @default(autoincrement())
-  title_ru String
-  title_en String
+  id Int @id @default(autoincrement())
 
-  person   Person @relation(fields: [personId], references: [id], onDelete: Cascade)
-  personId Int
+  person                          Person                            @relation(fields: [personId], references: [id], onDelete: Cascade)
+  personId                        Int
+  ProfessionalInterestTranslation ProfessionalInterestTranslation[]
 }
 
 model Award {
-  id       Int    @id @default(autoincrement())
-  title_ru String
-  title_en String
+  id Int @id @default(autoincrement())
 
-  person   Person @relation(fields: [personId], references: [id], onDelete: Cascade)
-  personId Int
+  person           Person             @relation(fields: [personId], references: [id], onDelete: Cascade)
+  personId         Int
+  AwardTranslation AwardTranslation[]
 }
 
 model News {
-  id       Int    @id @default(autoincrement())
-  title_ru String
-  title_en String
-  text_ru  String
-  text_en  String
+  id Int @id @default(autoincrement())
 
-  person    Person @relation(fields: [person_id], references: [id], onDelete: Cascade)
-  person_id Int
+  Person   Person @relation(fields: [personId], references: [id], onDelete: Cascade)
+  personId Int
+
+  NewsTranslation NewsTranslation[]
+}
+
+model TagTranslation {
+  id       Int    @default(autoincrement())
+  langcode String
+  tag      String @unique
+  Tag      Tag    @relation(fields: [tagId], references: [id], onDelete: Cascade)
+  tagId    Int
+
+  @@id([langcode, tagId])
+}
+
+model AwardTranslation {
+  id       Int    @default(autoincrement())
+  langcode String
+  title    String
+
+  award   Award @relation(fields: [awardId], references: [id], onDelete: Cascade)
+  awardId Int
+
+  @@id([awardId, langcode])
+}
+
+model ProfessionalInterestTranslation {
+  id       Int    @default(autoincrement())
+  langcode String
+  title    String
+
+  professionalInterest   ProfessionalInterest @relation(fields: [professionalInterestId], references: [id], onDelete: Cascade)
+  professionalInterestId Int
+
+  @@id([professionalInterestId, langcode])
+}
+
+model NewsTranslation {
+  id       Int    @default(autoincrement())
+  langCode String
+  title    String
+  text     String
+
+  news   News @relation(fields: [newsId], references: [id], onDelete: Cascade)
+  newsId Int
+
+  @@id([newsId, langCode])
 }
 
 model CategoryTranslation {
