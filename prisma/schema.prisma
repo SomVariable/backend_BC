@@ -83,7 +83,7 @@ model ContentItem {
   type ContentItemType
 
   videoLink       String
-  publicationDate DateTime
+  publicationDate DateTime @default(now())
   created_at      DateTime @default(now())
   updated_at      DateTime @updatedAt
 
