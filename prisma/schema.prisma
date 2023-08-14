@@ -16,7 +16,7 @@ generator dbml {
 
 datasource db {
   provider = "postgresql"
-  url      = "postgresql://variable:HxH787898HxH@hunter.com@localhost:5432/im_legal?schema=public"
+  url      = env("DATABASE_URL")
 }
 
 model Area {

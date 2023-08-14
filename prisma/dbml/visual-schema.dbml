@@ -27,11 +27,10 @@ Table Practice {
 
 Table Tag {
   id Int [pk, increment]
-  tag_ru String [unique, not null]
-  tag_en String [unique, not null]
   practice Practice [not null]
   practiceId Int [unique, not null]
   contentItemProfile ContentItem [not null]
+  TagTranslation TagTranslation [not null]
 }
 
 Table Service {
@@ -61,7 +60,7 @@ Table ContentItem {
   id Int [pk, increment]
   type ContentItemType [not null]
   videoLink String [not null]
-  publicationDate DateTime [not null]
+  publicationDate DateTime [default: `now()`, not null]
   created_at DateTime [default: `now()`, not null]
   updated_at DateTime [not null]
   person Person [not null]
@@ -89,7 +88,7 @@ Table Person {
   email String [unique, not null]
   hash String [not null]
   type EmployeePosition [not null]
-  role Role [not null]
+  role Role [not null, default: 'EMPLOYEE']
   created_at DateTime [default: `now()`, not null]
   updated_at DateTime [not null]
   avatar Photo
@@ -162,28 +161,72 @@ Table Education {
 
 Table ProfessionalInterest {
   id Int [pk, increment]
-  title_ru String [not null]
-  title_en String [not null]
   person Person [not null]
   personId Int [not null]
+  ProfessionalInterestTranslation ProfessionalInterestTranslation [not null]
 }
 
 Table Award {
   id Int [pk, increment]
-  title_ru String [not null]
-  title_en String [not null]
   person Person [not null]
   personId Int [not null]
+  AwardTranslation AwardTranslation [not null]
 }
 
 Table News {
   id Int [pk, increment]
-  title_ru String [not null]
-  title_en String [not null]
-  text_ru String [not null]
-  text_en String [not null]
-  person Person [not null]
-  person_id Int [not null]
+  Person Person [not null]
+  personId Int [not null]
+  NewsTranslation NewsTranslation [not null]
+}
+
+Table TagTranslation {
+  id Int [increment, not null]
+  langcode String [not null]
+  tag String [unique, not null]
+  Tag Tag [not null]
+  tagId Int [not null]
+
+  indexes {
+    (langcode, tagId) [pk]
+  }
+}
+
+Table AwardTranslation {
+  id Int [increment, not null]
+  langcode String [not null]
+  title String [not null]
+  award Award [not null]
+  awardId Int [not null]
+
+  indexes {
+    (awardId, langcode) [pk]
+  }
+}
+
+Table ProfessionalInterestTranslation {
+  id Int [increment, not null]
+  langcode String [not null]
+  title String [not null]
+  professionalInterest ProfessionalInterest [not null]
+  professionalInterestId Int [not null]
+
+  indexes {
+    (professionalInterestId, langcode) [pk]
+  }
+}
+
+Table NewsTranslation {
+  id Int [increment, not null]
+  langCode String [not null]
+  title String [not null]
+  text String [not null]
+  news News [not null]
+  newsId Int [not null]
+
+  indexes {
+    (newsId, langCode) [pk]
+  }
 }
 
 Table CategoryTranslation {
@@ -272,7 +315,15 @@ Ref: ProfessionalInterest.personId > Person.id [delete: Cascade]
 
 Ref: Award.personId > Person.id [delete: Cascade]
 
-Ref: News.person_id > Person.id [delete: Cascade]
+Ref: News.personId > Person.id [delete: Cascade]
+
+Ref: TagTranslation.tagId > Tag.id [delete: Cascade]
+
+Ref: AwardTranslation.awardId > Award.id [delete: Cascade]
+
+Ref: ProfessionalInterestTranslation.professionalInterestId > ProfessionalInterest.id [delete: Cascade]
+
+Ref: NewsTranslation.newsId > News.id [delete: Cascade]
 
 Ref: CategoryTranslation.areaId > Area.id [delete: Cascade]
 
