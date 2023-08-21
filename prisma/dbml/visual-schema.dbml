@@ -52,8 +52,8 @@ Table Photo {
   updated_at DateTime [not null]
   contentItem ContentItem
   contentItemId Int
-  person Person
-  personId Int [unique]
+  User User
+  userId Int [unique]
 }
 
 Table ContentItem {
@@ -63,7 +63,7 @@ Table ContentItem {
   publicationDate DateTime [default: `now()`, not null]
   created_at DateTime [default: `now()`, not null]
   updated_at DateTime [not null]
-  person Person [not null]
+  User User [not null]
   photos Photo [not null]
   Tag Tag [not null]
   ContentItemTranslation ContentItemTranslation [not null]
@@ -83,12 +83,12 @@ Table ContentItemTranslation {
   }
 }
 
-Table Person {
+Table User {
   id Int [pk, increment]
   email String [unique, not null]
   hash String [not null]
-  type EmployeePosition [not null]
   role Role [not null, default: 'EMPLOYEE']
+  accountStatus AccountStatus [not null, default: 'PENDING']
   created_at DateTime [default: `now()`, not null]
   updated_at DateTime [not null]
   avatar Photo
@@ -100,38 +100,38 @@ Table Person {
   partnerProfile PartnerProfile
   practiceManagerProfile PracticeManagerProfile
   employeeProfile EmployeeProfile
-  PersonTranslation PersonTranslation [not null]
+  UserTranslation UserTranslation [not null]
 }
 
 Table PartnerProfile {
   id Int [not null]
   quote_ru String [not null]
   quote_en String [not null]
-  person Person [not null]
-  personId Int [pk]
+  User User [not null]
+  userId Int [pk]
 
   indexes {
-    (personId) [pk]
+    (userId) [pk]
   }
 }
 
 Table PracticeManagerProfile {
   id Int [increment, not null]
-  person Person [not null]
-  personId Int [pk]
+  User User [not null]
+  userId Int [pk]
 
   indexes {
-    (personId) [pk]
+    (userId) [pk]
   }
 }
 
 Table EmployeeProfile {
   id Int [increment, not null]
-  person Person [not null]
-  personId Int [pk]
+  User User [not null]
+  userId Int [pk]
 
   indexes {
-    (personId) [pk]
+    (userId) [pk]
   }
 }
 
@@ -151,32 +151,32 @@ Table Education {
   qualification String [not null]
   educationLevel EducationLevel [not null]
   educationLevelId Int [not null]
-  person Person [not null]
-  personId Int [unique, not null]
+  User User [not null]
+  userId Int [unique, not null]
 
   indexes {
-    (personId, educationLevelId) [pk]
+    (userId, educationLevelId) [pk]
   }
 }
 
 Table ProfessionalInterest {
   id Int [pk, increment]
-  person Person [not null]
-  personId Int [not null]
+  User User [not null]
+  userId Int [not null]
   ProfessionalInterestTranslation ProfessionalInterestTranslation [not null]
 }
 
 Table Award {
   id Int [pk, increment]
-  person Person [not null]
-  personId Int [not null]
+  User User [not null]
+  userId Int [not null]
   AwardTranslation AwardTranslation [not null]
 }
 
 Table News {
   id Int [pk, increment]
-  Person Person [not null]
-  personId Int [not null]
+  User User [not null]
+  userId Int [not null]
   NewsTranslation NewsTranslation [not null]
 }
 
@@ -247,21 +247,21 @@ Table CategoryTranslation {
   }
 }
 
-Table PersonTranslation {
+Table UserTranslation {
   id Int [increment, not null]
   langCode String [not null]
-  firstName String [not null]
-  surnameName String [not null]
-  middleName String [not null]
-  description String [not null]
-  smallDescription String [not null]
-  status String [not null]
-  position String [not null]
-  personProfile Person [not null]
-  person_id Int [not null]
+  firstName String
+  surnameName String
+  middleName String
+  description String
+  smallDescription String
+  status String
+  position String
+  userProfile User [not null]
+  userId Int [not null]
 
   indexes {
-    (langCode, person_id) [pk]
+    (langCode, userId) [pk]
   }
 }
 
@@ -271,10 +271,9 @@ Enum Role {
   REPORTER
 }
 
-Enum EmployeePosition {
-  Partner
-  PracticeManager
-  Employee
+Enum AccountStatus {
+  PENDING
+  ACTIVE
 }
 
 Enum ContentItemType {
@@ -288,34 +287,34 @@ Enum PhotoType {
 }
 
 Enum CategoryTranslationType {
-  Area
-  Practice
-  Service
+  AREA
+  PRACTICE
+  SERVICE
 }
 
 Ref: Tag.practiceId > Practice.id [delete: Cascade]
 
 Ref: Photo.contentItemId > ContentItem.id [delete: Cascade]
 
-Ref: Photo.personId - Person.id [delete: Cascade]
+Ref: Photo.userId - User.id [delete: Cascade]
 
 Ref: ContentItemTranslation.contentItemId > ContentItem.id [delete: Cascade]
 
-Ref: PartnerProfile.personId - Person.id
+Ref: PartnerProfile.userId - User.id
 
-Ref: PracticeManagerProfile.personId - Person.id
+Ref: PracticeManagerProfile.userId - User.id
 
-Ref: EmployeeProfile.personId - Person.id
+Ref: EmployeeProfile.userId - User.id
 
 Ref: Education.educationLevelId > EducationLevel.id [delete: Cascade]
 
-Ref: Education.personId - Person.id [delete: Cascade]
+Ref: Education.userId - User.id [delete: Cascade]
 
-Ref: ProfessionalInterest.personId > Person.id [delete: Cascade]
+Ref: ProfessionalInterest.userId > User.id [delete: Cascade]
 
-Ref: Award.personId > Person.id [delete: Cascade]
+Ref: Award.userId > User.id [delete: Cascade]
 
-Ref: News.personId > Person.id [delete: Cascade]
+Ref: News.userId > User.id [delete: Cascade]
 
 Ref: TagTranslation.tagId > Tag.id [delete: Cascade]
 
@@ -331,4 +330,4 @@ Ref: CategoryTranslation.practiceId > Practice.id [delete: Cascade]
 
 Ref: CategoryTranslation.serviceId > Service.id [delete: Cascade]
 
-Ref: PersonTranslation.person_id > Person.id
+Ref: UserTranslation.userId > User.id

@@ -72,7 +72,11 @@ Response:
     error_message: $message
 }
 
-GET /auth/resend-verify-key?${email}:
+POST /auth/resend-verify-key
+
+{
+    email
+}
 
 Response:
 - 200 {access-token, refresh-token}
@@ -83,12 +87,12 @@ Response:
     error_message: $message
 }
 
-# /person
+# /user
 
 Header:
 - Authorization: $refresh-token
 
-PATCH /person
+PATCH /user
 
 {ru: {
  firstName?,
@@ -122,12 +126,12 @@ Response:
 }
 
 
-# /persons
+# /users
 
 Header:
 - Authorization: $refresh-token
 
-DELETE /persons/?${id}
+DELETE /users/?${id}
 
 Response:
 - 200 {access-token, refresh-token}
@@ -144,7 +148,7 @@ Response:
 }
 
 
-PATCH /persons/?${id}/change-password
+PATCH /users/?${id}/password
 
 {
     password
@@ -198,7 +202,6 @@ Response:
 {
     error_message: $message
 }
-
 
 POST /area
 {ru: {title content}, en: {title content}}
@@ -289,11 +292,11 @@ PATCH /service
 Header:
 - Authorization: $refresh-token
 
-GET /contentItem
-GET /contentItem/cases
-GET /contentItem/cases?{$caseId}
-GET /contentItem/publications
-GET /contentItem/publications?{$publicationId}
+GET /content-item
+GET /content-item/cases
+GET /content-item/cases?{$caseId}
+GET /content-item/publications
+GET /content-item/publications?{$publicationId}
 Response:
 - 200 { contentItems: ContentItem[]} || - 200 { contentItem: ContentItem}
 - 400
@@ -308,7 +311,7 @@ Response:
     error_message: $message
 }
 
-POST /contentItem
+POST /content-item
 {
     type: "CASE" "PUBLISH", 
     ru: {title, description,content}, 
@@ -319,9 +322,9 @@ POST /contentItem
 }
 
 
-DELETE /contentItem/${id}
+DELETE /content-item/${id}
 
-PATCH /contentItem
+PATCH /content-item
 {
     ru: {title, description,content}?, 
     en: {title, description,content}?, 

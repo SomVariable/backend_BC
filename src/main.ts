@@ -16,8 +16,8 @@ async function bootstrap() {
   app.useGlobalFilters(new PrismaClientExceptionFilter(httpAdapter))
 
   const swaggerConfig = new DocumentBuilder()
-    .setTitle('authorization task')
-    .setDescription('-')
+    .setTitle('im-legal')
+    .setDescription('add description')
     .setVersion('1.0')
     .addTag('authorization')
     .addBearerAuth()
