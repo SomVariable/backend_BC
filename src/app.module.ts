@@ -14,11 +14,11 @@ import { ProfessionalInterestModule } from './api/professional-interest/professi
 import { AwardModule } from './api/award/award.module';
 import { NewsModule } from './api/news/news.module';
 import { ContentItemModule } from './api/content-item/content-item.module';
-import { AreaModule } from './area/area.module';
-import { PracticeModule } from './practice/practice.module';
-import { ServiceModule } from './service/service.module';
-import { TagModule } from './tag/tag.module';
-import { PhotoModule } from './photo/photo.module';
+import { AreaModule } from './api/area/area.module';
+import { PracticeModule } from './api/practice/practice.module';
+import { ServiceModule } from './api/service/service.module';
+import { TagModule } from './api/tag/tag.module';
+import { PhotoModule } from './api/photo/photo.module';
 
 @Module({
   imports: [ConfigModule.forRoot({
