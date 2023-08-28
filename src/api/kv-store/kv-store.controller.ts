@@ -6,17 +6,20 @@ import {
   Get, 
   Param,
   Body, 
-  UseInterceptors} from '@nestjs/common';
+  UseInterceptors,
+  UseGuards} from '@nestjs/common';
 import { KvStoreService } from './kv-store.service';
-import { KVStoreInterceptor } from './interceptors/auth.interceptor';
 import { ApiTags } from '@nestjs/swagger';
 import { SaveSessionDto } from './dto/save-session.dto';
 import { SetVerificationProps } from './kv-types/kv-store.type';
 import { UpdateVerifyDto } from './dto/update-verify-session.dto';
 import { DeviceType } from 'src/common/decorators/device-type.decorator';
+import { BaseInterceptor } from 'src/common/interceptors/data-to-json';
+import { AccessJwtAuthGuard } from '../jwt-helper/guards/access-jwt.guard';
 
 @ApiTags("kv-store")
-@UseInterceptors(KVStoreInterceptor)
+@UseInterceptors(BaseInterceptor)
+@UseGuards(AccessJwtAuthGuard)
 @Controller('kv-store')
 export class KvStoreController {
   constructor(private readonly kvStoreService: KvStoreService) {}

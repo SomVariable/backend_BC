@@ -13,13 +13,14 @@ import { JwtHelperService } from '../jwt-helper/jwt-helper.service';
 import { LIMIT_USERS } from './constants/user.constants';
 import { UserParam } from 'src/common/decorators/param-user.decorator';
 import { jwtType } from '../jwt-helper/types/jwt-helper.types';
+import { BaseInterceptor } from 'src/common/interceptors/data-to-json';
 
 @ApiTags("user")
 @ApiBearerAuth()
-@Controller('user')
 @RolesDecorator(Role.ADMIN)
 @UseGuards(AccessJwtAuthGuard, RolesGuard)
-@UseInterceptors(UserInterceptor)
+@UseInterceptors(BaseInterceptor)
+@Controller('user')
 export class UserController {
   constructor(
     private readonly userService: UserService,

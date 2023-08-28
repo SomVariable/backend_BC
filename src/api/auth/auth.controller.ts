@@ -11,7 +11,6 @@ import { CreateUserDto } from './dto/create-person.dto';
 import {
   AUTH_OK
 } from './constants/auth.constants';
-import { AuthInterceptor } from './interceptors/auth.interceptor';
 import { AuthUserInterceptor } from './interceptors/auth-user.interceptor';
 import { UserParam } from 'src/common/decorators/param-user.decorator';
 import { jwtType } from '../jwt-helper/types/jwt-helper.types';
@@ -29,9 +28,10 @@ import { RefreshTokensOkResponse } from './dto/ok-response/refresh-tokens.dto';
 import { UnauthorizedExceptionResponse } from 'src/common/dto/unauthorized-errors.dto';
 import { AccountStatus, Role } from '@prisma/client';
 import { FirstUserOkResponse } from './dto/ok-response/first-user.dto';
+import { BaseInterceptor } from 'src/common/interceptors/data-to-json';
 
 @ApiTags("auth")
-@UseInterceptors(AuthInterceptor)
+@UseInterceptors(BaseInterceptor)
 @ApiBadRequestResponse( {type: AuthErrorResponse} )
 @Controller('auth')
 export class AuthController {

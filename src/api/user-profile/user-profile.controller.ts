@@ -7,7 +7,7 @@ import {
   Param,
   Delete,
   UseGuards,
-  InternalServerErrorException
+  UseInterceptors
 } from '@nestjs/common';
 import { UserProfileService } from './user-profile.service';
 import { CreateUserProfileDto } from './dto/create-user-profile.dto';
@@ -17,17 +17,18 @@ import { RolesGuard } from '../auth/guards/roles.guard';
 import { AccessJwtAuthGuard } from '../jwt-helper/guards/access-jwt.guard';
 import { UserParam } from 'src/common/decorators/param-user.decorator';
 import { jwtType } from '../jwt-helper/types/jwt-helper.types';
+import { BaseInterceptor } from 'src/common/interceptors/data-to-json';
+import { TRANSLATION_ROUTE } from 'src/common/constants/app.constants';
 
 @Controller('user-profile')
 @ApiTags("user-profile")
 @ApiBearerAuth()
-@Controller('user')
+@UseInterceptors(BaseInterceptor)
 @UseGuards(AccessJwtAuthGuard, RolesGuard)
 export class UserProfileController {
   constructor(private readonly userProfileService: UserProfileService) { }
 
-  
-  @Post('')
+  @Post()
   async createProfile(
     @UserParam() jwt_data: jwtType,
     @Body() data: CreateUserProfileDto
@@ -42,18 +43,18 @@ export class UserProfileController {
     return await this.userProfileService.findAll(id);
   }
 
-  @Get('translation/:code')
+  @Get(TRANSLATION_ROUTE)
   async findOne(
-    @Param('code') code: string,
+    @Param('langCode') langCode: string,
     @UserParam() { id }: jwtType) {
-    return await this.userProfileService.findOne(id, code);
+    return await this.userProfileService.findOne(id, langCode);
   }
 
-  @Patch('translation/:code')
+  @Patch(TRANSLATION_ROUTE)
   async updateByLang(
-    @Param('code') code: string,
+    @Param('langCode') langCode: string,
     @UserParam() { id }: jwtType, 
     @Body() updateUserProfileDto: UpdateUserProfileDto) {
-    return await this.userProfileService.update(id, updateUserProfileDto, code);
+    return await this.userProfileService.update(id, updateUserProfileDto, langCode);
   }
 }

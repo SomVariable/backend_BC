@@ -26,8 +26,10 @@ export class UserProfileService {
   }
 
   async findOne(userId: number, langCode: string) {
-    return await this.prismaService.userTranslation.findFirst({
-      where: { AND: [{userId}, {langCode}]}
+    return await this.prismaService.userTranslation.findUnique({
+      where: { 
+        langCode_userId: {langCode, userId}
+      }
     });
   }
 

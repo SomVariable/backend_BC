@@ -9,6 +9,16 @@ import { UserModule } from './api/user/user.module';
 import { KvStoreModule } from './api/kv-store/kv-store.module';
 import { JwtHelperModule } from './api/jwt-helper/jwt-helper.module';
 import { DatabaseModule } from './api/database/database.module';
+import { EducationModule } from './api/education/education.module';
+import { ProfessionalInterestModule } from './api/professional-interest/professional-interest.module';
+import { AwardModule } from './api/award/award.module';
+import { NewsModule } from './api/news/news.module';
+import { ContentItemModule } from './api/content-item/content-item.module';
+import { AreaModule } from './area/area.module';
+import { PracticeModule } from './practice/practice.module';
+import { ServiceModule } from './service/service.module';
+import { TagModule } from './tag/tag.module';
+import { PhotoModule } from './photo/photo.module';
 
 @Module({
   imports: [ConfigModule.forRoot({
@@ -21,6 +31,16 @@ import { DatabaseModule } from './api/database/database.module';
   KvStoreModule, 
   JwtHelperModule,
   DatabaseModule,
+  EducationModule,
+  ProfessionalInterestModule,
+  AwardModule,
+  NewsModule,
+  ContentItemModule,
+  AreaModule,
+  PracticeModule,
+  ServiceModule,
+  TagModule,
+  PhotoModule,
 ],
   controllers: [AppController],
   providers: [AppService],

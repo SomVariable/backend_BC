@@ -17,9 +17,6 @@ async function bootstrap() {
 
   const swaggerConfig = new DocumentBuilder()
     .setTitle('im-legal')
-    .setDescription('add description')
-    .setVersion('1.0')
-    .addTag('authorization')
     .addBearerAuth()
     .build();
   

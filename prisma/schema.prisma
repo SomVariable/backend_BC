@@ -79,7 +79,7 @@ model ContentItem {
   id   Int             @id @default(autoincrement())
   type ContentItemType
 
-  videoLink       String
+  videoLink       String?
   publicationDate DateTime @default(now())
   created_at      DateTime @default(now())
   updated_at      DateTime @updatedAt
@@ -104,19 +104,19 @@ model ContentItemTranslation {
 }
 
 model User {
-  id            Int              @id @default(autoincrement())
-  email         String           @unique
+  id            Int           @id @default(autoincrement())
+  email         String        @unique
   hash          String
-  role          Role             @default(EMPLOYEE)
-  accountStatus AccountStatus    @default(PENDING)
-  created_at    DateTime         @default(now())
-  updated_at    DateTime         @updatedAt
+  role          Role          @default(EMPLOYEE)
+  accountStatus AccountStatus @default(PENDING)
+  created_at    DateTime      @default(now())
+  updated_at    DateTime      @updatedAt
 
   avatar                 Photo?
   professional_interests ProfessionalInterest[]
   awards                 Award[]
   news                   News[]
-  education              Education?
+  education              Education[]
   contentItemId          ContentItem[]
   partnerProfile         PartnerProfile?
   practiceManagerProfile PracticeManagerProfile?
@@ -153,29 +153,17 @@ model EmployeeProfile {
   @@id([userId])
 }
 
-model EducationLevel {
-  id       Int    @id @default(autoincrement())
-  title_ru String
-  title_en String
-
-  Education Education[]
-}
-
 model Education {
-  id              Int      @default(autoincrement())
-  study_year      DateTime
-  graduation_year DateTime
-  university      String
-  specialty       String
-  qualification   String
+  id             Int      @id @default(autoincrement())
+  studyYear      DateTime
+  graduationYear DateTime
+  specialty      String
+  qualification  String
 
-  educationLevel   EducationLevel @relation(fields: [educationLevelId], references: [id], onDelete: Cascade)
-  educationLevelId Int
+  educationInfo EducationTranslation[]
 
   User   User @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId Int  @unique
-
-  @@id([userId, educationLevelId])
+  userId Int
 }
 
 model ProfessionalInterest {
@@ -203,36 +191,47 @@ model News {
   NewsTranslation NewsTranslation[]
 }
 
+model EducationTranslation {
+  id          Int       @default(autoincrement())
+  langCode    String
+  title       String
+  university  String
+  Education   Education @relation(references: [id], fields: [educationId])
+  educationId Int       @unique
+
+  @@id([langCode, educationId])
+}
+
 model TagTranslation {
   id       Int    @default(autoincrement())
-  langcode String
+  langCode String
   tag      String @unique
   Tag      Tag    @relation(fields: [tagId], references: [id], onDelete: Cascade)
   tagId    Int
 
-  @@id([langcode, tagId])
+  @@id([langCode, tagId])
 }
 
 model AwardTranslation {
   id       Int    @default(autoincrement())
-  langcode String
+  langCode String
   title    String
 
   award   Award @relation(fields: [awardId], references: [id], onDelete: Cascade)
   awardId Int
 
-  @@id([awardId, langcode])
+  @@id([awardId, langCode])
 }
 
 model ProfessionalInterestTranslation {
   id       Int    @default(autoincrement())
-  langcode String
+  langCode String
   title    String
 
   professionalInterest   ProfessionalInterest @relation(fields: [professionalInterestId], references: [id], onDelete: Cascade)
   professionalInterestId Int
 
-  @@id([professionalInterestId, langcode])
+  @@id([professionalInterestId, langCode])
 }
 
 model NewsTranslation {
@@ -265,7 +264,7 @@ model CategoryTranslation {
 }
 
 model UserTranslation {
-  id               Int    @default(autoincrement())
+  id               Int     @default(autoincrement())
   langCode         String
   firstName        String?
   surnameName      String?
@@ -276,7 +275,7 @@ model UserTranslation {
   position         String?
 
   userProfile User @relation(fields: [userId], references: [id])
-  userId     Int
+  userId      Int
 
   @@id([langCode, userId])
 }

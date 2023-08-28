@@ -59,7 +59,7 @@ Table Photo {
 Table ContentItem {
   id Int [pk, increment]
   type ContentItemType [not null]
-  videoLink String [not null]
+  videoLink String
   publicationDate DateTime [default: `now()`, not null]
   created_at DateTime [default: `now()`, not null]
   updated_at DateTime [not null]
@@ -95,7 +95,7 @@ Table User {
   professional_interests ProfessionalInterest [not null]
   awards Award [not null]
   news News [not null]
-  education Education
+  education Education [not null]
   contentItemId ContentItem [not null]
   partnerProfile PartnerProfile
   practiceManagerProfile PracticeManagerProfile
@@ -135,28 +135,15 @@ Table EmployeeProfile {
   }
 }
 
-Table EducationLevel {
-  id Int [pk, increment]
-  title_ru String [not null]
-  title_en String [not null]
-  Education Education [not null]
-}
-
 Table Education {
-  id Int [increment, not null]
-  study_year DateTime [not null]
-  graduation_year DateTime [not null]
-  university String [not null]
+  id Int [pk, increment]
+  studyYear DateTime [not null]
+  graduationYear DateTime [not null]
   specialty String [not null]
   qualification String [not null]
-  educationLevel EducationLevel [not null]
-  educationLevelId Int [not null]
+  educationInfo EducationTranslation [not null]
   User User [not null]
-  userId Int [unique, not null]
-
-  indexes {
-    (userId, educationLevelId) [pk]
-  }
+  userId Int [not null]
 }
 
 Table ProfessionalInterest {
@@ -180,39 +167,52 @@ Table News {
   NewsTranslation NewsTranslation [not null]
 }
 
+Table EducationTranslation {
+  id Int [increment, not null]
+  langCode String [not null]
+  title String [not null]
+  university String [not null]
+  Education Education [not null]
+  educationId Int [unique, not null]
+
+  indexes {
+    (langCode, educationId) [pk]
+  }
+}
+
 Table TagTranslation {
   id Int [increment, not null]
-  langcode String [not null]
+  langCode String [not null]
   tag String [unique, not null]
   Tag Tag [not null]
   tagId Int [not null]
 
   indexes {
-    (langcode, tagId) [pk]
+    (langCode, tagId) [pk]
   }
 }
 
 Table AwardTranslation {
   id Int [increment, not null]
-  langcode String [not null]
+  langCode String [not null]
   title String [not null]
   award Award [not null]
   awardId Int [not null]
 
   indexes {
-    (awardId, langcode) [pk]
+    (awardId, langCode) [pk]
   }
 }
 
 Table ProfessionalInterestTranslation {
   id Int [increment, not null]
-  langcode String [not null]
+  langCode String [not null]
   title String [not null]
   professionalInterest ProfessionalInterest [not null]
   professionalInterestId Int [not null]
 
   indexes {
-    (professionalInterestId, langcode) [pk]
+    (professionalInterestId, langCode) [pk]
   }
 }
 
@@ -306,15 +306,15 @@ Ref: PracticeManagerProfile.userId - User.id
 
 Ref: EmployeeProfile.userId - User.id
 
-Ref: Education.educationLevelId > EducationLevel.id [delete: Cascade]
-
-Ref: Education.userId - User.id [delete: Cascade]
+Ref: Education.userId > User.id [delete: Cascade]
 
 Ref: ProfessionalInterest.userId > User.id [delete: Cascade]
 
 Ref: Award.userId > User.id [delete: Cascade]
 
 Ref: News.userId > User.id [delete: Cascade]
+
+Ref: EducationTranslation.educationId > Education.id
 
 Ref: TagTranslation.tagId > Tag.id [delete: Cascade]
 
