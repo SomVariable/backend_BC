@@ -1,1 +1,4 @@
-export class CreatePracticeDto {}
+export class CreatePracticeDto {
+    areasIds: number[]
+    servicesIds: number[]
+}

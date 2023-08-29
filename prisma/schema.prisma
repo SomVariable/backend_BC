@@ -33,7 +33,7 @@ model Practice {
   updated_at DateTime @updatedAt
 
   tag                 Tag[]
-  areasId             Area[]
+  areasIds            Area[]
   servicesIds         Service[]
   CategoryTranslation CategoryTranslation[]
 }
@@ -253,12 +253,12 @@ model CategoryTranslation {
   title                   String
   text                    String
 
-  areaProfile     Area?     @relation(fields: [areaId], references: [id], onDelete: Cascade)
-  areaId          Int?
-  practiceProfile Practice? @relation(fields: [practiceId], references: [id], onDelete: Cascade)
-  practiceId      Int?
-  serviceProfile  Service?  @relation(fields: [serviceId], references: [id], onDelete: Cascade)
-  serviceId       Int?
+  area       Area?     @relation(fields: [areaId], references: [id], onDelete: Cascade)
+  areaId     Int?
+  practice   Practice? @relation(fields: [practiceId], references: [id], onDelete: Cascade)
+  practiceId Int?
+  service    Service?  @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  serviceId  Int?
 
   @@id([langCode, categoryTranslationType])
 }

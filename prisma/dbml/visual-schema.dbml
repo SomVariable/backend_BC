@@ -235,11 +235,11 @@ Table CategoryTranslation {
   categoryTranslationType CategoryTranslationType [not null]
   title String [not null]
   text String [not null]
-  areaProfile Area
+  area Area
   areaId Int
-  practiceProfile Practice
+  practice Practice
   practiceId Int
-  serviceProfile Service
+  service Service
   serviceId Int
 
   indexes {

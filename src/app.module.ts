@@ -16,9 +16,10 @@ import { NewsModule } from './api/news/news.module';
 import { ContentItemModule } from './api/content-item/content-item.module';
 import { AreaModule } from './api/area/area.module';
 import { PracticeModule } from './api/practice/practice.module';
-import { ServiceModule } from './api/service/service.module';
+
 import { TagModule } from './api/tag/tag.module';
 import { PhotoModule } from './api/photo/photo.module';
+import { OfferingsModule } from './api/service/offerings.module';
 
 @Module({
   imports: [ConfigModule.forRoot({
@@ -38,7 +39,7 @@ import { PhotoModule } from './api/photo/photo.module';
   ContentItemModule,
   AreaModule,
   PracticeModule,
-  ServiceModule,
+  OfferingsModule,
   TagModule,
   PhotoModule,
 ],
