@@ -1,10 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { CreatePracticeDto } from './dto/create-practice.dto';
 import { UpdatePracticeDto } from './dto/update-practice.dto';
-import { mapToIdObject } from '../area/constants/area.constants';
-import { CreateCategoryDto } from '../area/dto/create-category.dto';
-import { UpdateCategoryDto } from '../area/dto/update-category.dto';
 import { PrismaService } from '../database/prisma.service';
+import { mapToIdObject } from '../category-translation/constants/category.constants';
 
 @Injectable()
 export class PracticeService {
@@ -23,12 +21,6 @@ export class PracticeService {
           connect: servicesIds.map(mapToIdObject)
         }
       }
-    });
-  }
-
-  async createInfo(id: number, langCode: string, data: CreateCategoryDto) {
-    return await this.prismaService.categoryTranslation.create({
-      data: { practiceId: id, langCode, ...data}
     });
   }
 
@@ -54,15 +46,6 @@ export class PracticeService {
           set: data?.servicesIds.map(mapToIdObject)
         }
       }
-    })
-  }
-
-  async updateInfo(categoryTranslationType, langCode, data: UpdateCategoryDto){
-    return await this.prismaService.categoryTranslation.update({
-      where: {
-        langCode_categoryTranslationType: {categoryTranslationType, langCode}
-      },
-      data
     })
   }
 

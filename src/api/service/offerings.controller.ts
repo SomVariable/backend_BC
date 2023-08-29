@@ -4,14 +4,10 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { AccessJwtAuthGuard } from '../jwt-helper/guards/access-jwt.guard';
 import { BaseInterceptor } from 'src/common/interceptors/data-to-json';
 import { CreateOfferDto } from './dto/create-offer.dto';
-import { ID_PARAM, TRANSLATION_ROUTE_WITH_ID } from 'src/common/constants/app.constants';
-import { TranslationParamDto } from 'src/common/dto/translation-param.dto';
-import { CreateCategoryDto } from '../area/dto/create-category.dto';
-import { UpdatePracticeDto } from '../practice/dto/update-practice.dto';
+import { ID_PARAM } from 'src/common/constants/app.constants';
+
 import { UpdateOfferDto } from './dto/update-offer.dto';
-import { TRANSLATION_ROUTE_WITH_CATEGORY_TYPE } from '../area/constants/area.constants';
-import { CategoryDto } from '../area/dto/category-pram.dto';
-import { UpdateCategoryDto } from '../area/dto/update-category.dto';
+
 
 @Controller('service')
 @ApiTags("service")
@@ -26,14 +22,6 @@ export class OfferingsController {
     @Body() data: CreateOfferDto
   ){
     return await this.offeringsService.create(data)
-  }
-
-  @Post(TRANSLATION_ROUTE_WITH_ID)
-  async createInfo(
-    @Param() {id, langCode}: TranslationParamDto,
-    @Body() data: CreateCategoryDto
-  ){
-    return await this.offeringsService.createInfo(id, langCode, data)
   }
 
   @Get()
@@ -54,14 +42,6 @@ export class OfferingsController {
     @Body() data: UpdateOfferDto
   ) {
     return await this.offeringsService.update(id, data)
-  }
-
-  @Patch(TRANSLATION_ROUTE_WITH_CATEGORY_TYPE)
-  async updateInfo(
-    @Param() {categoryTranslationType, langCode}: CategoryDto, 
-    @Body() data: UpdateCategoryDto
-  ) {
-    return await this.offeringsService.updateInfo(categoryTranslationType, langCode, data)
   }
 
   @Delete(ID_PARAM)

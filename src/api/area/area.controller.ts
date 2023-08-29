@@ -5,12 +5,7 @@ import { UpdateAreaDto } from './dto/update-area.dto';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { AccessJwtAuthGuard } from '../jwt-helper/guards/access-jwt.guard';
 import { BaseInterceptor } from 'src/common/interceptors/data-to-json';
-import { TRANSLATION_ROUTE_WITH_CATEGORY_TYPE } from './constants/area.constants';
-import { CategoryDto } from './dto/category-pram.dto';
 import { ID_PARAM, TRANSLATION_ROUTE_WITH_ID } from 'src/common/constants/app.constants';
-import { TranslationParamDto } from 'src/common/dto/translation-param.dto';
-import { CreateCategoryDto } from './dto/create-category.dto';
-import { UpdateCategoryDto } from './dto/update-category.dto';
 
 @Controller('area')
 @ApiTags("area")
@@ -25,14 +20,6 @@ export class AreaController {
     @Body() data: CreateAreaDto
   ){
     return await this.areaService.create(data)
-  }
-
-  @Post(TRANSLATION_ROUTE_WITH_ID)
-  async createCategoryDto(
-    @Param() {id, langCode}: TranslationParamDto,
-    @Body() data: CreateCategoryDto
-  ){
-    return await this.areaService.createInfo(id, langCode, data)
   }
 
   @Get()
@@ -53,14 +40,6 @@ export class AreaController {
     @Body() data: UpdateAreaDto
   ) {
     return await this.areaService.update(id, data)
-  }
-
-  @Patch(TRANSLATION_ROUTE_WITH_CATEGORY_TYPE)
-  async updateInfo(
-    @Param() {categoryTranslationType, langCode}: CategoryDto, 
-    @Body() data: UpdateCategoryDto
-  ) {
-    return await this.areaService.updateInfo(categoryTranslationType, langCode, data)
   }
 
   @Delete(ID_PARAM)

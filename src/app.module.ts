@@ -20,6 +20,7 @@ import { PracticeModule } from './api/practice/practice.module';
 import { TagModule } from './api/tag/tag.module';
 import { PhotoModule } from './api/photo/photo.module';
 import { OfferingsModule } from './api/service/offerings.module';
+import { CategoryTranslationModule } from './api/category-translation/category-translation.module';
 
 @Module({
   imports: [ConfigModule.forRoot({
@@ -42,6 +43,7 @@ import { OfferingsModule } from './api/service/offerings.module';
   OfferingsModule,
   TagModule,
   PhotoModule,
+  CategoryTranslationModule,
 ],
   controllers: [AppController],
   providers: [AppService],

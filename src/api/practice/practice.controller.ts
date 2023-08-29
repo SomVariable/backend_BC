@@ -8,9 +8,8 @@ import { BaseInterceptor } from 'src/common/interceptors/data-to-json';
 import { ID_PARAM, TRANSLATION_ROUTE_WITH_ID } from 'src/common/constants/app.constants';
 import { TranslationParamDto } from 'src/common/dto/translation-param.dto';
 import { CreateCategoryDto } from '../area/dto/create-category.dto';
-import { TRANSLATION_ROUTE_WITH_CATEGORY_TYPE } from '../area/constants/area.constants';
-import { CategoryDto } from '../area/dto/category-pram.dto';
-import { UpdateCategoryDto } from '../area/dto/update-category.dto';
+import { CategoryDto } from '../category-translation/dto/category-pram.dto';
+import { UpdateCategoryDto } from '../category-translation/dto/update-category.dto';
 
 @Controller('practice')
 @ApiTags("practice")
@@ -25,14 +24,6 @@ export class PracticeController {
     @Body() data: CreatePracticeDto
   ){
     return await this.practiceService.create(data)
-  }
-
-  @Post(TRANSLATION_ROUTE_WITH_ID)
-  async createInfo(
-    @Param() {id, langCode}: TranslationParamDto,
-    @Body() data: CreateCategoryDto
-  ){
-    return await this.practiceService.createInfo(id, langCode, data)
   }
 
   @Get()
@@ -53,14 +44,6 @@ export class PracticeController {
     @Body() data: UpdatePracticeDto
   ) {
     return await this.practiceService.update(id, data)
-  }
-
-  @Patch(TRANSLATION_ROUTE_WITH_CATEGORY_TYPE)
-  async updateInfo(
-    @Param() {categoryTranslationType, langCode}: CategoryDto, 
-    @Body() data: UpdateCategoryDto
-  ) {
-    return await this.practiceService.updateInfo(categoryTranslationType, langCode, data)
   }
 
   @Delete(ID_PARAM)
