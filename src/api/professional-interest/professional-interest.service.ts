@@ -26,7 +26,7 @@ export class ProfessionalInterestService {
       data: {professionalInterestId, langCode, ...createProfessionalInterestDto}
     });
   }
-  // add user check 
+
   async updateInfo(professionalInterestId: number, langCode: string,  data: UpdateProfessionalInterestDto) {
     return await this.prismaService.professionalInterestTranslation.update( {
       where: {
@@ -43,7 +43,7 @@ export class ProfessionalInterestService {
     });
   }
 
-  // add user check 
+
   async findOne(id: number) {
     return await this.prismaService.professionalInterest.findFirst({
       include: {ProfessionalInterestTranslation: true},
@@ -53,7 +53,6 @@ export class ProfessionalInterestService {
     });
   }
 
-  // add user check 
   async remove(id: number) {
     return await this.prismaService.professionalInterest.delete({
       where: {id}

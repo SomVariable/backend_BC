@@ -137,10 +137,11 @@ export class AuthController {
   async refreshToken(
     @UserParam() { email, sessionKey }: jwtType
   ) {
+
     const tokens = await this.authService.generateTokens(sessionKey, email)
 
     const res: authVerifyReturnType = {
-      message: AUTH_OK.SUCCESS_VERIFICATION,
+      message: AUTH_OK.REFRESH_TOKEN,
       ...tokens
     }
     return res

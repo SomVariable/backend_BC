@@ -20,7 +20,7 @@ Table Practice {
   created_at DateTime [default: `now()`, not null]
   updated_at DateTime [not null]
   tag Tag [not null]
-  areasId Area [not null]
+  areasIds Area [not null]
   servicesIds Service [not null]
   CategoryTranslation CategoryTranslation [not null]
 }
@@ -137,8 +137,8 @@ Table EmployeeProfile {
 
 Table Education {
   id Int [pk, increment]
-  studyYear DateTime [not null]
-  graduationYear DateTime [not null]
+  studyYear String [not null]
+  graduationYear String [not null]
   specialty String [not null]
   qualification String [not null]
   educationInfo EducationTranslation [not null]

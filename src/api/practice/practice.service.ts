@@ -14,7 +14,7 @@ export class PracticeService {
   async create({areasIds, servicesIds}: CreatePracticeDto) {
     return await this.prismaService.practice.create({
       data: {
-        areasId: {
+        areasIds: {
           connect: areasIds.map(mapToIdObject)
         },
         servicesIds: {
@@ -39,8 +39,8 @@ export class PracticeService {
     return await this.prismaService.practice.update({
       where: {id},
       data: {
-        areasId: {
-          set: data?.areasIds.map(mapToIdObject)
+        areasIds: {
+          set: data?.servicesIds.map(mapToIdObject)
         },
         servicesIds: {
           set: data?.servicesIds.map(mapToIdObject)

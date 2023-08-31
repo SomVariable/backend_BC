@@ -1,4 +1,4 @@
-import { Body, Controller, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Param, Patch, Post, UseGuards, UseInterceptors } from '@nestjs/common';
 import { CategoryTranslationService } from './category-translation.service';
 import { TRANSLATION_ROUTE_WITH_ID } from 'src/common/constants/app.constants';
 import { CreateCategoryDto } from '../area/dto/create-category.dto';
@@ -6,7 +6,14 @@ import { TranslationParamDto } from 'src/common/dto/translation-param.dto';
 import { TRANSLATION_ROUTE_WITH_CATEGORY_TYPE } from './constants/category.constants';
 import { CategoryDto } from './dto/category-pram.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { BaseInterceptor } from 'src/common/interceptors/data-to-json';
+import { AccessJwtAuthGuard } from '../jwt-helper/guards/access-jwt.guard';
 
+@ApiTags("category-translation")
+@ApiBearerAuth()
+@UseInterceptors(BaseInterceptor)
+@UseGuards(AccessJwtAuthGuard)
 @Controller('category-translation')
 export class CategoryTranslationController {
   constructor(private readonly categoryTranslationService: CategoryTranslationService) {}
@@ -27,3 +34,5 @@ export class CategoryTranslationController {
     return await this.categoryTranslationService.updateInfo(categoryTranslationType, langCode, data)
   }
 }
+
+

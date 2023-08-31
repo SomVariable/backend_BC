@@ -1,20 +1,66 @@
 import { ApiProperty } from "@nestjs/swagger"
-import { IsDataURI, IsNotEmpty, IsString, Matches, MaxLength } from "class-validator"
-import { dateTemplate } from "../constants/education.constants"
+import { IsDataURI, IsNotEmpty, IsString, Matches, MaxLength, Validate, ValidationArguments, ValidationOptions, ValidatorConstraint, ValidatorConstraintInterface } from "class-validator"
+import { EDUCATION_BAD_REQUEST, dateTemplate } from "../constants/education.constants"
+
+
+@ValidatorConstraint({ name: 'isValidDate', async: false })
+export class IsValidDateConstraint implements ValidatorConstraintInterface {
+  validate(value: string, args: ValidationArguments) {
+    if (!dateTemplate.test(value)) {
+      return false;
+    }
+
+    const parts = value.split('-');
+    const year = parseInt(parts[0], 10);
+    const month = parseInt(parts[1], 10);
+    const day = parseInt(parts[2], 10);
+
+    if (year < 1900 || year > 9999 || month < 1 || month > 12 || day < 1 || day > 31) {
+      return false;
+    }
+
+    return true;
+  }
+
+  defaultMessage(args?: ValidationArguments): string {
+    return `wrong data`;
+  }
+}
+
+export const dateOptions: ValidationOptions = {
+    message(validationArguments: ValidationArguments) {
+        const value = validationArguments.value
+
+        if (!dateTemplate.test(value)) {
+            return EDUCATION_BAD_REQUEST.WRONG_DATA_FORMAT;
+          }
+      
+          const parts = value.split('-');
+          const year = parseInt(parts[0], 10);
+          const month = parseInt(parts[1], 10);
+          const day = parseInt(parts[2], 10);
+      
+          if (year < 1900 || year > 9999 || month < 1 || month > 12 || day < 1 || day > 31) {
+            return EDUCATION_BAD_REQUEST.WRONG_DATA;
+          }
+    },
+}
+
 
 export class CreateEducationDto {
     @ApiProperty({
         example: "yyyy-mm-dd",
     })
     @IsNotEmpty()
-    @Matches(dateTemplate)
+    @IsString()
+    @Validate(IsValidDateConstraint, dateOptions)
     studyYear: string
 
     @ApiProperty({
         example: "yyyy-mm-dd",
     })
     @IsNotEmpty()
-    @Matches(dateTemplate)
+    @Validate(IsValidDateConstraint, dateOptions)
     graduationYear: string
 
     @ApiProperty()

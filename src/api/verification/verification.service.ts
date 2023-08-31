@@ -1,7 +1,7 @@
 import { HttpException, HttpStatus, Injectable, BadRequestException, InternalServerErrorException } from '@nestjs/common';
 import { UserService } from '../user/user.service';
 import { KvStoreService } from '../kv-store/kv-store.service';
-import { VERIFICATION_BAD_REQUEST_ERRORS, VERIFICATION_SERVER_ERRORS, VERIFY_KEY_TIMESTAMP } from './constants/constants';
+import { VERIFICATION_BAD_REQUEST_ERRORS, VERIFICATION_OK, VERIFICATION_SERVER_ERRORS, VERIFY_KEY_TIMESTAMP } from './constants/constants';
 import { Session, SetVerificationProps } from '../kv-store/kv-types/kv-store.type';
 
 @Injectable()
@@ -21,7 +21,9 @@ export class VerificationService {
 
             await this.kvStoreService.setVerificationProps(data)
 
-            return true
+            return {
+                message: VERIFICATION_OK.SUCCESS_VERIFICATION
+            }
             //there should be return send message to the email
         } catch (error) {
             console.log(error)
