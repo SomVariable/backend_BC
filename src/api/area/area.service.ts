@@ -1,10 +1,11 @@
 import { PrismaService } from './../database/prisma.service';
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateAreaDto } from './dto/create-area.dto';
 import { UpdateAreaDto } from './dto/update-area.dto';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from '../category-translation/dto/update-category.dto';
 import { mapToIdObject } from '../category-translation/constants/category.constants';
+import { AREA_NOT_FOUND } from './constants/area.constants';
 
 @Injectable()
 export class AreaService {
@@ -35,6 +36,12 @@ export class AreaService {
   }
 
   async update(id: number, data: UpdateAreaDto) {
+    const area = await this.getArea(id)
+
+    if( !area ){
+      throw new NotFoundException( AREA_NOT_FOUND.MISSING_AREA )
+    }
+
     return await this.prismaService.area.update({
       where: {id},
       data:{
@@ -45,8 +52,13 @@ export class AreaService {
     })
   }
 
-
   async delete(id: number) {
+    const area = await this.getArea(id)
+
+    if( !area ){
+      throw new NotFoundException( AREA_NOT_FOUND.MISSING_AREA )
+    }
+
     return await this.prismaService.area.delete({
       where: {id}
     })

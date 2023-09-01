@@ -19,6 +19,7 @@ import { UserParam } from 'src/common/decorators/param-user.decorator';
 import { jwtType } from '../jwt-helper/types/jwt-helper.types';
 import { BaseInterceptor } from 'src/common/interceptors/data-to-json';
 import { TRANSLATION_ROUTE } from 'src/common/constants/app.constants';
+import { LangCodeDto } from 'src/common/dto/translation-param.dto';
 
 @Controller('user-profile')
 @ApiTags("user-profile")
@@ -45,14 +46,14 @@ export class UserProfileController {
 
   @Get(TRANSLATION_ROUTE)
   async findOne(
-    @Param('langCode') langCode: string,
+    @Param() {langCode}: LangCodeDto,
     @UserParam() { id }: jwtType) {
     return await this.userProfileService.findOne(id, langCode);
   }
 
   @Patch(TRANSLATION_ROUTE)
   async updateByLang(
-    @Param('langCode') langCode: string,
+    @Param() {langCode}: LangCodeDto,
     @UserParam() { id }: jwtType, 
     @Body() updateUserProfileDto: UpdateUserProfileDto) {
     return await this.userProfileService.update(id, updateUserProfileDto, langCode);

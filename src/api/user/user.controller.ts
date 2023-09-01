@@ -14,6 +14,8 @@ import { LIMIT_USERS } from './constants/user.constants';
 import { UserParam } from 'src/common/decorators/param-user.decorator';
 import { jwtType } from '../jwt-helper/types/jwt-helper.types';
 import { BaseInterceptor } from 'src/common/interceptors/data-to-json';
+import { ID_PARAM } from 'src/common/constants/app.constants';
+import { QueryPaginationParam } from 'src/common/dto/query-pagination.dto';
 
 @ApiTags("user")
 @ApiBearerAuth()
@@ -34,6 +36,20 @@ export class UserController {
     return await this.userService.findById(id)      
   }
 
+  @Patch() 
+  async updateSelf(
+    @UserParam() {id}: jwtType,
+    @Body() body: UpdateUserDto
+  ) {
+    return await this.userService.updateProperty(id, body)
+  }
+
+  @Delete()
+  async deleteSelf(
+    @UserParam() {id}: jwtType,
+  ) {
+    return await this.userService.remove(id)
+  }
 }
 
 @ApiTags("users")
@@ -45,12 +61,26 @@ export class UsersController {
     private readonly userProfileService: UserProfileService
   ) { }
 
-  @Get('')
+  @Get()
   async findUsers(
-    @Query('offset', ParseIntPipe) offset: number = 0,
-    @Query('limit', ParseIntPipe) limit: number = LIMIT_USERS
+    @Query('limit, offset') {limit, offset}: QueryPaginationParam
     ) {
       return await this.userService.findUsers(offset, limit)
+  }
+
+  @Get('count')
+  async usersCount() {
+    return await this.userService.getTotalCount()
+  }
+
+  @Get(`user/${ID_PARAM}`)
+  async findUser(@Param() id: number) {
+    return await this.userService.findById(id)
+  }
+
+  @Delete(ID_PARAM)
+  async deleteUser(@Param('id', ParseIntPipe) id: number) {
+    return await this.userService.remove(id)
   }
 }
 

@@ -5,15 +5,14 @@ export class QueryPaginationParam {
   
     @ApiPropertyOptional()
     @IsNumber()
-    @IsPositive()
     @Max(100)
     @IsOptional()
-    limit = 100
+    limit: number = 100
 
     @ApiPropertyOptional()
     @IsNumber()
-    @IsPositive()
     @Min(0)
     @IsOptional()
-    offset = 0
+    offset: number = 0
+    
 }

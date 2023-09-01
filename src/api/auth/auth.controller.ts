@@ -130,8 +130,8 @@ export class AuthController {
   }
 
   @ApiOkResponse( { type: RefreshTokensOkResponse } )
-  @ApiBearerAuth()
   @ApiUnauthorizedResponse( {type: UnauthorizedExceptionResponse} )
+  @ApiBearerAuth()
   @Get('refresh-token')
   @UseGuards(RefreshJwtAuthGuard)
   async refreshToken(

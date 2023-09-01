@@ -6,22 +6,7 @@ import { PartialType } from "@nestjs/swagger";
 
 
 export class UpdateUserDto extends PartialType(CreateUserDto) {
-
-    @ApiProperty()
-    @IsOptional()
-    @IsNotEmpty()
-    @MinLength(4)
-    @MaxLength(30)
-    login?: string;
-    
-    @ApiProperty()
-    @IsOptional()
-    verification_key?: string
-    
-    @ApiProperty()
-    @IsOptional()
-    verification_timestamp?: string
-    
+     
     @ApiProperty()
     @IsOptional()
     role?: Role
