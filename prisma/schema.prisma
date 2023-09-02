@@ -259,8 +259,9 @@ model CategoryTranslation {
   practiceId Int?
   service    Service?  @relation(fields: [serviceId], references: [id], onDelete: Cascade)
   serviceId  Int?
-
-  @@id([langCode, categoryTranslationType])
+  relatedId  Int
+  
+  @@id([langCode, relatedId, categoryTranslationType])
 }
 
 model UserTranslation {

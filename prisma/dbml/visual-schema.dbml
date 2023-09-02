@@ -241,9 +241,10 @@ Table CategoryTranslation {
   practiceId Int
   service Service
   serviceId Int
+  relatedId Int [not null]
 
   indexes {
-    (langCode, categoryTranslationType) [pk]
+    (langCode, relatedId, categoryTranslationType) [pk]
   }
 }
 
