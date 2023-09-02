@@ -16,6 +16,7 @@ import { CategoryTranslationBadRequestErrorResponse } from './dto/category-bad-r
 import { CreateCategoryTranslationInterceptor } from './interceptors/create.interceptor';
 import { UpdateCategoryTranslationInterceptor } from './interceptors/update.interceptor';
 
+
 @ApiTags("category-translation")
 @ApiBearerAuth()
 @ApiNotFoundResponse({
