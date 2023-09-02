@@ -1,24 +1,32 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe, UseInterceptors } from '@nestjs/common';
 import { NewsService } from './news.service';
 import { CreateNewsDto } from './dto/create-news.dto';
 import { UpdateNewsDto } from './dto/update-news.dto';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiBadRequestResponse, ApiBearerAuth, ApiNotFoundResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { UserParam } from 'src/common/decorators/param-user.decorator';
 import { jwtType } from 'src/api/jwt-helper/types/jwt-helper.types';
 import { TranslationParamDto } from 'src/common/dto/translation-param.dto';
 import { CreateNewsTranslationBodyDto } from './dto/create-news-translation.dto';
 import { ID_PARAM, TRANSLATION_ROUTE } from 'src/common/constants/app.constants';
+import { NewsInterceptor } from './interceptors/news.interceptor';
+import { BaseInterceptor } from 'src/common/interceptors/data-to-json';
+import { NewsBadRequestErrorResponse } from './dto/news-bad-request-error.dto';
+import { NewsNotFoundErrorResponse } from './dto/news-not-found-error.dto';
+import { NewsOkResponse } from './dto/ok-response/ok.dto';
 
 @ApiTags("news")
 @ApiBearerAuth()
+@ApiOkResponse({ type: NewsOkResponse})
+@ApiBadRequestResponse({ type: NewsBadRequestErrorResponse})
+@ApiNotFoundResponse({ type: NewsNotFoundErrorResponse})
+@UseInterceptors(BaseInterceptor, NewsInterceptor)
 @Controller('news')
 export class NewsController {
   constructor(private readonly newsService: NewsService) { }
 
   @Post()
   create(
-    @Body() createNewsDto: CreateNewsDto,
-    @UserParam() jwtData: jwtType
+    @Body() createNewsDto: CreateNewsDto
   ) {
     return this.newsService.create(createNewsDto);
   }
@@ -32,17 +40,15 @@ export class NewsController {
 
   @Get(ID_PARAM)
   findOne(
-    @Param('id') id: string,
-    @UserParam() jwtData: jwtType) {
-    return this.newsService.findOne(+id);
+    @Param('id', ParseIntPipe) id: number) {
+    return this.newsService.findOne(id);
   }
 
 
   @Delete(ID_PARAM)
   remove(
-    @Param('id') id: string,
-    @UserParam() jwtData: jwtType) {
-    return this.newsService.remove(+id);
+    @Param('id', ParseIntPipe) id: number) {
+    return this.newsService.remove(id);
   }
 
   @Post(TRANSLATION_ROUTE)
@@ -54,11 +60,11 @@ export class NewsController {
       newsId, text, title
     })
   }
+  
   @Patch(TRANSLATION_ROUTE)
   async update(
     @Param() { id, langCode }: TranslationParamDto,
-    @Body() updateNewsDto: UpdateNewsDto,
-    @UserParam() jwtData: jwtType) {
+    @Body() updateNewsDto: UpdateNewsDto) {
     return this.newsService.update(id, langCode, updateNewsDto);
   }
 }

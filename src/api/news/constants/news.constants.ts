@@ -7,6 +7,9 @@ export enum NEWS_BAD_REQUEST {
 }
 
 export enum NEWS_NOT_FOUND {
+    MISSING_EDUCATION = 'missing news',
+    MISSING_EDUCATION_INFO = 'missing news-info',
+
 }
 
 export const NEWS_EXAMPLES = ""
