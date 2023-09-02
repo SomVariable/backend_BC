@@ -1,14 +1,14 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { ContentItemOkResponse } from "./ok.dto";
-import { ContentItem_OK } from "../../constants/content-item.constants";
+import { CONTENT_ITEM_OK } from "../../constants/content-item.constants";
 
 export class CreatedOkResponse extends ContentItemOkResponse {
     
     @ApiProperty({
-        type: ContentItem_OK.UPDATED,
-        default: ContentItem_OK.UPDATED,
-        enum: ContentItem_OK
+        type: CONTENT_ITEM_OK.UPDATED,
+        default: CONTENT_ITEM_OK.UPDATED,
+        enum: CONTENT_ITEM_OK
     })
-    message: ContentItem_OK.UPDATED;
+    message: CONTENT_ITEM_OK.UPDATED;
 
 }

@@ -1,14 +1,14 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { ContentItemOkResponse } from "./ok.dto";
-import { ContentItem_OK } from "../../constants/content-item.constants";
+import { CONTENT_ITEM_OK } from "../../constants/content-item.constants";
 
 export class DeletedOkResponse extends ContentItemOkResponse {
     
     @ApiProperty({
-        type: ContentItem_OK.DELETED,
-        default: ContentItem_OK.DELETED,
-        enum: ContentItem_OK
+        type: CONTENT_ITEM_OK.DELETED,
+        default: CONTENT_ITEM_OK.DELETED,
+        enum: CONTENT_ITEM_OK
     })
-    message: ContentItem_OK.DELETED;
+    message: CONTENT_ITEM_OK.DELETED;
 
 }

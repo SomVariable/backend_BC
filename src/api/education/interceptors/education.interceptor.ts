@@ -1,15 +1,15 @@
 import { Injectable, NestInterceptor, ExecutionContext, CallHandler } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { CONTENT_ITEM_OK } from '../constants/content-item.constants';
+import { EDUCATION_OK } from '../constants/education.constants';
 
 @Injectable()
-export class UpdateContentItemInterceptor implements NestInterceptor {
+export class EducationInterceptor implements NestInterceptor {
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     return next.handle().pipe(
       map((data: any) => {
         return {
-            message: CONTENT_ITEM_OK.CREATED_INFO,
+            message: EDUCATION_OK.OK,
             data
         };
       }),
