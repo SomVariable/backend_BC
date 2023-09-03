@@ -1,9 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateOfferDto } from './dto/create-offer.dto';
 import { UpdateOfferDto } from './dto/update-offer.dto';
 import { CreateCategoryDto } from '../area/dto/create-category.dto';
 import { PrismaService } from '../database/prisma.service';
 import { mapToIdObject } from '../category-translation/constants/category.constants';
+import { Offer_NOT_FOUND } from './constants/offer.constants';
 
 
 @Injectable()
@@ -34,6 +35,12 @@ export class OfferingsService {
   }
 
   async update(id: number, data: UpdateOfferDto) {
+    const offer = await this.prismaService.service.findFirst({where: {id}})
+
+    if(!offer){
+      throw new NotFoundException(Offer_NOT_FOUND.MISSING_Offer)
+    }
+
     return await this.prismaService.service.update({
       where: {id},
       data: {
@@ -45,6 +52,12 @@ export class OfferingsService {
   }
 
   async delete(id: number) {
+    const offer = await this.prismaService.service.findFirst({where: {id}})
+
+    if(!offer){
+      throw new NotFoundException(Offer_NOT_FOUND.MISSING_Offer)
+    }
+    
     return await this.prismaService.service.delete({
       where: {id}
     })
