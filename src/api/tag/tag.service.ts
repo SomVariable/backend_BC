@@ -1,8 +1,9 @@
 import { PrismaService } from './../database/prisma.service';
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateTagDto } from './dto/create-tag.dto';
 import { CreateTagInfoDto } from './dto/create-tag-info';
 import { UpdateTagInfoDto } from './dto/update-tag-info';
+import { TAG_NOT_FOUND } from './constants/tag.constants';
 
 @Injectable()
 export class TagService {
@@ -17,6 +18,12 @@ export class TagService {
     }
 
     async createInfo(tagId:number, langCode: string, data: CreateTagInfoDto) {
+        const tag = await this.getTag(tagId)
+
+        if(!tag) {
+            throw new NotFoundException(TAG_NOT_FOUND.MISSING_TAG)
+        }
+
         return await this.prismaService.tagTranslation.create({
             data: {tagId, langCode, ...data}
         }) 
@@ -36,6 +43,16 @@ export class TagService {
     }
 
     async updateTagInfo(tagId: number, langCode: string, data: UpdateTagInfoDto) {
+        const tagInfo = await this.prismaService.tagTranslation.findUnique({
+            where: {
+                langCode_tagId: {tagId, langCode}
+            }
+        })
+
+        if(!tagInfo) {
+            throw new NotFoundException(TAG_NOT_FOUND.MISSING_TAG_INFO)
+        }
+
         return await this.prismaService.tagTranslation.update({
             where: {langCode_tagId: {tagId, langCode}},
             data
@@ -43,6 +60,12 @@ export class TagService {
     }
 
     async delete(id: number) {
+        const tag = await this.getTag(id)
+
+        if(!tag) {
+            throw new NotFoundException(TAG_NOT_FOUND.MISSING_TAG)
+        }
+
         return await this.prismaService.tag.delete( {
             where: {id}
         } ) 

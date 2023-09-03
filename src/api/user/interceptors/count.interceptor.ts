@@ -5,19 +5,13 @@ import { map } from 'rxjs/operators';
 import { userResponse } from '../types/user.types';
 
 @Injectable()
-export class UserInterceptor implements NestInterceptor {
+export class UsersCountInterceptor implements NestInterceptor {
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     return next.handle().pipe(
       map((data: userResponse) => {
-        const {user} = data
-        const {id, role, email, accountStatus} = user
-        const returnObject = {
-          ...data, 
-          user: {
-            id, role, email, accountStatus
-          }
-        }
-        return returnObject;
+        return {
+            count: data
+        };
       })
     );
   }

@@ -1,9 +1,9 @@
 
-import { Injectable} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Prisma, Role, User, UserTranslation } from '@prisma/client';
 import { PrismaService } from '../database/prisma.service';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { LIMIT_USERS } from './constants/user.constants';
+import { LIMIT_USERS, USER_NOT_FOUND } from './constants/user.constants';
 
 
 
@@ -17,13 +17,11 @@ export class UserService {
   async create(data: Prisma.UserCreateInput): Promise<User> {
 
     const newUser = await this.prismaService.user.create({
-          data
-        })
-    
+      data
+    })
 
     return newUser
   }
-
 
   async findUsers(skip?: number, take?: number): Promise<User[]> {
     const user: User[] = await this.prismaService.user.findMany({
@@ -33,7 +31,7 @@ export class UserService {
     return user
   }
 
-  async getTotalCount(){
+  async getTotalCount() {
     return await this.prismaService.user.count()
   }
 
@@ -42,28 +40,41 @@ export class UserService {
 
     return user
   }
-  
-  
+
+
   async findById(id: number): Promise<User> {
-    const user: User = await this.prismaService.user.findFirst({ where: {id} })
+    const user: User = await this.prismaService.user.findFirst({ where: { id } })
 
     return user
   }
 
   async updateProperty(id: number, data: UpdateUserDto): Promise<User> {
-    const updatedUser: User  = await this.prismaService.user.update({
-        where: { id },
-        data
-      })
+
+    const user = await this.findById(id)
+
+    if(!user) {
+      throw new NotFoundException(USER_NOT_FOUND.MISSING_USER)
+    }
+
+    const updatedUser: User = await this.prismaService.user.update({
+      where: { id },
+      data
+    })
 
     return updatedUser
 
   }
 
   async remove(id: number): Promise<User> {
+    const user = await this.findById(id)
+
+    if(!user) {
+      throw new NotFoundException(USER_NOT_FOUND.MISSING_USER)
+    }
+
     const deletedUser: User = await this.prismaService.user.delete({
-        where: { id }
-      })
+      where: { id }
+    })
 
     return deletedUser
   }

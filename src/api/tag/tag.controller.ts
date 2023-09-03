@@ -5,18 +5,23 @@ import { ID_PARAM, TRANSLATION_ROUTE_WITH_ID } from 'src/common/constants/app.co
 import { CreateTagInfoDto } from './dto/create-tag-info';
 import { TranslationParamDto } from 'src/common/dto/translation-param.dto';
 import { UpdateTagInfoDto } from './dto/update-tag-info';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiBadRequestResponse, ApiBearerAuth, ApiNotFoundResponse, ApiTags } from '@nestjs/swagger';
 import { RolesDecorator } from '../roles/roles.decorator';
 import { Role } from '@prisma/client';
 import { AccessJwtAuthGuard } from '../jwt-helper/guards/access-jwt.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { BaseInterceptor } from 'src/common/interceptors/data-to-json';
+import { TagInterceptor } from './interceptors/tag.interceptor';
+import { TagBadRequestErrorResponse } from './dto/tag-bad-request-error.dto';
+import { TagNotFoundErrorResponse } from './dto/tag-not-found-error.dto';
 
 @ApiTags('tag')
 @ApiBearerAuth()
+@ApiBadRequestResponse({ type: TagBadRequestErrorResponse})
+@ApiNotFoundResponse({ type: TagNotFoundErrorResponse})
 @RolesDecorator(Role.ADMIN)
 @UseGuards(AccessJwtAuthGuard, RolesGuard)
-@UseInterceptors(BaseInterceptor)
+@UseInterceptors(BaseInterceptor, TagInterceptor)
 @Controller('tag')
 export class TagController {
   constructor(
