@@ -2,20 +2,34 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, UseInterc
 import { AreaService } from './area.service';
 import { CreateAreaDto } from './dto/create-area.dto';
 import { UpdateAreaDto } from './dto/update-area.dto';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiNotFoundResponse, ApiOkResponse, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
 import { AccessJwtAuthGuard } from '../jwt-helper/guards/access-jwt.guard';
 import { BaseInterceptor } from 'src/common/interceptors/data-to-json';
 import { ID_PARAM, TRANSLATION_ROUTE_WITH_ID } from 'src/common/constants/app.constants';
+import { CreateAreaInterceptor } from './interceptors/create-area.interceptor';
+import { GetAreaInterceptor } from './interceptors/get-area.interceptor';
+import { UpdateAreaInterceptor } from './interceptors/update-area.interceptor';
+import { DeleteAreaInterceptor } from './interceptors/delete-area.interceptor';
+import { DeletedOkResponse } from './dto/ok-response/deleted.dto';
+import { UnauthorizedExceptionResponse } from 'src/common/dto/unauthorized-errors.dto';
+import { UpdatedOkResponse } from './dto/ok-response/updated.dto';
+import { CreatedOkResponse } from './dto/ok-response/created.dto';
+import { GetAreaOkResponse } from './dto/ok-response/get-area.dto';
+import { GetAreasOkResponse } from './dto/ok-response/get-areas.dto';
+import { AreaNotFoundErrorResponse } from './dto/area-not-found-error.dto';
 
 @Controller('area')
 @ApiTags("area")
 @ApiBearerAuth()
+@ApiNotFoundResponse( { type: AreaNotFoundErrorResponse } )
 @UseGuards(AccessJwtAuthGuard)
 @UseInterceptors(BaseInterceptor)
 export class AreaController {
   constructor(private readonly areaService: AreaService) {}
 
   @Post()
+  @ApiOkResponse( { type: CreatedOkResponse } )
+  @UseInterceptors(CreateAreaInterceptor)
   async createAreaDto(
     @Body() data: CreateAreaDto
   ){
@@ -23,11 +37,15 @@ export class AreaController {
   }
 
   @Get()
+  @ApiOkResponse( { type: GetAreasOkResponse } )
+  @UseInterceptors(GetAreaInterceptor)
   async getAreas() {
     return await this.areaService.getAreas()
   }
 
   @Get(ID_PARAM)
+  @ApiOkResponse( { type: GetAreaOkResponse } )
+  @UseInterceptors(GetAreaInterceptor)
   async getArea(
     @Param('id', ParseIntPipe) id: number 
   ) {
@@ -35,6 +53,8 @@ export class AreaController {
   }
 
   @Patch(ID_PARAM)
+  @ApiOkResponse( { type: UpdatedOkResponse } )
+  @UseInterceptors(UpdateAreaInterceptor)
   async update(
     @Param('id', ParseIntPipe) id: number, 
     @Body() data: UpdateAreaDto
@@ -43,6 +63,8 @@ export class AreaController {
   }
 
   @Delete(ID_PARAM)
+  @ApiOkResponse( { type: DeletedOkResponse } )
+  @UseInterceptors(DeleteAreaInterceptor)
   async delete(
     @Param('id', ParseIntPipe) id: number, 
   ){

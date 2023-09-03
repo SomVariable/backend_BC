@@ -38,8 +38,6 @@ export class KvStoreService {
             return session
 
         } catch (error) {
-            console.log(error)
-
             throw new InternalServerErrorException()
         }
     }

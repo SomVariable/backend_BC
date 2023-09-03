@@ -1,10 +1,10 @@
 import { PrismaService } from './../database/prisma.service';
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateContentItemDto } from './dto/create-content-item.dto';
 import { UpdateContentItemDto } from './dto/update-content-item.dto';
 import { CreateContentItemInfoDto } from './dto/create-content-item-info.dto';
 import { UpdateContentItemInfoDto } from './dto/update-content-item-info.dto';
-import { ContentItemIncludeTranslation } from './constants/content-item.constants';
+import { CONTENT_ITEM_NOT_FOUND, ContentItemIncludeTranslation,  } from './constants/content-item.constants';
 
 @Injectable()
 export class ContentItemService {
@@ -21,6 +21,13 @@ export class ContentItemService {
   }
 
   async createInfo(contentItemId: number, langCode: string, data: CreateContentItemInfoDto) {
+
+    const contentItem = await this.getContentItem(contentItemId)
+
+    if(!contentItem) {
+      throw new NotFoundException(CONTENT_ITEM_NOT_FOUND.MISSING_CONTENT_ITEM)
+    }
+
     return await this.prismaService.contentItemTranslation.create({
       data: {
         contentItemId,
@@ -31,6 +38,13 @@ export class ContentItemService {
   }
 
   async update(id: number, data: UpdateContentItemDto) {
+
+    const contentItem = await this.getContentItem(id)
+
+    if(!contentItem) {
+      throw new NotFoundException(CONTENT_ITEM_NOT_FOUND.MISSING_CONTENT_ITEM)
+    }
+
     return await this.prismaService.contentItem.update({
       where: {id},
       data
@@ -38,6 +52,17 @@ export class ContentItemService {
   }
 
   async updateInfo(contentItemId: number, langCode: string, data: UpdateContentItemInfoDto) {
+
+    const contentItem = await this.prismaService.contentItemTranslation.findUnique({
+      where: {
+        langCode_contentItemId: {contentItemId, langCode}
+      }
+    })
+    
+    if(!contentItem) {
+      throw new NotFoundException(CONTENT_ITEM_NOT_FOUND.MISSING_CONTENT_ITEM)
+    }
+
     return await this.prismaService.contentItemTranslation.update({
       where: {
         langCode_contentItemId: {contentItemId, langCode}

@@ -1,5 +1,5 @@
 
-import {ForbiddenException} from '@nestjs/common'
+import { ForbiddenException } from '@nestjs/common'
 import { PrismaService } from './../../database/prisma.service';
 import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
 import { Observable } from 'rxjs';
@@ -13,16 +13,16 @@ export class PIAccessToDataGuard implements CanActivate {
 
     async canActivate(
         context: ExecutionContext
-    ): Promise<boolean>{
+    ): Promise<boolean> {
 
         const httpRequest = context.switchToHttp().getRequest();
-        const {id} = httpRequest.params
-        const userId = httpRequest.user?.id;
-        const data = await this.prismaService.professionalInterest.findFirst({where: {id}})
-        
-        if(userId === data.userId){
+        const { id } = httpRequest.params
+        const userId = parseInt(httpRequest.user?.id);
+        const data = await this.prismaService.professionalInterest.findFirst({ where: { id } })
+
+        if (userId === data.userId) {
             return true
-        }else{
+        } else {
             throw new ForbiddenException("you do not have access to this data")
         }
     }

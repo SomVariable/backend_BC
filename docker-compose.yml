@@ -1,0 +1,86 @@
+version: '3'
+services:
+  api:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    container_name: im-legal
+    profiles: ["backend"]
+    ports:
+      - '3000:3000'
+    env_file:
+      - ./.env:/app/.env
+    networks:
+      - im-legal
+    volumes:
+      - ./.env:/app/.env
+    depends_on:
+      - im-legal-redis
+      - im-legal-s3
+      - api-migration
+  api-migration:
+      build:
+        context: .
+        dockerfile: Dockerfile.migration
+      profiles: ["backend"]
+      entrypoint: "npm run migrate:run"
+      restart: "no"
+      env_file:
+        - ./.env:/app/.env
+      networks:
+        - im-legal
+      volumes:
+        - ./.env:/app/.env  
+      depends_on:
+        - db
+  im-legal-redis:
+    image: redis
+    container_name: im-legal-redis-store
+    restart: always
+    ports:
+      - "6380:6379"
+    networks:
+      - im-legal
+    profiles: ["backend"]
+    volumes:
+      - im-legal-redis_data:/data
+    command: redis-server --appendonly yes
+  mailhog:
+    image: mailhog/mailhog:latest
+    restart: always
+    ports:
+      - 1025:1025
+      - 8025:8025
+  im-legal-s3:
+    image: 'bitnami/minio:latest'
+    container_name: im-legal-s3-store
+    ports:
+      - '9000:9000'
+      - '9001:9001'
+    restart: always
+    env_file:
+      - ./.env:/app/.env
+    profiles: ["backend"]
+    networks:
+      - im-legal
+    volumes:
+      - im-legal-s3:/data
+  db:
+    image: postgres
+    container_name: im-legal-database
+    ports:
+      - '5432:5432'
+    networks:
+      - im-legal
+    profiles: ["backend"]
+    restart: always
+    env_file:
+      - ./.env:/app/.env
+
+networks:
+  im-legal:
+    driver: bridge
+
+volumes:
+  im-legal-s3:
+  im-legal-redis_data:

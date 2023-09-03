@@ -1,5 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger"
-import { IsEnum, IsNotEmpty, IsNumber, IsString, Length } from "class-validator"
+import { Type } from "class-transformer"
+import { IsEnum, IsInt, IsNotEmpty, IsNumber, IsString, Length } from "class-validator"
 
 enum LANGS {
     RU = 'ru',
@@ -17,7 +18,8 @@ export class LangCodeDto {
 
 export class TranslationParamDto extends LangCodeDto{
     @ApiProperty()
-    @IsNumber()
+    @IsInt()
+    @Type(() => Number)
     @IsNotEmpty()
     id: number
 }

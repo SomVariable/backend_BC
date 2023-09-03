@@ -8,7 +8,14 @@ export class AuthUserInterceptor implements NestInterceptor {
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     return next.handle().pipe(
       map((data: authUserReturnType) => {
-        return data;
+        const {person, message} = data
+        const {id, email, role, accountStatus} = person
+        const returnData = {
+          person: {id, email, role, accountStatus},
+          message
+        }
+
+        return returnData;
       }),
     );
   }

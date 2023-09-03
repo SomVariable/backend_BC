@@ -8,13 +8,9 @@ export type userResponse = {
 
 
 export type userUnion = UserTranslation & User
-export type UserReturnType = Pick<User, "email"> & Pick<
-UserTranslation, 
-"firstName" | "position" | "surnameName" | "middleName" | "status" | "smallDescription"
->
 
 export type usersResponse = {
-    users: userUnion | userUnion[];
+    users: userUnion[];
     totalCountUsers?: number;
     pagination?: number;
     page?: number;

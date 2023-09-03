@@ -9,7 +9,15 @@ export class UserInterceptor implements NestInterceptor {
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     return next.handle().pipe(
       map((data: userResponse) => {
-        return JSON.stringify(data);
+        const {user} = data
+        const {id, role, email, accountStatus} = user
+        const returnObject = {
+          ...data, 
+          user: {
+            id, role, email, accountStatus
+          }
+        }
+        return returnObject;
       })
     );
   }

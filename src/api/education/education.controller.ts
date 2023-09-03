@@ -5,15 +5,22 @@ import { UpdateEducationDto } from './dto/update-education.dto';
 import { TranslationParamDto } from 'src/common/dto/translation-param.dto';
 import { UserParam } from 'src/common/decorators/param-user.decorator';
 import { jwtType } from 'src/api/jwt-helper/types/jwt-helper.types';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiBadRequestResponse, ApiBearerAuth, ApiNotFoundResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { CreateEducationInfoDto } from './dto/create-education-info.dto';
 import { ID_PARAM, TRANSLATION_ROUTE } from 'src/common/constants/app.constants';
 import { BaseInterceptor } from 'src/common/interceptors/data-to-json';
 import { AccessJwtAuthGuard } from '../jwt-helper/guards/access-jwt.guard';
+import { EducationInterceptor } from './interceptors/education.interceptor';
+import { EducationOkResponse } from './dto/ok-response/ok.dto';
+import { EducationNotFoundErrorResponse } from './dto/education-not-found-error.dto';
+import { EducationBadRequestErrorResponse } from './dto/education-bad-request-error.dto';
 
 @ApiTags("education")
 @ApiBearerAuth()
-@UseInterceptors(BaseInterceptor)
+@ApiOkResponse( {type: EducationOkResponse} )
+@ApiNotFoundResponse( {type: EducationNotFoundErrorResponse} )
+@ApiBadRequestResponse( {type: EducationBadRequestErrorResponse} )
+@UseInterceptors(BaseInterceptor, EducationInterceptor)
 @UseGuards(AccessJwtAuthGuard)
 @Controller('education')
 export class EducationController {
@@ -29,11 +36,10 @@ export class EducationController {
 
   @Patch(ID_PARAM)
   update(
-    @UserParam() jwtData: jwtType,
     @Param('id') id: number,
     @Body() createEducationDto: UpdateEducationDto
   ) {
-    return this.educationService.update(jwtData.id, id, createEducationDto);
+    return this.educationService.update(id, createEducationDto);
   }
 
   @Post(TRANSLATION_ROUTE)
@@ -54,9 +60,8 @@ export class EducationController {
 
   @Delete(ID_PARAM)
   async delete(
-    @UserParam() jwtData: jwtType,
     @Param('id', ParseIntPipe) educationId: number
   ) {
-    return await this.educationService.remove(jwtData.id, educationId)
+    return await this.educationService.remove(educationId)
   }
 }
