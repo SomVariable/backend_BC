@@ -58,7 +58,7 @@ model Service {
 }
 
 model Photo {
-  id           Int       @id @default(autoincrement())
+  id           Int       @default(autoincrement())
   type         PhotoType
   fileName     String
   size         Int
@@ -73,6 +73,10 @@ model Photo {
 
   User   User? @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId Int?  @unique
+
+  itemId Int
+
+  @@id([itemId, type])
 }
 
 model ContentItem {
