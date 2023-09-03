@@ -36,6 +36,7 @@ import { UserOkResponse } from './dto/ok-response/ok.dto';
 export class UserProfileController {
   constructor(private readonly userProfileService: UserProfileService) { }
 
+  
   @Post()
   async createProfile(
     @UserParam() jwt_data: jwtType,
