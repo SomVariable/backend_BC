@@ -15,7 +15,7 @@ export class UserService {
   ) { }
 
   async create(data: Prisma.UserCreateInput): Promise<User> {
-
+    
     const newUser = await this.prismaService.user.create({
       data
     })
@@ -23,8 +23,9 @@ export class UserService {
     return newUser
   }
 
-  async findUsers(skip?: number, take?: number): Promise<User[]> {
-    const user: User[] = await this.prismaService.user.findMany({
+  async findUsers(skip?: number, take?: number){
+    const user= await this.prismaService.user.findMany({
+      include: {UserTranslation: true},
       skip,
       take
     })
@@ -36,14 +37,20 @@ export class UserService {
   }
 
   async findBy(params: UpdateUserDto): Promise<User> {
-    const user: User = await this.prismaService.user.findFirst({ where: params })
+    const user: User = await this.prismaService.user.findFirst({ 
+      include: {UserTranslation: true},
+      where: params 
+    })
 
     return user
   }
 
 
   async findById(id: number): Promise<User> {
-    const user: User = await this.prismaService.user.findFirst({ where: { id } })
+    const user: User = await this.prismaService.user.findFirst({ 
+      include: {UserTranslation: true},
+      where: { id } 
+    })
 
     return user
   }

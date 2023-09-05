@@ -1,4 +1,4 @@
-import { Inject, Injectable, InternalServerErrorException, BadRequestException } from '@nestjs/common';
+import { Inject, Injectable, InternalServerErrorException, BadRequestException, NotFoundException } from '@nestjs/common';
 import { CreateSession, Session } from './kv-types/kv-store.type';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
@@ -46,7 +46,7 @@ export class KvStoreService {
         const session: Session = await JSON.parse(await this.cacheManager.get(id));
 
         if (!session) {
-            return null
+            throw new NotFoundException()
         }
 
         const updateObject = JSON.stringify({ ...session, ...data })
@@ -99,7 +99,7 @@ export class KvStoreService {
             return updatedSession
         }
 
-        return null
+        return updatedSession
     }
 
     async activeSession({ id }: CreateSession): Promise<Session> {

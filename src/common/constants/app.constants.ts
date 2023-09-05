@@ -12,3 +12,7 @@ export enum PROPERTY_LENGTH {
 export const ID_PARAM = ':id'
 export const TRANSLATION_ROUTE = ':translation/:langCode'
 export const TRANSLATION_ROUTE_WITH_ID = ':id/translation/:langCode'
+export const UNIQUE_MESSAGE = {
+    "statusCode": 409,
+    "message": "[P2002]: Unique constraint failed on the (not available)"
+  }

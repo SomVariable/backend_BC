@@ -1,11 +1,12 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, UseGuards } from '@nestjs/common';
 import { extname } from 'path';
 import { v4 as uuidv4 } from 'uuid'
 import { S3Service } from '../s3-store/s3-store.service';
-import { PrismaService } from 'nestjs-prisma';
 import { CreatePhotoBodyDto } from './dto/create-photo.dto';
 import { PhotoType } from '@prisma/client';
 import { PHOTO_NOT_FOUND } from './constants/photo.constants';
+import { PrismaService } from '../database/prisma.service';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
 @Injectable()
 export class PhotoService {

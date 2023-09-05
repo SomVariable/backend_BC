@@ -24,12 +24,12 @@ import { DeletedOkResponse } from './dto/ok-response/deleted.dto';
 import { GetUsersOkResponse } from './dto/ok-response/get-users.dto';
 import { UsersCountInterceptor } from './interceptors/count.interceptor';
 import { GetUsersCountOkResponse } from './dto/ok-response/count.dto';
+import { usersResponse } from './types/user.types';
 
 @ApiTags("user")
 @ApiBearerAuth()
 @ApiBadRequestResponse({ type: UserBadRequestErrorResponse })
 @ApiNotFoundResponse({ type: UserNotFoundErrorResponse })
-@RolesDecorator(Role.ADMIN)
 @UseGuards(AccessJwtAuthGuard, RolesGuard)
 @UseInterceptors(BaseInterceptor)
 @Controller('user')
@@ -80,9 +80,17 @@ export class UsersController {
   @UseInterceptors(UsersInterceptor)
   @ApiOkResponse({ type: GetUsersOkResponse })
   async findUsers(
-    @Query('limit, offset') { limit, offset }: QueryPaginationParam
+    @Query() { limit, offset }: QueryPaginationParam
   ) {
-    return await this.userService.findUsers(offset, limit)
+    const users = await this.userService.findUsers(offset, limit)
+    const totalCountUsers = await this.userService.getTotalCount()
+    const returnData: usersResponse = {
+      users,
+      totalCountUsers,
+      limit, 
+      offset
+    }
+    return returnData
   }
 
   @Get('count')
@@ -95,7 +103,7 @@ export class UsersController {
   @Get(`user/${ID_PARAM}`)
   @ApiOkResponse({ type: GetUserOkResponse })
   @UseInterceptors(UserInterceptor)
-  async findUser(@Param() id: number) {
+  async findUser(@Param('id', ParseIntPipe) id: number) {
     return await this.userService.findById(id)
   }
 

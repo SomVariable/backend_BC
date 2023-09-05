@@ -21,9 +21,7 @@ export class VerificationService {
 
             await this.kvStoreService.setVerificationProps(data)
 
-            return {
-                message: VERIFICATION_OK.SUCCESS_VERIFICATION
-            }
+            return true
             //there should be return send message to the email
         } catch (error) {
             console.log(error)

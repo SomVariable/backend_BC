@@ -1,7 +1,7 @@
 import { User } from "@prisma/client";
 
 export type authUserReturnType = {
-    person: User
+    data: User
     message?: string
 }
 

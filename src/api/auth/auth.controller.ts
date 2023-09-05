@@ -11,7 +11,7 @@ import { CreateUserDto } from './dto/create-person.dto';
 import {
   AUTH_OK
 } from './constants/auth.constants';
-import { AuthUserInterceptor } from './interceptors/auth-user.interceptor';
+import { AuthSignUpInterceptor } from './interceptors/sign-up-user.interceptor';
 import { UserParam } from 'src/common/decorators/param-user.decorator';
 import { jwtType } from '../jwt-helper/types/jwt-helper.types';
 import { LocalAuthGuard } from './guards/local.guard';
@@ -29,9 +29,15 @@ import { UnauthorizedExceptionResponse } from 'src/common/dto/unauthorized-error
 import { AccountStatus, Role } from '@prisma/client';
 import { FirstUserOkResponse } from './dto/ok-response/first-user.dto';
 import { BaseInterceptor } from 'src/common/interceptors/data-to-json';
+import { AuthInterceptor } from './interceptors/auth.interceptor';
+import { AuthLogoutInterceptor } from './interceptors/logout.interceptor';
+import { AuthUserInterceptor } from './interceptors/user.interceptor';
+import { AuthRefreshTokenInterceptor } from './interceptors/refresh-tokens.dto';
+import { AuthResendVerifyKeyTokenInterceptor } from './interceptors/resend-verify-key.interceptor';
+import { AuthVerificationInterceptor } from './interceptors/verification.interceptor';
 
 @ApiTags("auth")
-@UseInterceptors(BaseInterceptor)
+@UseInterceptors( BaseInterceptor, AuthInterceptor)
 @ApiBadRequestResponse({ type: AuthBadRequestErrorResponse })
 @Controller('auth')
 export class AuthController {
@@ -41,16 +47,16 @@ export class AuthController {
     private readonly kvStoreService: KvStoreService) { }
 
   @ApiOkResponse({ type: SignUpOkResponse })
-  @UseInterceptors(AuthUserInterceptor)
+  @UseInterceptors( AuthSignUpInterceptor, AuthUserInterceptor)
   @Post('sign-up')
   async signUp(
     @DeviceType() deviceType: string,
     @Body() data: CreateUserDto) {
-    const user = await this.authService.singUp({ email: data.email, hash: data.password }, deviceType)
+    const hash = await this.authService.hashPassword(data.password)
+    const user = await this.authService.singUp({ email: data.email, hash }, deviceType)
 
-    return { message: AUTH_OK.SIGN_UP, user }
+    return user 
   }
-
 
   @ApiOkResponse({ type: FirstUserOkResponse })
   @UseInterceptors(AuthUserInterceptor)
@@ -58,14 +64,14 @@ export class AuthController {
   async addFirstUser(
     @DeviceType() deviceType: string,
     @Body() data: CreateUserDto) {
-    const return_data = await this.authService.addFirstUser({
+    const admin = await this.authService.addFirstUser({
       email: data.email,
       hash: data.password,
       role: Role.ADMIN,
       accountStatus: AccountStatus.ACTIVE
     }, deviceType)
 
-    return { message: AUTH_OK.FIRST_USER, ...return_data }
+    return admin
   }
 
   @ApiOkResponse({ type: SignINOkResponse })
@@ -75,35 +81,34 @@ export class AuthController {
   async signIn(@DeviceType() deviceType: string, @Body() { email, password }: SignInDto) {
     const user = await this.authService.signIn({ email, password }, deviceType)
 
-    return { message: AUTH_OK.SIGN_IN, user }
+    return user
   }
 
   @ApiOkResponse({ type: LogoutOkResponse })
+  @UseInterceptors(AuthLogoutInterceptor)
   @Patch("logout")
   @ApiBearerAuth()
   @UseGuards(AccessJwtAuthGuard)
   async logout(
     @UserParam() jwtBody: jwtType) {
-    await this.authService.logout(jwtBody.sessionKey)
+    const blockedSession = await this.authService.logout(jwtBody.sessionKey)
 
-    return { message: AUTH_OK.LOGOUT }
+    return blockedSession
   }
 
   @ApiOkResponse({ type: VerificationOkResponse })
+  @UseInterceptors(AuthVerificationInterceptor)
   @Post('login/verification')
   async loginVerification(
     @Body() { email, verifyCode }: VerifyUser,
     @DeviceType() deviceType: string) {
     const tokens = await this.authService.verification(verifyCode, email, deviceType)
-
-    const res: authVerifyReturnType = {
-      message: AUTH_OK.SUCCESS_VERIFICATION,
-      ...tokens
-    }
-    return res
+    
+    return tokens
   }
 
   @ApiOkResponse({ type: VerificationOkResponse })
+  @UseInterceptors(AuthVerificationInterceptor)
   @Post('sign-up/verification')
   async signUpVerification(
     @Body() { email, verifyCode }: VerifyUser,
@@ -112,38 +117,32 @@ export class AuthController {
 
     await this.authService.activeUserStatus(email)
 
-    const res: authVerifyReturnType = {
-      message: AUTH_OK.SUCCESS_VERIFICATION,
-      ...tokens
-    }
-    return res
+    return tokens
   }
 
   @ApiOkResponse({ type: ResendVerificationOkResponse })
+  @UseInterceptors(AuthResendVerifyKeyTokenInterceptor)
   @Post('resend-verify-key')
   async resendVerifyKey(
     @Body() { email }: ResendVerifyKey,
     @DeviceType() deviceType: string) {
     const { id } = await this.userService.findBy({ email })
     const sessionKey = this.kvStoreService.generateSessionKey(id.toString(), deviceType)
+    
     return await this.authService.sendVerificationKey(email, sessionKey)
   }
 
   @ApiOkResponse({ type: RefreshTokensOkResponse })
   @ApiUnauthorizedResponse({ type: UnauthorizedExceptionResponse })
+  @UseInterceptors(AuthRefreshTokenInterceptor)
   @ApiBearerAuth()
   @Get('refresh-token')
   @UseGuards(RefreshJwtAuthGuard)
   async refreshToken(
     @UserParam() { email, sessionKey }: jwtType
   ) {
-
     const tokens = await this.authService.generateTokens(sessionKey, email)
 
-    const res: authVerifyReturnType = {
-      message: AUTH_OK.REFRESH_TOKEN,
-      ...tokens
-    }
-    return res
+    return tokens
   }
 }

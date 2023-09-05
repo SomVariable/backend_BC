@@ -1,12 +1,16 @@
-import { Controller, Post, Get, Delete, UploadedFile, UseInterceptors, Body, Param } from '@nestjs/common';
+import { Controller, Post, Get, Delete, UploadedFile, UseInterceptors, Body, Param, UseGuards } from '@nestjs/common';
 import { PhotoService } from './photo.service';
-import { ApiBody, ApiConsumes } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiConsumes, ApiTags } from '@nestjs/swagger';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { API_FILE_CONFIG, PHOTO_TYPE_PATH } from './constants/photo.constants';
 import { CreatePhotoBodyDto } from './dto/create-photo.dto';
 import { ID_PARAM } from 'src/common/constants/app.constants';
+import { AccessJwtAuthGuard } from '../jwt-helper/guards/access-jwt.guard';
 
 @Controller('photo')
+@ApiTags("photo")
+@ApiBearerAuth()
+@UseGuards(AccessJwtAuthGuard)
 export class PhotoController {
   constructor(private readonly photoService: PhotoService) {}
 
