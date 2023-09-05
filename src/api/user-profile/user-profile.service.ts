@@ -11,6 +11,7 @@ export class UserProfileService {
   ) {}
 
   async create(userId: number, createUserProfileDto: CreateUserProfileDto) {
+    console.log(createUserProfileDto)
     return await this.prismaService.userTranslation.create({
       data: {
         ...createUserProfileDto,

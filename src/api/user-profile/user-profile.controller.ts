@@ -41,6 +41,7 @@ export class UserProfileController {
     @UserParam() jwt_data: jwtType,
     @Body() data: CreateUserProfileDto
   ){
+    console.log('controller ', data)
     return await this.userProfileService.create(jwt_data.id, data) 
   }
 

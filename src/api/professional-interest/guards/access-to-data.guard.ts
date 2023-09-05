@@ -18,7 +18,7 @@ export class PIAccessToDataGuard implements CanActivate {
         const httpRequest = context.switchToHttp().getRequest();
         const { id } = httpRequest.params
         const userId = parseInt(httpRequest.user?.id);
-        const data = await this.prismaService.professionalInterest.findFirst({ where: { id } })
+        const data = await this.prismaService.professionalInterest.findFirst({ where: { id: parseInt(id) } })
 
         if (userId === data.userId) {
             return true

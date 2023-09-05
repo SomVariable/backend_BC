@@ -1,5 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger"
-import { Length } from "class-validator"
+import { IsOptional, IsString, Length, Max, MaxLength } from "class-validator"
+import { PROPERTY_LENGTH } from "src/common/constants/app.constants"
 
 export class CreateUserProfileDto {
     @ApiProperty()
@@ -19,13 +20,19 @@ export class CreateUserProfileDto {
     middleName?: string
 
     @ApiProperty()
+    @IsString()
+    @IsOptional()
+    @MaxLength(PROPERTY_LENGTH.DESCRIPTION)
     description?: string
 
     @ApiProperty()
-    @Length(3, 200)
+    @IsString()
+    @IsOptional()
+    @MaxLength(PROPERTY_LENGTH.SMALL_DESCRIPTION)
     smallDescription?: string
 
     @ApiProperty()
+    @IsOptional()
     status?: string
 
     @ApiProperty()

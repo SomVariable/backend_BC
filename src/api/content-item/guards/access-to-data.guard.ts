@@ -17,10 +17,10 @@ export class ContentItemAccessToDataGuard implements CanActivate {
 
         const httpRequest = context.switchToHttp().getRequest();
         const {id} = httpRequest.params
-        const userId = httpRequest.user?.id;
+        const userId = parseInt(httpRequest.user?.id);
         const isUserAssociated = await this.prismaService.contentItem.findFirst({
             where: {
-                id,
+                id: parseInt(id),
                 User: { some: { id: userId } }
             }
         });

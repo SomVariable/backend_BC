@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
 import { BAD_REQUEST_ERRORS } from 'src/common/constants/app.constants';
 
 @Injectable()
-export class AwardAccessToDataGuard implements CanActivate {
+export class EducationAccessToDataGuard implements CanActivate {
     constructor(
         private prismaService: PrismaService
 
@@ -18,9 +18,15 @@ export class AwardAccessToDataGuard implements CanActivate {
         const httpRequest = context.switchToHttp().getRequest();
         const {id} = httpRequest.params
         const userId = parseInt(httpRequest.user?.id);
-        const data = await this.prismaService.award.findFirst({where: {id: parseInt(id)}})
-        
-        if(userId === data.userId){
+        console.log(id, userId)
+        const isUserAssociated = await this.prismaService.education.findFirst({
+            where: {
+                id: parseInt(id),
+                userId
+            }
+        });
+
+        if(isUserAssociated){
             return true
         }else{
             throw new ForbiddenException(BAD_REQUEST_ERRORS.FORBIDDEN)

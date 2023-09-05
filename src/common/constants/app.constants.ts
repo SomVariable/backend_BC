@@ -1,4 +1,8 @@
 export enum APP_ERRORS {
+    
+}
+
+export enum BAD_REQUEST_ERRORS {
     FORBIDDEN = 'You do not have access'
 }
 
