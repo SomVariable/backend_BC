@@ -5,8 +5,8 @@ const configService = new ConfigService()
 
 export const s3Config: AWS.S3ClientConfig = {
     credentials: {
-      accessKeyId: configService.get('S3_ACCESS_KEY_ID'),
-      secretAccessKey: configService.get('S3_SECRET_ACCESS_KEY'),
+      accessKeyId: configService.get('S3_ROOT_USER'),
+      secretAccessKey: configService.get('S3_ROOT_PASSWORD'),
     },
     ...(configService.get('S3_ENDPOINT')
       ? {

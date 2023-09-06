@@ -64,15 +64,17 @@ export class PhotoService {
     }
 
     async findOne(
-        id: number
+        itemId: number,
+        type: PhotoType
     ) {
-        return await this.prismaService.photo.findFirst({
-            where: { id }
+        return await this.prismaService.photo.findUnique({
+            where: { itemId_type: {itemId, type} },
+
         })
     }
 
     async remove(itemId: number, type: PhotoType) {
-        const photoInfo = await this.findOne(itemId)
+        const photoInfo = await this.findOne(itemId, type)
 
         if(!photoInfo) {
             throw new NotFoundException(PHOTO_NOT_FOUND.MISSING_PHOTO_INFO)
