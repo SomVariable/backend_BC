@@ -1,12 +1,15 @@
-import { HttpException, HttpStatus, Injectable, BadRequestException, InternalServerErrorException } from '@nestjs/common';
+import { Injectable, BadRequestException, InternalServerErrorException } from '@nestjs/common';
+import { MailerService } from '@nestjs-modules/mailer';
 import { UserService } from '../user/user.service';
 import { KvStoreService } from '../kv-store/kv-store.service';
 import { VERIFICATION_BAD_REQUEST_ERRORS, VERIFICATION_OK, VERIFICATION_SERVER_ERRORS, VERIFY_KEY_TIMESTAMP } from './constants/constants';
 import { Session, SetVerificationProps } from '../kv-store/kv-types/kv-store.type';
+import { generateSendObject } from 'src/configuration/mailer.config';
 
 @Injectable()
 export class VerificationService {
     constructor(
+        private readonly mailerService: MailerService,
         private readonly userService: UserService,
         private readonly kvStoreService: KvStoreService
     ) { }
@@ -20,10 +23,9 @@ export class VerificationService {
             }
 
             await this.kvStoreService.setVerificationProps(data)
-
-            return {
-                message: VERIFICATION_OK.SUCCESS_VERIFICATION
-            }
+            const ans = await this.mailerService.sendMail(generateSendObject(email, verificationKey))
+            console.log(ans)
+            return true
             //there should be return send message to the email
         } catch (error) {
             console.log(error)

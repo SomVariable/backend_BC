@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { AUTH_OK } from "../../constants/auth.constants";
+import { AUTH_OK, LOGOUT_EXAMPLE } from "../../constants/auth.constants";
 import { AuthOkResponse } from "./ok.dto";
 
 export class LogoutOkResponse extends AuthOkResponse {
@@ -10,4 +10,9 @@ export class LogoutOkResponse extends AuthOkResponse {
         enum: AUTH_OK
     })
     message: AUTH_OK.LOGOUT;
+
+    @ApiProperty({
+        example: LOGOUT_EXAMPLE
+    })
+    data: any
 }

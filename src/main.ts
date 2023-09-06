@@ -4,7 +4,6 @@ import { ValidationPipe } from '@nestjs/common';
 import { PrismaClientExceptionFilter } from 'nestjs-prisma';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ConfigService } from '@nestjs/config/dist';
-import configuration from './configuration/configuration'
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);

@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe, UseInterceptors } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe, UseInterceptors, UseGuards } from '@nestjs/common';
 import { NewsService } from './news.service';
 import { CreateNewsDto } from './dto/create-news.dto';
 import { UpdateNewsDto } from './dto/update-news.dto';
@@ -13,6 +13,7 @@ import { BaseInterceptor } from 'src/common/interceptors/data-to-json';
 import { NewsBadRequestErrorResponse } from './dto/news-bad-request-error.dto';
 import { NewsNotFoundErrorResponse } from './dto/news-not-found-error.dto';
 import { NewsOkResponse } from './dto/ok-response/ok.dto';
+import { NewsAccessToDataGuard } from './guards/news_access.guard';
 
 @ApiTags("news")
 @ApiBearerAuth()
@@ -39,6 +40,7 @@ export class NewsController {
   }
 
   @Get(ID_PARAM)
+  @UseGuards(NewsAccessToDataGuard)
   findOne(
     @Param('id', ParseIntPipe) id: number) {
     return this.newsService.findOne(id);
@@ -46,12 +48,14 @@ export class NewsController {
 
 
   @Delete(ID_PARAM)
+  @UseGuards(NewsAccessToDataGuard)
   remove(
     @Param('id', ParseIntPipe) id: number) {
     return this.newsService.remove(id);
   }
 
   @Post(TRANSLATION_ROUTE)
+  @UseGuards(NewsAccessToDataGuard)
   async addNewsInfo(
     @Param() { id, langCode }: TranslationParamDto,
     @Body() { newsId, text, title }: CreateNewsTranslationBodyDto) {
@@ -62,6 +66,7 @@ export class NewsController {
   }
   
   @Patch(TRANSLATION_ROUTE)
+  @UseGuards(NewsAccessToDataGuard)
   async update(
     @Param() { id, langCode }: TranslationParamDto,
     @Body() updateNewsDto: UpdateNewsDto) {

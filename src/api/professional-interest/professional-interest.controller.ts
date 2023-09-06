@@ -34,6 +34,7 @@ export class ProfessionalInterestController {
   }
 
   @Post(TRANSLATION_ROUTE_WITH_ID)
+  @UseGuards(PIAccessToDataGuard)
   async createInfo(
     @Param() { id, langCode }: TranslationParamDto,
     @Body() createProfessionalInterestDto: CreateProfessionalInterestDto
@@ -41,8 +42,8 @@ export class ProfessionalInterestController {
     return await this.professionalInterestService.createInfo(id, langCode, createProfessionalInterestDto);
   }
 
-  @UseGuards(PIAccessToDataGuard)
   @Get(ID_PARAM)
+  @UseGuards(PIAccessToDataGuard)
   async getInterest(
     @Param('id') id: number,
   ) {
@@ -56,8 +57,8 @@ export class ProfessionalInterestController {
     return await this.professionalInterestService.findOne(jwtData.id)
   }
 
-  @UseGuards(PIAccessToDataGuard)
   @Patch(TRANSLATION_ROUTE_WITH_ID)
+  @UseGuards(PIAccessToDataGuard)
   async updateInfo(
     @Param() { id, langCode }: TranslationParamDto,
     @Body() data: UpdateProfessionalInterestDto
@@ -65,8 +66,8 @@ export class ProfessionalInterestController {
     return await this.professionalInterestService.updateInfo(id, langCode, data)
   }
 
-  @UseGuards(PIAccessToDataGuard)
   @Delete(ID_PARAM)
+  @UseGuards(PIAccessToDataGuard)
   async deleteInterest(
     @Param('id', ParseIntPipe) id: number
   ) {

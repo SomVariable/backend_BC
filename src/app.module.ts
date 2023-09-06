@@ -21,12 +21,15 @@ import { TagModule } from './api/tag/tag.module';
 import { PhotoModule } from './api/photo/photo.module';
 import { OfferingsModule } from './api/service/offerings.module';
 import { CategoryTranslationModule } from './api/category-translation/category-translation.module';
+import { MailerModule } from '@nestjs-modules/mailer';
+import { mailerConfig } from './configuration/mailer.config';
 
 @Module({
   imports: [ConfigModule.forRoot({
     load: [configuration],
     isGlobal: true
   }), 
+  MailerModule.forRoot(mailerConfig),  
   AuthModule, 
   UserProfileModule,
   UserModule, 

@@ -1,19 +1,21 @@
 import { User, UserTranslation } from "@prisma/client";
 
 export type userResponse = {
-    user: User;
+    user: UserWithTranslations;
     message?: string;
     additionalInfo?: object;
 }
 
 
-export type userUnion = UserTranslation & User
+type UserWithTranslations = User & {
+    UserTranslation: UserTranslation[];
+  };
 
 export type usersResponse = {
-    users: userUnion[];
+    users: UserWithTranslations[];
     totalCountUsers?: number;
-    pagination?: number;
-    page?: number;
+    offset?: number;
+    limit?: number;
     message?: string;
     additionalInfo?: object;
 }

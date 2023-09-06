@@ -9,16 +9,23 @@ import {
   UseInterceptors,
   UseGuards} from '@nestjs/common';
 import { KvStoreService } from './kv-store.service';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiBadRequestResponse, ApiBearerAuth, ApiNotFoundResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { SaveSessionDto } from './dto/save-session.dto';
 import { SetVerificationProps } from './kv-types/kv-store.type';
 import { UpdateVerifyDto } from './dto/update-verify-session.dto';
 import { DeviceType } from 'src/common/decorators/device-type.decorator';
 import { BaseInterceptor } from 'src/common/interceptors/data-to-json';
 import { AccessJwtAuthGuard } from '../jwt-helper/guards/access-jwt.guard';
+import { KVStoreInterceptor } from './interceptors/kv-store.interceptor';
+import { KVStoreOkResponse } from './dto/ok-response/ok.dto';
+import { KVStoreBadRequestErrorResponse } from './dto/kv-store-bad-request-error.dto';
+import { KVStoreNotFoundErrorResponse } from './dto/kv-store-not-found-error.dto';
 
 @ApiTags("kv-store")
-@UseInterceptors(BaseInterceptor)
+@ApiOkResponse({ type: KVStoreOkResponse})
+@ApiBadRequestResponse({ type: KVStoreBadRequestErrorResponse})
+@ApiNotFoundResponse({ type: KVStoreNotFoundErrorResponse})
+@UseInterceptors(BaseInterceptor, KVStoreInterceptor)
 @Controller('kv-store')
 export class KvStoreController {
   constructor(private readonly kvStoreService: KvStoreService) {}

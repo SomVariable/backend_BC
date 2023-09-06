@@ -14,6 +14,7 @@ import { EducationInterceptor } from './interceptors/education.interceptor';
 import { EducationOkResponse } from './dto/ok-response/ok.dto';
 import { EducationNotFoundErrorResponse } from './dto/education-not-found-error.dto';
 import { EducationBadRequestErrorResponse } from './dto/education-bad-request-error.dto';
+import { EducationAccessToDataGuard } from './guards/education_access.guard';
 
 @ApiTags("education")
 @ApiBearerAuth()
@@ -27,14 +28,23 @@ export class EducationController {
   constructor(private readonly educationService: EducationService) { }
 
   @Post()
-  create(
+  async create(
     @UserParam() jwtData: jwtType,
     @Body() createEducationDto: CreateEducationDto
   ) {
     return this.educationService.create(jwtData.id, createEducationDto);
   }
 
+  @Get(ID_PARAM)
+  @UseGuards(EducationAccessToDataGuard)
+  async getEducation(
+    @Param('id', ParseIntPipe) id: number
+  ){
+    return await this.educationService.findOne(id)
+  }
+
   @Patch(ID_PARAM)
+  @UseGuards(EducationAccessToDataGuard)
   update(
     @Param('id') id: number,
     @Body() createEducationDto: UpdateEducationDto
@@ -43,6 +53,7 @@ export class EducationController {
   }
 
   @Post(TRANSLATION_ROUTE)
+  @UseGuards(EducationAccessToDataGuard)
   createInfo(
     @Param() { id, langCode }: TranslationParamDto,
     @Body() createEducationDto: CreateEducationInfoDto
@@ -51,6 +62,7 @@ export class EducationController {
   }
 
   @Patch(TRANSLATION_ROUTE)
+  @UseGuards(EducationAccessToDataGuard)
   updateInfo(
     @Param() { id, langCode }: TranslationParamDto,
     @Body() createEducationInfoDto: CreateEducationInfoDto
@@ -59,6 +71,7 @@ export class EducationController {
   }
 
   @Delete(ID_PARAM)
+  @UseGuards(EducationAccessToDataGuard)
   async delete(
     @Param('id', ParseIntPipe) educationId: number
   ) {

@@ -17,8 +17,7 @@ export class AuthService {
     private jwtHelperService: JwtHelperService,
     private userService: UserService,
     private verificationService: VerificationService,
-    private kvStoreService: KvStoreService,
-    private userProfileService: UserProfileService
+    private kvStoreService: KvStoreService
   ) { }
 
   async validateUser(email: string, password: string): Promise<User> {
@@ -34,7 +33,7 @@ export class AuthService {
       return user
     }
 
-    throw new BadRequestException(AUTH_BAD_REQUEST.WRONG_PASSWORD);
+    throw new BadRequestException(AUTH_BAD_REQUEST.WRONG_DATA);
   }
 
   async addFirstUser(data: Prisma.UserCreateInput,  deviceType: string) {
@@ -64,7 +63,7 @@ export class AuthService {
     await this.kvStoreService.createSession({id: sessionKey})
     await this.sendVerificationKey(email, sessionKey)
 
-    return {data: user, message: AUTH_OK.SIGN_UP}
+    return user
   }
 
   async signIn({ email, password }: { email: string, password: string }, deviceType: string) {
@@ -86,6 +85,7 @@ export class AuthService {
     const { id } = await this.userService.findBy({ email })
     const session = this.kvStoreService.generateSessionKey(id.toString(), deviceType)
     await this.verifyUser(verifyCode, session)
+    await this.kvStoreService.activeSession({id: session})
     const tokens = await this.generateTokens(session, email)
 
     return tokens
@@ -127,6 +127,6 @@ export class AuthService {
   }
 
   async logout(sessionKey: string): Promise<void> {
-    await this.kvStoreService.blockSession({id: sessionKey})
+    return await this.kvStoreService.blockSession({id: sessionKey})
   }
 }

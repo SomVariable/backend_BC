@@ -42,7 +42,7 @@ Table Service {
 }
 
 Table Photo {
-  id Int [pk, increment]
+  id Int [increment, not null]
   type PhotoType [not null]
   fileName String [not null]
   size Int [not null]
@@ -54,6 +54,11 @@ Table Photo {
   contentItemId Int
   User User
   userId Int [unique]
+  itemId Int [not null]
+
+  indexes {
+    (itemId, type) [pk]
+  }
 }
 
 Table ContentItem {
