@@ -11,7 +11,6 @@ export type CreateSession = {
 }
 
 export type SetVerificationProps = {
-    id: string,
     verificationTimestamp: string,
     verificationKey: string,
 }

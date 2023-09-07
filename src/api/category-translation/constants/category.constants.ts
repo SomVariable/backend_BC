@@ -18,8 +18,8 @@ export enum CATEGORY_INFO_NOT_FOUND {
 export const CATEGORY_INFO_EXAMPLES = {
     "data":{"id":16,"langCode":"ru",
     "categoryTranslationType": "AREA",
-    "title":"SDF",
-    "text":"SDF",
+    "title":"TITLE",
+    "text":"TEXT",
     "areaId":4,
     "relatedId":4,
     "practiceId":null,

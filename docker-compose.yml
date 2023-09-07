@@ -5,11 +5,12 @@ services:
       context: .
       dockerfile: ./Dockerfile
     container_name: im-legal
-    profiles: ["backend"]
     ports:
       - '3000:3000'
-    env_file:
-      - ./.env:/app/.env
+    environment:
+      - DATABASE_URL=postgresql://variable:HxH787898HxH@hunter.com@im-legal-db:5432/im-legal-db?schema=public
+      - REDIS_HOST=im-legal-redis
+      - S3_HOST=im-legal-s3
     networks:
       - im-legal
     volumes:
@@ -21,16 +22,15 @@ services:
   api-migration:
       build:
         context: .
-        dockerfile: Dockerfile.migration
-      profiles: ["backend"]
+        dockerfile: Dockerfile.migrate
       entrypoint: "npm run migrate:run"
       restart: "no"
-      env_file:
-        - ./.env:/app/.env
+      environment:
+        - DATABASE_URL=postgresql://variable:HxH787898HxH@hunter.com@im-legal-db:5432/im-legal-db?schema=public
       networks:
         - im-legal
       volumes:
-        - ./.env:/app/.env  
+        - ./.env:/app/.env
       depends_on:
         - db
   im-legal-redis:
@@ -38,10 +38,9 @@ services:
     container_name: im-legal-redis-store
     restart: always
     ports:
-      - "6380:6379"
+      - "6379:6379"
     networks:
       - im-legal
-    profiles: ["backend"]
     volumes:
       - im-legal-redis_data:/data
     command: redis-server --appendonly yes
@@ -58,24 +57,25 @@ services:
       - '9000:9000'
       - '9001:9001'
     restart: always
-    env_file:
-      - ./.env:/app/.env
-    profiles: ["backend"]
+    environment:
+      - MINIO_ROOT_USER=ROOTNAME
+      - MINIO_ROOT_PASSWORD=CHANGEME123
     networks:
       - im-legal
     volumes:
       - im-legal-s3:/data
   db:
     image: postgres
-    container_name: im-legal-database
+    container_name: im-legal-db
     ports:
       - '5432:5432'
     networks:
       - im-legal
-    profiles: ["backend"]
     restart: always
-    env_file:
-      - ./.env:/app/.env
+    environment:
+      - POSTGRES_PASSWORD=HxH787898HxH@hunter.com
+      - POSTGRES_USER=variable
+      - POSTGRES_DB=im-legal-db
 
 networks:
   im-legal:

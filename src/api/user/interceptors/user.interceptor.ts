@@ -9,10 +9,10 @@ export class UserInterceptor implements NestInterceptor {
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     return next.handle().pipe(
       map((data:any) => {
-        const {id, role, email, accountStatus, UserTranslation} = data
+        delete data.hash
         const returnObject = { 
           user: {
-            id, role, email, accountStatus, UserTranslation
+            ...data
           }
         }
         return returnObject;

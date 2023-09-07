@@ -15,6 +15,14 @@ import { EducationOkResponse } from './dto/ok-response/ok.dto';
 import { EducationNotFoundErrorResponse } from './dto/education-not-found-error.dto';
 import { EducationBadRequestErrorResponse } from './dto/education-bad-request-error.dto';
 import { EducationAccessToDataGuard } from './guards/education_access.guard';
+import { CreatedOkResponse } from './dto/ok-response/created.dto';
+import { UpdatedOkResponse } from './dto/ok-response/updated.dto';
+import { DeletedOkResponse } from './dto/ok-response/deleted.dto';
+import { EducationCreateInterceptor } from './interceptors/education-create.interceptor';
+import { EducationCreateInfoInterceptor } from './interceptors/education-create-info.interceptor';
+import { EducationUpdateInterceptor } from './interceptors/education-update.interceptor';
+import { EducationUpdateInfoInterceptor } from './interceptors/education-update-info.interceptor';
+import { EducationDeleteInterceptor } from './interceptors/education-delete.interceptor';
 
 @ApiTags("education")
 @ApiBearerAuth()
@@ -28,6 +36,8 @@ export class EducationController {
   constructor(private readonly educationService: EducationService) { }
 
   @Post()
+  @ApiOkResponse({type: CreatedOkResponse})
+  @UseInterceptors(EducationCreateInterceptor)
   async create(
     @UserParam() jwtData: jwtType,
     @Body() createEducationDto: CreateEducationDto
@@ -44,7 +54,9 @@ export class EducationController {
   }
 
   @Patch(ID_PARAM)
+  @ApiOkResponse({type: UpdatedOkResponse})
   @UseGuards(EducationAccessToDataGuard)
+  @UseInterceptors(EducationUpdateInterceptor)
   update(
     @Param('id') id: number,
     @Body() createEducationDto: UpdateEducationDto
@@ -52,7 +64,19 @@ export class EducationController {
     return this.educationService.update(id, createEducationDto);
   }
 
+  @Delete(ID_PARAM)
+  @ApiOkResponse({type: DeletedOkResponse})
+  @UseGuards(EducationAccessToDataGuard)
+  @UseInterceptors(EducationDeleteInterceptor)
+  async delete(
+    @Param('id', ParseIntPipe) educationId: number
+  ) {
+    return await this.educationService.remove(educationId)
+  }
+
   @Post(TRANSLATION_ROUTE)
+  @ApiOkResponse({type: UpdatedOkResponse})
+  @UseInterceptors(EducationCreateInfoInterceptor)
   @UseGuards(EducationAccessToDataGuard)
   createInfo(
     @Param() { id, langCode }: TranslationParamDto,
@@ -63,6 +87,7 @@ export class EducationController {
 
   @Patch(TRANSLATION_ROUTE)
   @UseGuards(EducationAccessToDataGuard)
+  @UseInterceptors(EducationUpdateInfoInterceptor)
   updateInfo(
     @Param() { id, langCode }: TranslationParamDto,
     @Body() createEducationInfoDto: CreateEducationInfoDto
@@ -70,11 +95,5 @@ export class EducationController {
     return this.educationService.updateInfo(id, langCode, createEducationInfoDto);
   }
 
-  @Delete(ID_PARAM)
-  @UseGuards(EducationAccessToDataGuard)
-  async delete(
-    @Param('id', ParseIntPipe) educationId: number
-  ) {
-    return await this.educationService.remove(educationId)
-  }
+  
 }

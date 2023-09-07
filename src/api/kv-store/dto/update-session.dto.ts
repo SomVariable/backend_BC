@@ -1,4 +1,4 @@
-import { ApiProperty, PartialType } from "@nestjs/swagger";
+import { ApiProperty, PartialType, PickType } from "@nestjs/swagger";
 import { SaveSessionDto } from "./save-session.dto";
 import { IsOptional, IsString } from "class-validator";
 

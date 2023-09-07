@@ -1,3 +1,5 @@
+import { Prisma } from "@prisma/client";
+
 export const LIMIT_USERS = 10;
 
 export enum USER_OK {
@@ -15,6 +17,29 @@ export enum USER_NOT_FOUND {
     MISSING_USER = 'missing user'
 }
 
+export const UserIncludeTranslation: Prisma.UserInclude = {
+   UserTranslation: {
+       include: {userProfile: true}
+   }
+}
+
+export const UserIncludeAvatar: Prisma.UserInclude = {
+   avatar: {
+   }
+}
+
+export const UserIncludeEducation: Prisma.UserInclude = {
+   education: {
+       include: {educationInfo: true}
+   }
+}
+
+export const UserIncludeAwards: Prisma.UserInclude = {
+   awards: {
+       include: {AwardTranslation: true}
+   }
+} 
+
 export const COUNT_EXAMPLE = {"count":3}
 
 export const USER_EXAMPLES = {"id":12,"role":"EMPLOYEE","email":"valera_new@gmail.com","accountStatus":"ACTIVE"}
@@ -28,24 +53,24 @@ export const USER_EXAMPLES_WITH_TRANSLATION = {
           {
              "id":4,
              "langCode":"ru",
-             "firstName":"ИМЯ",
-             "surnameName":"ФАМИЛИЯ",
-             "middleName":"ОТЧЕСТВО",
-             "description":null,
+             "firstName":"Test",
+             "surnameName":"Test",
+             "middleName":"Test",
+             "description":"Test",
              "smallDescription":"Я...",
-             "status":null,
+             "status":"Test",
              "position":"нет",
              "userId":12
           },
           {
              "id":6,
              "langCode":"en",
-             "firstName":"ИМЯ",
-             "surnameName":"ФАМИЛИЯ",
-             "middleName":"ОТЧЕСТВО",
-             "description":null,
+             "firstName":"Test",
+             "surnameName":"Test",
+             "middleName":"Test",
+             "description":"Test",
              "smallDescription":"Я...",
-             "status":null,
+             "status":"Test",
              "position":"нет",
              "userId":12
           }
@@ -57,30 +82,30 @@ export const USERS_EXAMPLES_WITH_TRANSLATION = {
        {
           "accountStatus":"ACTIVE",
           "UserTranslation":[
-             {
-                "id":4,
-                "langCode":"ru",
-                "firstName":"ИМЯ",
-                "surnameName":"ФАМИЛИЯ",
-                "middleName":"ОТЧЕСТВО",
-                "description":null,
-                "smallDescription":"Я...",
-                "status":null,
-                "position":"нет",
-                "userId":12
-             },
-             {
-                "id":6,
-                "langCode":"en",
-                "firstName":"ИМЯ",
-                "surnameName":"ФАМИЛИЯ",
-                "middleName":"ОТЧЕСТВО",
-                "description":null,
-                "smallDescription":"Я...",
-                "status":null,
-                "position":"нет",
-                "userId":12
-             }
+            {
+               "id":4,
+               "langCode":"ru",
+               "firstName":"Test",
+               "surnameName":"Test",
+               "middleName":"Test",
+               "description":"Test",
+               "smallDescription":"Я...",
+               "status":"Test",
+               "position":"нет",
+               "userId":12
+            },
+            {
+               "id":6,
+               "langCode":"en",
+               "firstName":"Test",
+               "surnameName":"Test",
+               "middleName":"Test",
+               "description":"Test",
+               "smallDescription":"Я...",
+               "status":"Test",
+               "position":"нет",
+               "userId":12
+            }
           ],
           "email":"valera_new@gmail.com",
           "id":12,

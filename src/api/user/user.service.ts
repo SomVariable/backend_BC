@@ -3,7 +3,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { Prisma, Role, User, UserTranslation } from '@prisma/client';
 import { PrismaService } from '../database/prisma.service';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { LIMIT_USERS, USER_NOT_FOUND } from './constants/user.constants';
+import { LIMIT_USERS, USER_NOT_FOUND, UserIncludeAvatar, UserIncludeAwards, UserIncludeEducation, UserIncludeTranslation } from './constants/user.constants';
 
 
 
@@ -14,8 +14,7 @@ export class UserService {
     private readonly prismaService: PrismaService
   ) { }
 
-  async create(data: Prisma.UserCreateInput): Promise<User> {
-    
+  async create(data: Prisma.UserCreateInput){
     const newUser = await this.prismaService.user.create({
       data
     })
@@ -32,11 +31,25 @@ export class UserService {
     return user
   }
 
+  async getUserWithFullData(id: number) {
+    const user = await this.prismaService.user.findUnique({ 
+      include: {
+        ...UserIncludeAvatar, 
+        ...UserIncludeAwards, 
+        ...UserIncludeEducation, 
+        ...UserIncludeTranslation
+      },
+      where: { id } 
+    })
+
+    return user
+  }
+
   async getTotalCount() {
     return await this.prismaService.user.count()
   }
 
-  async findBy(params: UpdateUserDto): Promise<User> {
+  async findBy(params: UpdateUserDto){
     const user: User = await this.prismaService.user.findFirst({ 
       include: {UserTranslation: true},
       where: params 
@@ -46,7 +59,7 @@ export class UserService {
   }
 
 
-  async findById(id: number): Promise<User> {
+  async findById(id: number){
     const user: User = await this.prismaService.user.findFirst({ 
       include: {UserTranslation: true},
       where: { id } 
@@ -55,7 +68,7 @@ export class UserService {
     return user
   }
 
-  async updateProperty(id: number, data: UpdateUserDto): Promise<User> {
+  async updateProperty(id: number, data: UpdateUserDto){
 
     const user = await this.findById(id)
 
@@ -72,7 +85,7 @@ export class UserService {
 
   }
 
-  async remove(id: number): Promise<User> {
+  async remove(id: number){
     const user = await this.findById(id)
 
     if(!user) {

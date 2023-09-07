@@ -127,7 +127,7 @@ export class AuthController {
     @Body() { email }: ResendVerifyKey,
     @DeviceType() deviceType: string) {
     const { id } = await this.userService.findBy({ email })
-    const sessionKey = this.kvStoreService.generateSessionKey(id.toString(), deviceType)
+    const sessionKey = this.kvStoreService.generateSessionKey(id, deviceType)
     
     return await this.authService.sendVerificationKey(email, sessionKey)
   }

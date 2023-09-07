@@ -3,7 +3,12 @@ import { BAD_REQUEST_ERRORS } from "src/common/constants/app.constants"
 export const dateTemplate = /^\d{4}-\d{2}-\d{2}$/
 
 export enum EDUCATION_OK {
-    OK = "OK"
+    OK = "OK",
+    CREATED = "education has been created",
+    UPDATED = "education has been updated",
+    DELETED = "education has been deleted",
+    INFO_CREATED = "education-information has been created",
+    INFO_UPDATED = "education-information has been updated"
 }
 
 export enum EDUCATION_BAD_REQUEST {
@@ -41,4 +46,16 @@ export enum EDUCATION_LEVELS_RU {
     ADVANCED_TRAINING = 'повышение квалификации'
 } 
 
-export const EDUCATION_EXAMPLES = ""
+export const EDUCATION_EXAMPLES = {
+    "id":3,
+    "studyYear":"2023-10-10",
+    "graduationYear":"2023-10-10",
+    "specialty":"specialty",
+    "qualification":"qualification",
+    "userId":30,
+    "educationInfo":[
+       
+    ]
+ }
+
+ export const EDUCATION_INFO_EXAMPLES = {}

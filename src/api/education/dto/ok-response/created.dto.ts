@@ -2,17 +2,18 @@ import { ApiProperty } from "@nestjs/swagger";
 import {  Education } from "@prisma/client";
 import { EDUCATION_EXAMPLES, EDUCATION_OK } from "../../constants/education.constants";
 
-export class EducationOkResponse {
+export class CreatedOkResponse {
     @ApiProperty({
-        type: EDUCATION_OK.OK,
+        type: EDUCATION_OK.CREATED,
+        default: EDUCATION_OK.CREATED,
         enum: EDUCATION_OK
     })
 
-    message: EDUCATION_OK.OK;
+    message: EDUCATION_OK.CREATED;
 
     @ApiProperty({
         example: EDUCATION_EXAMPLES
     })
-    data: Education
+    data: any
 
 }

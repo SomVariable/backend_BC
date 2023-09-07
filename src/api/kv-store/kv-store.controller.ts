@@ -7,7 +7,8 @@ import {
   Param,
   Body, 
   UseInterceptors,
-  UseGuards} from '@nestjs/common';
+  UseGuards,
+  ParseIntPipe} from '@nestjs/common';
 import { KvStoreService } from './kv-store.service';
 import { ApiBadRequestResponse, ApiBearerAuth, ApiNotFoundResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { SaveSessionDto } from './dto/save-session.dto';
@@ -20,6 +21,9 @@ import { KVStoreInterceptor } from './interceptors/kv-store.interceptor';
 import { KVStoreOkResponse } from './dto/ok-response/ok.dto';
 import { KVStoreBadRequestErrorResponse } from './dto/kv-store-bad-request-error.dto';
 import { KVStoreNotFoundErrorResponse } from './dto/kv-store-not-found-error.dto';
+import { UserParam } from 'src/common/decorators/param-user.decorator';
+import { jwtType } from '../jwt-helper/types/jwt-helper.types';
+import { ID_PARAM } from 'src/common/constants/app.constants';
 
 @ApiTags("kv-store")
 @ApiOkResponse({ type: KVStoreOkResponse})
@@ -31,35 +35,59 @@ export class KvStoreController {
   constructor(private readonly kvStoreService: KvStoreService) {}
   
   @Post('session')
+  @ApiBearerAuth()
   async createSession(
-    @Body() data: SaveSessionDto,
+    @UserParam() {id}: jwtType,
     @DeviceType() deviceType: string){
-    const session = await this.kvStoreService.generateSessionKey(data.id, deviceType)
+    const session = await this.kvStoreService.generateSessionKey(id, deviceType)
     return await this.kvStoreService.createSession({id: session})
   }
-  @Get('session/:id')
-  async getSession(@Param() data: SaveSessionDto){
-    return await this.kvStoreService.getSession(data)
+  
+  @Get('session/')
+  async getSession(
+    @UserParam() {id}: jwtType,
+    @DeviceType() deviceType: string){
+    const session = await this.kvStoreService.generateSessionKey(id, deviceType)
+    return await this.kvStoreService.getSession(session)
   }
 
   @Patch('session/verification')
-  async setVerificationProps(@Body() data: UpdateVerifyDto){
-    return await this.kvStoreService.setVerificationProps(data)
+  @ApiBearerAuth()
+  async setVerificationProps(
+    @UserParam() {id}: jwtType,
+    @DeviceType() deviceType: string,
+    @Body() data: UpdateVerifyDto){
+    const session = await this.kvStoreService.generateSessionKey(id, deviceType)
+    return await this.kvStoreService.setVerificationProps(session, data)
   }
   
   @Patch('session/block')
-  async blockSession(@Body() data: SaveSessionDto){
-    return await this.kvStoreService.blockSession(data)
+  @ApiBearerAuth()
+  async blockSession(
+    @UserParam() {id}: jwtType,
+    @DeviceType() deviceType: string){
+    const session = await this.kvStoreService.generateSessionKey(id, deviceType)
+
+    return await this.kvStoreService.blockSession(session)
   }
 
-  @Patch('session/active')
-  async activeSession(@Body() data: SaveSessionDto){
-    return await this.kvStoreService.activeSession(data)
+  @Patch(`session/active/${ID_PARAM}`)
+  async activeSession(
+    @Param('id', ParseIntPipe) id: number,
+    @DeviceType() deviceType: string){
+    const session = await this.kvStoreService.generateSessionKey(id, deviceType)
+
+    return await this.kvStoreService.activeSession(session)
   }
 
-  @Delete('session/:id')
-  async deleteSession(@Param() data: SaveSessionDto){
-    return await this.kvStoreService.deleteSession(data)
+  @Delete('session')
+  @ApiBearerAuth()
+  async deleteSession(
+    @UserParam() {id}: jwtType,
+    @DeviceType() deviceType: string){
+    const session = await this.kvStoreService.generateSessionKey(id, deviceType)
+
+    return await this.kvStoreService.deleteSession(session)
   }
 
 }

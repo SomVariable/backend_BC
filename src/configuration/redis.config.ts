@@ -10,7 +10,5 @@ export const redisConfig: RedisClientOptions = {
   host: config.get("REDIS_HOST"),
   port: config.get("REDIS_PORT"),
   
-  // Store-specific configuration:
-  
 }
 

@@ -107,6 +107,13 @@ export class UsersController {
     return await this.userService.findById(id)
   }
 
+  @Get(`user/${ID_PARAM}/fullData`)
+  @ApiOkResponse({ type: GetUserOkResponse })
+  @UseInterceptors(UserInterceptor)
+  async findUserWithFullData(@Param('id', ParseIntPipe) id: number) {
+    return await this.userService.getUserWithFullData(id)
+  }
+
   @Delete(ID_PARAM)
   @ApiOkResponse({ type: DeletedOkResponse })
   @UseInterceptors(UserInterceptor)

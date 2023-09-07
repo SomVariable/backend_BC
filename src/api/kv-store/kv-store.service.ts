@@ -31,9 +31,9 @@ export class KvStoreService {
 
     }
 
-    async setVerificationProps(data: UpdateVerifyDto): Promise<Session> {
+    async setVerificationProps(id: string, data: UpdateVerifyDto): Promise<Session> {
         try {
-            const session: Session = await this.updateSession(data)
+            const session: Session = await this.updateSession(id, data)
 
             return session
 
@@ -42,7 +42,7 @@ export class KvStoreService {
         }
     }
 
-    async updateSession({ id, ...data }: UpdateSessionDto): Promise<Session | null> {
+    async updateSession(id: string, data: UpdateSessionDto): Promise<Session | null> {
         const session: Session = await JSON.parse(await this.cacheManager.get(id));
 
         if (!session) {
@@ -64,7 +64,7 @@ export class KvStoreService {
         return null
     }
 
-    async getSession({ id }: CreateSession): Promise<Session> {
+    async getSession(id: string) {
         let dataFromStore: Session | string = await this.cacheManager.get(id)
 
         if(!dataFromStore) {
@@ -81,7 +81,7 @@ export class KvStoreService {
     }
 
 
-    async blockSession({ id }: CreateSession) {
+    async blockSession( id: string) {
         const session: Session = await JSON.parse(await this.cacheManager.get(id));
 
         if (!session || session.status === "BLOCKED") {
@@ -102,7 +102,7 @@ export class KvStoreService {
         return updatedSession
     }
 
-    async activeSession({ id }: CreateSession): Promise<Session> {
+    async activeSession( id: string): Promise<Session> {
         const session: Session = await JSON.parse(await this.cacheManager.get(id));
 
         if (!session || session.status === "ACTIVE") {
@@ -120,7 +120,7 @@ export class KvStoreService {
         return updatedSession
     }
 
-    async deleteSession({ id }: CreateSession): Promise<Session> {
+    async deleteSession( id: string) {
         try {
             const session = await JSON.parse(await this.cacheManager.get(id))
 
@@ -139,7 +139,7 @@ export class KvStoreService {
         }
     }
 
-    generateSessionKey(id : string, deviceType: string): string {
+    generateSessionKey(id : number, deviceType: string): string {
         return `${id}:${deviceType}`
     }
 }

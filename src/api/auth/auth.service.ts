@@ -43,7 +43,7 @@ export class AuthService {
       const user =  await this.userService.create({...data})
       const { id } = user
     
-      const sessionKey = this.kvStoreService.generateSessionKey(String(id), deviceType)
+      const sessionKey = this.kvStoreService.generateSessionKey(id, deviceType)
       
       await this.kvStoreService.createSession({id: sessionKey})
       const tokens = await this.generateTokens(sessionKey, user.email)
@@ -58,7 +58,7 @@ export class AuthService {
     const user =  await this.userService.create({...data})
     const {id, email} = user
     
-    const sessionKey = this.kvStoreService.generateSessionKey(String(id), deviceType)
+    const sessionKey = this.kvStoreService.generateSessionKey(id, deviceType)
 
     await this.kvStoreService.createSession({id: sessionKey})
     await this.sendVerificationKey(email, sessionKey)
@@ -83,9 +83,9 @@ export class AuthService {
 
   async verification(verifyCode: string, email: string, deviceType: string) {
     const { id } = await this.userService.findBy({ email })
-    const session = this.kvStoreService.generateSessionKey(id.toString(), deviceType)
+    const session = this.kvStoreService.generateSessionKey(id, deviceType)
     await this.verifyUser(verifyCode, session)
-    await this.kvStoreService.activeSession({id: session})
+    await this.kvStoreService.activeSession(session)
     const tokens = await this.generateTokens(session, email)
 
     return tokens
@@ -109,13 +109,6 @@ export class AuthService {
     return await this.userService.updateProperty(id, { accountStatus: AccountStatus.ACTIVE });
   }
 
-
-  // async submitNewPassword(email: string, hash: string) {
-  //   const user = await this.userService.findBy({ email });
-  //   const { id } = user
-
-  // }
-
   async hashPassword(password) {
     try {
       const saltRounds = 10;
@@ -127,6 +120,6 @@ export class AuthService {
   }
 
   async logout(sessionKey: string): Promise<void> {
-    return await this.kvStoreService.blockSession({id: sessionKey})
+    return await this.kvStoreService.blockSession(sessionKey)
   }
 }

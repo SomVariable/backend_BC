@@ -17,16 +17,14 @@ export class VerificationService {
     async sendVerificationCode(email: string, sessionKey: string, verificationKey: string) {
         try {
             const data: SetVerificationProps = {
-                id: sessionKey, 
                 verificationKey, 
                 verificationTimestamp: Date.now().toString()
             }
 
-            await this.kvStoreService.setVerificationProps(data)
+            await this.kvStoreService.setVerificationProps(sessionKey, data)
             const ans = await this.mailerService.sendMail(generateSendObject(email, verificationKey))
-            console.log(ans)
-            return true
-            //there should be return send message to the email
+            const {accepted, rejected, messageId} = ans
+            return {accepted, rejected, messageId}
         } catch (error) {
             console.log(error)
             throw new InternalServerErrorException(
@@ -41,7 +39,7 @@ export class VerificationService {
     }
 
     async validateVerifyCode(verifyCode: string, sessionKey: string): Promise<boolean> {
-        const session = await this.kvStoreService.getSession({id: sessionKey})
+        const session = await this.kvStoreService.getSession(sessionKey)
 
         if (parseInt(session.verificationTimestamp) + VERIFY_KEY_TIMESTAMP < Date.now()) {
             throw new BadRequestException(VERIFICATION_BAD_REQUEST_ERRORS.OVERSTAYED)
