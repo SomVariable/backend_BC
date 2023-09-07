@@ -67,12 +67,8 @@ export class UserProfileController {
   async uploadAvatar(
     @UploadedFile(new ParseFilePipe(validateFile)) file: Express.Multer.File,
     @UserParam() {id}: jwtType,
-    @Req() req: any
   ) {
 
-    if(req.isPhoto) {
-      throw new BadRequestException(PHOTO_BAD_REQUEST.WRONG_FORMAT)
-    }
 
     return this.photoService.create(file, {
       type: 'AVATAR',
