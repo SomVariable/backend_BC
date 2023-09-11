@@ -19,7 +19,7 @@ export class S3Service {
   constructor(
     private readonly configService: ConfigService
   ) {
-    this.client = new S3Client(s3Config)
+    this.client = new S3Client(s3Config())
     this.bucketName = this.configService.get("S3_FOLDER_NAME")
   }
 

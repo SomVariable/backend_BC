@@ -98,8 +98,8 @@ export class AuthService {
       throw new NotFoundException(AUTH_NOT_FOUND.MISSING_USER)
     }
     
-    const jwtToken = await this.jwtHelperService.generateToken(user, sessionKey, AccessJwtConfig)
-    const refreshToken = await this.jwtHelperService.generateToken(user, sessionKey, RefreshJwtConfig)
+    const jwtToken = await this.jwtHelperService.generateToken(user, sessionKey, AccessJwtConfig())
+    const refreshToken = await this.jwtHelperService.generateToken(user, sessionKey, RefreshJwtConfig())
 
     return {jwtToken, refreshToken}
   }

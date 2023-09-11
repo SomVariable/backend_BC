@@ -15,7 +15,7 @@ export class JwtHelperService {
     return jwt
   }
 
-  async getDataFromJwt(authorization: string, option: JwtSignOptions = AccessJwtConfig): Promise<jwtType> {
+  async getDataFromJwt(authorization: string, option: JwtSignOptions = AccessJwtConfig()): Promise<jwtType> {
     const token = authorization?.replace('Bearer ', '');
     const dataFromToken = await this.jwtService.verify(token, option)
 

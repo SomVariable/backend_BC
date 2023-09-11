@@ -8,7 +8,7 @@ import { ConfigService } from '@nestjs/config';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 
 @Module({
-  imports: [CacheModule.register<RedisClientOptions>(redisConfig)],
+  imports: [CacheModule.register<RedisClientOptions>(redisConfig())],
   controllers: [KvStoreController],
   providers: [KvStoreService],
   exports: [KvStoreService]

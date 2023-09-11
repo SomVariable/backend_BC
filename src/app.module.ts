@@ -29,7 +29,7 @@ import { mailerConfig } from './configuration/mailer.config';
     load: [configuration],
     isGlobal: true
   }), 
-  MailerModule.forRoot(mailerConfig),  
+  MailerModule.forRoot(mailerConfig()),  
   AuthModule, 
   UserProfileModule,
   UserModule, 

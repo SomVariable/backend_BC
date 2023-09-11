@@ -3,7 +3,8 @@ import * as AWS  from '@aws-sdk/client-s3'
 
 const configService = new ConfigService()
 
-export const s3Config: AWS.S3ClientConfig = {
+export const s3Config = (): AWS.S3ClientConfig => {
+  return {
     credentials: {
       accessKeyId: configService.get('S3_ROOT_USER'),
       secretAccessKey: configService.get('S3_ROOT_PASSWORD'),
@@ -19,5 +20,6 @@ export const s3Config: AWS.S3ClientConfig = {
           region: configService.get('S3_REGION'),
         }
       : {}),
-  };
+  }; 
+} 
 
