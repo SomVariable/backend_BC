@@ -9,7 +9,7 @@ export class UsersInterceptor implements NestInterceptor {
     return next.handle().pipe(
       map((data: usersResponse) => {
         const {users} = data
-        console.log(data)
+
         const updatedUsers = users?.map(user => {
           const {
             accountStatus,  email, 

@@ -64,9 +64,10 @@ export class AuthController {
   async addFirstUser(
     @DeviceType() deviceType: string,
     @Body() data: CreateUserDto) {
+    const hash = await this.authService.hashPassword(data.password)
     const admin = await this.authService.addFirstUser({
       email: data.email,
-      hash: data.password,
+      hash,
       role: Role.ADMIN,
       accountStatus: AccountStatus.ACTIVE
     }, deviceType)
