@@ -10,7 +10,7 @@ export enum PROPERTY_LENGTH {
     TITLE = 30,
     SMALL_DESCRIPTION = 100,
     DESCRIPTION = 200,
-
+    TEXT = 400,
 }
 
 export const ID_PARAM = ':id'

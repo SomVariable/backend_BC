@@ -77,10 +77,12 @@ export class AwardService {
      })
   }
 
-  async getAwardsByLang(id: number, langCode: string) {
+  async getAwardsByLang(id: number, langCode: string, skip: number, take: number) {
     return await this.prismaService.award.findFirst({
       include: {AwardTranslation: {where: {langCode}}},
-      where: {id}
+      where: {id},
+      skip,
+      take
      })
   }
 

@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, UseInterceptors, ParseIntPipe } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, UseInterceptors, ParseIntPipe, Query } from '@nestjs/common';
 import { AreaService } from './area.service';
 import { CreateAreaDto } from './dto/create-area.dto';
 import { UpdateAreaDto } from './dto/update-area.dto';
@@ -17,6 +17,7 @@ import { CreatedOkResponse } from './dto/ok-response/created.dto';
 import { GetAreaOkResponse } from './dto/ok-response/get-area.dto';
 import { GetAreasOkResponse } from './dto/ok-response/get-areas.dto';
 import { AreaNotFoundErrorResponse } from './dto/area-not-found-error.dto';
+import { QueryPaginationParam } from 'src/common/dto/query-pagination.dto';
 
 @Controller('area')
 @ApiTags("area")
@@ -39,8 +40,10 @@ export class AreaController {
   @Get()
   @ApiOkResponse( { type: GetAreasOkResponse } )
   @UseInterceptors(GetAreaInterceptor)
-  async getAreas() {
-    return await this.areaService.getAreas()
+  async getAreas(
+    @Query() {limit, offset}: QueryPaginationParam
+  ) {
+    return await this.areaService.getAreas(limit, offset)
   }
 
   @Get(ID_PARAM)

@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, ParseIntPipe, UseInterceptors } from '@nestjs/common';
+import { Query, Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, ParseIntPipe, UseInterceptors } from '@nestjs/common';
 import { ContentItemService } from './content-item.service';
 import { CreateContentItemDto } from './dto/create-content-item.dto';
 import { CreateContentItemInfoDto } from './dto/create-content-item-info.dto';
@@ -21,6 +21,7 @@ import { UpdatedInfoOkResponse } from './dto/ok-response/updated-info.dto';
 import { GetContentItemInterceptor } from './interceptors/get-content-item.interceptor';
 import { GetContentItemOkResponse } from './dto/ok-response/get-content-item.dto';
 import { GetContentItemsOkResponse } from './dto/ok-response/get-content-items.dto';
+import { QueryPaginationParam } from 'src/common/dto/query-pagination.dto';
 
 @ApiTags("content-item")
 @ApiBearerAuth()
@@ -53,9 +54,10 @@ export class ContentItemController {
   @ApiOkResponse( {type: GetContentItemsOkResponse} )
   @UseInterceptors(GetContentItemInterceptor)
   async getContentItems(
+    @Query() {limit, offset}: QueryPaginationParam, 
     @Param('id', ParseIntPipe) id: number
   ) {
-    return await this.publicationService.getContentItems(id)
+    return await this.publicationService.getContentItems(id, offset, limit)
   }
 
   @Patch(ID_PARAM)

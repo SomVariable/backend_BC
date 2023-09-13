@@ -23,32 +23,35 @@ import { OfferingsModule } from './api/service/offerings.module';
 import { CategoryTranslationModule } from './api/category-translation/category-translation.module';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { mailerConfig } from './configuration/mailer.config';
+import { APP_GUARD } from '@nestjs/core';
 
 @Module({
   imports: [ConfigModule.forRoot({
     load: [configuration],
     isGlobal: true
-  }), 
-  MailerModule.forRoot(mailerConfig()),  
-  AuthModule, 
-  UserProfileModule,
-  UserModule, 
-  KvStoreModule, 
-  JwtHelperModule,
-  DatabaseModule,
-  EducationModule,
-  ProfessionalInterestModule,
-  AwardModule,
-  NewsModule,
-  ContentItemModule,
-  AreaModule,
-  PracticeModule,
-  OfferingsModule,
-  TagModule,
-  PhotoModule,
-  CategoryTranslationModule,
-],
+  }),
+  MailerModule.forRoot(mailerConfig()),
+    AuthModule,
+    UserProfileModule,
+    UserModule,
+    KvStoreModule,
+    JwtHelperModule,
+    DatabaseModule,
+    EducationModule,
+    ProfessionalInterestModule,
+    AwardModule,
+    NewsModule,
+    ContentItemModule,
+    AreaModule,
+    PracticeModule,
+    OfferingsModule,
+    TagModule,
+    PhotoModule,
+    CategoryTranslationModule,
+  ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService
+  ],
 })
-export class AppModule {}
+export class AppModule { }

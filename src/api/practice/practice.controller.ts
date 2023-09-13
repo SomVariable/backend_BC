@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, UseInterceptors, ParseIntPipe } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, UseInterceptors, ParseIntPipe, Query } from '@nestjs/common';
 import { PracticeService } from './practice.service';
 import { CreatePracticeDto } from './dto/create-practice.dto';
 import { UpdatePracticeDto } from './dto/update-practice.dto';
@@ -12,6 +12,7 @@ import { CreatePracticeInterceptor } from './interceptors/create-practice.interc
 import { DeletePracticeInterceptor } from './interceptors/delete-practice.interceptor';
 import { UpdatePracticeInterceptor } from './interceptors/update-practice.interceptor';
 import { PracticeInterceptor } from './interceptors/practice.interceptor';
+import { QueryPaginationParam } from 'src/common/dto/query-pagination.dto';
 
 
 @Controller('practice')
@@ -35,8 +36,10 @@ export class PracticeController {
 
   @Get()
   @UseInterceptors(PracticeInterceptor)
-  async getPractices() {
-    return await this.practiceService.getPractices()
+  async getPractices(
+    @Query() {offset, limit}: QueryPaginationParam
+  ) {
+    return await this.practiceService.getPractices(offset, limit)
   }
 
   @Get(ID_PARAM)

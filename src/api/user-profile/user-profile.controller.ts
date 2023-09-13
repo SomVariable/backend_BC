@@ -60,7 +60,7 @@ export class UserProfileController {
     return await this.userProfileService.create(jwt_data.id, data)
   }
 
-  @Patch(`avatar`)
+  @Post(`avatar`)
   @ApiConsumes('multipart/form-data')
   @ApiBody(API_FILE_CONFIG)
   @UseInterceptors(FileInterceptor('file'))
@@ -68,8 +68,6 @@ export class UserProfileController {
     @UploadedFile(new ParseFilePipe(validateFile)) file: Express.Multer.File,
     @UserParam() {id}: jwtType,
   ) {
-
-
     return this.photoService.create(file, {
       type: 'AVATAR',
       userId: id,

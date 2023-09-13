@@ -2,8 +2,8 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreatePracticeDto } from './dto/create-practice.dto';
 import { UpdatePracticeDto } from './dto/update-practice.dto';
 import { PrismaService } from '../database/prisma.service';
-import { mapToIdObject } from '../category-translation/constants/category.constants';
 import { PRACTICE_NOT_FOUND } from './constants/practice.constants';
+import { mapToIdObject } from 'src/common/helpers/map-to-id-object.helper';
 
 @Injectable()
 export class PracticeService {
@@ -32,8 +32,11 @@ export class PracticeService {
     })
   }
 
-  async getPractices() {
-    return await this.prismaService.practice.findMany({})
+  async getPractices(skip: number, take: number) {
+    return await this.prismaService.practice.findMany({
+      skip,
+      take
+    })
   }
 
   async update(id: number, data: UpdatePracticeDto) {

@@ -9,9 +9,10 @@ services:
     ports:
       - '3000:3000'
     environment:
-      - DATABASE_URL=postgresql://variable:HxH787898HxH@hunter.com@db:5432/im_legal?schema=public
+      - DATABASE_URL=postgresql://variable:HxH787898HxH@hunter.com@im-legal-db:5432/im_legal?schema=public
       - REDIS_HOST=im-legal-redis-store
       - S3_HOST=im-legal-s3
+      - MH_SMTP_BIND_HOST=im-legal-mailhog
     networks:
       - im-legal-network
     volumes:
@@ -28,7 +29,7 @@ services:
       dockerfile: Dockerfile.migrate
     restart: "no"
     environment:
-      - DATABASE_URL=postgresql://variable:HxH787898HxH@hunter.com@db:5432/im_legal?schema=public
+      - DATABASE_URL=postgresql://variable:HxH787898HxH@hunter.com@im-legal-db:5432/im_legal?schema=public
     networks:
       - im-legal-network
     volumes:
@@ -50,8 +51,11 @@ services:
     command: redis-server --appendonly yes
   
   mailhog:
+    container_name: im-legal-mailhog
     image: mailhog/mailhog:latest
     restart: always
+    environment:
+      - MH_SMTP_BIND_HOST=im-legal-mailhog
     ports:
       - 1025:1025
       - 8025:8025
@@ -74,6 +78,7 @@ services:
       - im-legal-s3:/data
   
   db:
+    container_name: im-legal-db
     image: postgres
     ports:
       - '5432:5432'

@@ -1,7 +1,5 @@
 import { MailerOptions } from '@nestjs-modules/mailer';
 import { ConfigService } from '@nestjs/config';
-import { HandlebarsAdapter } from "@nestjs-modules/mailer/dist/adapters/handlebars.adapter"
-import { join } from 'path';
 
 const config = new ConfigService()
 
@@ -18,7 +16,6 @@ export const mailerConfig = (): MailerOptions => {
     }
   }; 
 } 
-
 
 export const generateSendObject = (email: string, verificationCode: string) => {
   const subject = 'Email Verification';

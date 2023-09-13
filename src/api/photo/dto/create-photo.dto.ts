@@ -24,6 +24,12 @@ export class CreatePhotoBodyDto {
     @IsInt()
     @IsPositive()
     @IsOptional()
+    newsId?: number
+
+    @ApiProperty()
+    @IsInt()
+    @IsPositive()
+    @IsOptional()
     contentItemId?: number
 }
 

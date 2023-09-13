@@ -11,9 +11,11 @@ async function bootstrap() {
   const { httpAdapter } = app.get(HttpAdapterHost);
 
   app.enableCors({ credentials: true, origin: true });
+
+  
+  
   app.useGlobalPipes(new ValidationPipe({transform: true, whitelist: true}));
   app.useGlobalFilters(new PrismaClientExceptionFilter(httpAdapter))
-
   const swaggerConfig = new DocumentBuilder()
     .setTitle('im-legal')
     .addBearerAuth()

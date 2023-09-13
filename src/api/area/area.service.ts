@@ -4,8 +4,8 @@ import { CreateAreaDto } from './dto/create-area.dto';
 import { UpdateAreaDto } from './dto/update-area.dto';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from '../category-translation/dto/update-category.dto';
-import { mapToIdObject } from '../category-translation/constants/category.constants';
 import { AREA_NOT_FOUND } from './constants/area.constants';
+import { mapToIdObject } from 'src/common/helpers/map-to-id-object.helper';
 
 @Injectable()
 export class AreaService {
@@ -31,8 +31,11 @@ export class AreaService {
     })
   }
 
-  async getAreas() {
-    return await this.prismaService.area.findMany({})
+  async getAreas(take: number, skip: number) {
+    return await this.prismaService.area.findMany({
+      skip,
+      take
+    })
   }
 
   async update(id: number, data: UpdateAreaDto) {

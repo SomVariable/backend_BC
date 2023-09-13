@@ -3,8 +3,8 @@ import { CreateOfferDto } from './dto/create-offer.dto';
 import { UpdateOfferDto } from './dto/update-offer.dto';
 import { CreateCategoryDto } from '../area/dto/create-category.dto';
 import { PrismaService } from '../database/prisma.service';
-import { mapToIdObject } from '../category-translation/constants/category.constants';
 import { Offer_NOT_FOUND } from './constants/offer.constants';
+import { mapToIdObject } from 'src/common/helpers/map-to-id-object.helper';
 
 
 @Injectable()

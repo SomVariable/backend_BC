@@ -80,13 +80,15 @@ export class ContentItemService {
     })
   }
 
-  async getContentItems(userId: number){
+  async getContentItems(userId: number, skip: number, take: number){
     return await this.prismaService.contentItem.findMany({
       where: {
         User: {
           some: {id: userId}
         }
-      }
+      },
+      skip,
+      take
     })
   }
 
