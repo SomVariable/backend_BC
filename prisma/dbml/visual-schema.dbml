@@ -29,8 +29,10 @@ Table Tag {
   id Int [pk, increment]
   practice Practice [not null]
   practiceId Int [unique, not null]
-  contentItemProfile ContentItem [not null]
+  contentItem ContentItem [not null]
   TagTranslation TagTranslation [not null]
+  News News
+  newsId Int
 }
 
 Table Service {
@@ -54,6 +56,8 @@ Table Photo {
   contentItemId Int
   User User
   userId Int [unique]
+  News News
+  newsId Int [unique]
   itemId Int [not null]
 
   indexes {
@@ -167,8 +171,11 @@ Table Award {
 
 Table News {
   id Int [pk, increment]
-  User User [not null]
-  userId Int [not null]
+  date String [not null]
+  views Int [not null]
+  previe Photo
+  users User [not null]
+  tags Tag [not null]
   NewsTranslation NewsTranslation [not null]
 }
 
@@ -225,6 +232,7 @@ Table NewsTranslation {
   id Int [increment, not null]
   langCode String [not null]
   title String [not null]
+  subtitle String [not null]
   text String [not null]
   news News [not null]
   newsId Int [not null]
@@ -290,6 +298,7 @@ Enum ContentItemType {
 Enum PhotoType {
   CONTENT
   AVATAR
+  NEWS
 }
 
 Enum CategoryTranslationType {
@@ -300,9 +309,13 @@ Enum CategoryTranslationType {
 
 Ref: Tag.practiceId > Practice.id [delete: Cascade]
 
+Ref: Tag.newsId > News.id
+
 Ref: Photo.contentItemId > ContentItem.id [delete: Cascade]
 
 Ref: Photo.userId - User.id [delete: Cascade]
+
+Ref: Photo.newsId - News.id [delete: Cascade]
 
 Ref: ContentItemTranslation.contentItemId > ContentItem.id [delete: Cascade]
 
@@ -317,8 +330,6 @@ Ref: Education.userId > User.id [delete: Cascade]
 Ref: ProfessionalInterest.userId > User.id [delete: Cascade]
 
 Ref: Award.userId > User.id [delete: Cascade]
-
-Ref: News.userId > User.id [delete: Cascade]
 
 Ref: EducationTranslation.educationId > Education.id
 

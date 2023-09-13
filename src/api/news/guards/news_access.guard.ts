@@ -22,7 +22,11 @@ export class NewsAccessToDataGuard implements CanActivate {
         const isUserAssociated = await this.prismaService.news.findFirst({
             where: {
                 id: parseInt(id),
-                userId
+                users: {
+                    some: {
+                        id: userId
+                    }
+                }
             }
         });
 

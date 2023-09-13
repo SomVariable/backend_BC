@@ -3,5 +3,6 @@ export type createNewsInfo = {
     langCode: string
     text: string
     title: string
+    subtitle: string
     newsId: number
 }

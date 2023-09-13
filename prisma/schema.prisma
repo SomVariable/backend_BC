@@ -41,10 +41,15 @@ model Practice {
 model Tag {
   id Int @id @default(autoincrement())
 
-  practice           Practice         @relation(fields: [practiceId], references: [id], onDelete: Cascade)
-  practiceId         Int              @unique
-  contentItemProfile ContentItem[]
-  TagTranslation     TagTranslation[]
+  practice   Practice @relation(fields: [practiceId], references: [id], onDelete: Cascade)
+  practiceId Int      @unique
+
+  contentItem ContentItem[]
+
+  TagTranslation TagTranslation[]
+
+  News   News? @relation(fields: [newsId], references: [id])
+  newsId Int?
 }
 
 model Service {
@@ -74,6 +79,9 @@ model Photo {
   User   User? @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId Int?  @unique
 
+  News   News? @relation(fields: [newsId], references: [id], onDelete: Cascade)
+  newsId Int?  @unique
+
   itemId Int
 
   @@id([itemId, type])
@@ -88,9 +96,12 @@ model ContentItem {
   created_at      DateTime @default(now())
   updated_at      DateTime @updatedAt
 
-  User                   User[]
-  photos                 Photo[]
-  Tag                    Tag[]
+  User User[]
+
+  photos Photo[]
+
+  Tag Tag[]
+
   ContentItemTranslation ContentItemTranslation[]
 }
 
@@ -121,11 +132,14 @@ model User {
   awards                 Award[]
   news                   News[]
   education              Education[]
-  contentItemId          ContentItem[]
+
+  contentItemId ContentItem[]
+
   partnerProfile         PartnerProfile?
   practiceManagerProfile PracticeManagerProfile?
   employeeProfile        EmployeeProfile?
-  UserTranslation        UserTranslation[]
+
+  UserTranslation UserTranslation[]
 }
 
 model PartnerProfile {
@@ -187,11 +201,13 @@ model Award {
 }
 
 model News {
-  id Int @id @default(autoincrement())
+  id    Int    @id @default(autoincrement())
+  date  String
+  views Int
 
-  User   User @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId Int
-
+  previe          Photo?
+  users           User[]
+  tags            Tag[]
   NewsTranslation NewsTranslation[]
 }
 
@@ -242,6 +258,7 @@ model NewsTranslation {
   id       Int    @default(autoincrement())
   langCode String
   title    String
+  subtitle String
   text     String
 
   news   News @relation(fields: [newsId], references: [id], onDelete: Cascade)
@@ -304,6 +321,7 @@ enum ContentItemType {
 enum PhotoType {
   CONTENT
   AVATAR
+  NEWS
 }
 
 enum CategoryTranslationType {
