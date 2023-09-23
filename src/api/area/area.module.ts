@@ -6,6 +6,6 @@ import { DatabaseModule } from '../database/database.module';
 @Module({
   imports: [DatabaseModule],
   controllers: [AreaController],
-  providers: [AreaService]
+  providers: [AreaService],
 })
 export class AreaModule {}

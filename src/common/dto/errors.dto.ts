@@ -1,4 +1,4 @@
-import { ApiProperty } from "@nestjs/swagger";
+import { ApiProperty } from '@nestjs/swagger';
 
 export class AppErrorResponse {
   @ApiProperty({ default: 400, example: 400 })

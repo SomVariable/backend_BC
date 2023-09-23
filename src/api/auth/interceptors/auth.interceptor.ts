@@ -1,7 +1,11 @@
-import { Injectable, NestInterceptor, ExecutionContext, CallHandler } from '@nestjs/common';
+import {
+  Injectable,
+  NestInterceptor,
+  ExecutionContext,
+  CallHandler,
+} from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { authUserReturnType } from '../types/auth.types';
 import { AUTH_OK } from '../constants/auth.constants';
 
 @Injectable()
@@ -10,8 +14,8 @@ export class AuthInterceptor implements NestInterceptor {
     return next.handle().pipe(
       map((data: any) => {
         return {
-            message: AUTH_OK.OK,
-            ...data,
+          message: AUTH_OK.OK,
+          ...data,
         };
       }),
     );

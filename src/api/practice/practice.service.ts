@@ -7,67 +7,64 @@ import { mapToIdObject } from 'src/common/helpers/map-to-id-object.helper';
 
 @Injectable()
 export class PracticeService {
+  constructor(private readonly prismaService: PrismaService) {}
 
-  constructor(
-    private readonly prismaService: PrismaService
-  ){}
-
-  async create({areasIds, servicesIds}: CreatePracticeDto) {
+  async create({ areasIds, servicesIds }: CreatePracticeDto) {
     return await this.prismaService.practice.create({
       data: {
         areasIds: {
-          connect: areasIds.map(mapToIdObject)
+          connect: areasIds.map(mapToIdObject),
         },
         servicesIds: {
-          connect: servicesIds.map(mapToIdObject)
-        }
-      }
+          connect: servicesIds.map(mapToIdObject),
+        },
+      },
     });
   }
 
   async getPractice(id: number) {
     return await this.prismaService.practice.findFirst({
-      include: {CategoryTranslation: true},
-      where: {id}
-    })
+      include: { CategoryTranslation: true },
+      where: { id },
+    });
   }
 
   async getPractices(skip: number, take: number) {
     return await this.prismaService.practice.findMany({
       skip,
-      take
-    })
+      take,
+    });
   }
 
   async update(id: number, data: UpdatePracticeDto) {
-    const practice = await this.getPractice(id)
+    const practice = await this.getPractice(id);
 
-    if(!practice) {
-      throw new NotFoundException(PRACTICE_NOT_FOUND.MISSING_PRACTICE)
+    if (!practice) {
+      throw new NotFoundException(PRACTICE_NOT_FOUND.MISSING_PRACTICE);
     }
 
     return await this.prismaService.practice.update({
-      where: {id},
+      where: { id },
       data: {
         areasIds: {
-          set: data?.servicesIds.map(mapToIdObject)
+          set: data?.servicesIds.map(mapToIdObject),
         },
         servicesIds: {
-          set: data?.servicesIds.map(mapToIdObject)
-        }
-      }
-    })
+          set: data?.servicesIds.map(mapToIdObject),
+        },
+      },
+    });
   }
 
   async delete(id: number) {
-    const practice = await this.getPractice(id)
+    const practice = await this.getPractice(id);
 
-    if(!practice) {
-      throw new NotFoundException(PRACTICE_NOT_FOUND.MISSING_PRACTICE)
+    if (!practice) {
+      throw new NotFoundException(PRACTICE_NOT_FOUND.MISSING_PRACTICE);
     }
 
     return await this.prismaService.practice.delete({
-      where: {id}
-    })
+      where: { id },
+    });
   }
 }

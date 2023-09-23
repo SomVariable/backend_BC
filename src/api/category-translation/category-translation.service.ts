@@ -6,34 +6,46 @@ import { CATEGORY_INFO_NOT_FOUND } from './constants/category.constants';
 
 @Injectable()
 export class CategoryTranslationService {
-    constructor(
-        private readonly prismaService: PrismaService
-    ) { }
+  constructor(private readonly prismaService: PrismaService) {}
 
-    async createInfo(id: number, langCode: string, data: CreateCategoryDto) {
-        console.log(id, langCode)
+  async createInfo(id: number, langCode: string, data: CreateCategoryDto) {
+    return await this.prismaService.categoryTranslation.create({
+      data: { areaId: id, langCode, relatedId: id, ...data },
+    });
+  }
 
-        return await this.prismaService.categoryTranslation.create({
-            data: { areaId: id, langCode, relatedId: id, ...data }
-        });
+  async updateInfo(
+    relatedId: number,
+    categoryTranslationType,
+    langCode,
+    data: UpdateCategoryDto,
+  ) {
+    const categoryTranslation =
+      await this.prismaService.categoryTranslation.findUnique({
+        where: {
+          langCode_relatedId_categoryTranslationType: {
+            categoryTranslationType,
+            langCode,
+            relatedId,
+          },
+        },
+      });
+
+    if (!categoryTranslation) {
+      throw new NotFoundException(
+        CATEGORY_INFO_NOT_FOUND.MISSING_CATEGORY_INFO,
+      );
     }
 
-    async updateInfo(relatedId: number, categoryTranslationType, langCode, data: UpdateCategoryDto) {
-        const categoryTranslation = await this.prismaService.categoryTranslation.findUnique({
-            where: {
-                langCode_relatedId_categoryTranslationType: { categoryTranslationType, langCode, relatedId }
-            },
-        })
-        
-        if(!categoryTranslation) {
-            throw new NotFoundException(CATEGORY_INFO_NOT_FOUND.MISSING_CATEGORY_INFO)
-        }
-
-        return await this.prismaService.categoryTranslation.update({
-            where: {
-                langCode_relatedId_categoryTranslationType: { categoryTranslationType, langCode, relatedId }
-            },
-            data
-        })
-    }
+    return await this.prismaService.categoryTranslation.update({
+      where: {
+        langCode_relatedId_categoryTranslationType: {
+          categoryTranslationType,
+          langCode,
+          relatedId,
+        },
+      },
+      data,
+    });
+  }
 }

@@ -8,6 +8,6 @@ import { PhotoModule } from '../photo/photo.module';
   imports: [DatabaseModule, PhotoModule],
   controllers: [UserProfileController],
   providers: [UserProfileService],
-  exports: [UserProfileService]
+  exports: [UserProfileService],
 })
 export class UserProfileModule {}

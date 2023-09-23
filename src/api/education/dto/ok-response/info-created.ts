@@ -1,18 +1,19 @@
-import { ApiProperty } from "@nestjs/swagger";
-import { EDUCATION_INFO_EXAMPLES, EDUCATION_OK } from "../../constants/education.constants";
+import { ApiProperty } from '@nestjs/swagger';
+import {
+  EDUCATION_INFO_EXAMPLES,
+  EDUCATION_OK,
+} from '../../constants/education.constants';
 
 export class InfoCreatedOkResponse {
-    @ApiProperty({
-        type: EDUCATION_OK.INFO_CREATED,
-        default: EDUCATION_OK.INFO_CREATED,
-        enum: EDUCATION_OK
-    })
+  @ApiProperty({
+    type: EDUCATION_OK.INFO_CREATED,
+    default: EDUCATION_OK.INFO_CREATED,
+    enum: EDUCATION_OK,
+  })
+  message: EDUCATION_OK.INFO_CREATED;
 
-    message: EDUCATION_OK.INFO_CREATED;
-
-    @ApiProperty({
-        example: EDUCATION_INFO_EXAMPLES
-    })
-    data: any
-
+  @ApiProperty({
+    example: EDUCATION_INFO_EXAMPLES,
+  })
+  data: any;
 }

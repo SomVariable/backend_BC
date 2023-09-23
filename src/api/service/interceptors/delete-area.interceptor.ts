@@ -1,4 +1,9 @@
-import { Injectable, NestInterceptor, ExecutionContext, CallHandler } from '@nestjs/common';
+import {
+  Injectable,
+  NestInterceptor,
+  ExecutionContext,
+  CallHandler,
+} from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Offer_OK } from '../constants/offer.constants';
@@ -9,8 +14,8 @@ export class DeleteOfferInterceptor implements NestInterceptor {
     return next.handle().pipe(
       map((data: any) => {
         return {
-            message: Offer_OK.DELETED,
-            data
+          message: Offer_OK.DELETED,
+          data,
         };
       }),
     );

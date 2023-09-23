@@ -1,4 +1,16 @@
-import { Query, Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, ParseIntPipe, UseInterceptors } from '@nestjs/common';
+import {
+  Query,
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+  ParseIntPipe,
+  UseInterceptors,
+} from '@nestjs/common';
 import { ContentItemService } from './content-item.service';
 import { CreateContentItemDto } from './dto/create-content-item.dto';
 import { CreateContentItemInfoDto } from './dto/create-content-item-info.dto';
@@ -7,7 +19,10 @@ import { UpdateContentItemInfoDto } from './dto/update-content-item-info.dto';
 import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { AccessJwtAuthGuard } from '../jwt-helper/guards/access-jwt.guard';
 import { TranslationParamDto } from 'src/common/dto/translation-param.dto';
-import { ID_PARAM, TRANSLATION_ROUTE_WITH_ID } from 'src/common/constants/app.constants';
+import {
+  ID_PARAM,
+  TRANSLATION_ROUTE_WITH_ID,
+} from 'src/common/constants/app.constants';
 import { ContentItemAccessToDataGuard } from './guards/access-to-data.guard';
 import { BaseInterceptor } from 'src/common/interceptors/data-to-json';
 import { CreatedOkResponse } from './dto/ok-response/created.dto';
@@ -23,41 +38,37 @@ import { GetContentItemOkResponse } from './dto/ok-response/get-content-item.dto
 import { GetContentItemsOkResponse } from './dto/ok-response/get-content-items.dto';
 import { QueryPaginationParam } from 'src/common/dto/query-pagination.dto';
 
-@ApiTags("content-item")
+@ApiTags('content-item')
 @ApiBearerAuth()
 @UseInterceptors(BaseInterceptor)
 @UseGuards(AccessJwtAuthGuard)
 @Controller('content-item')
 export class ContentItemController {
-  constructor(private readonly publicationService: ContentItemService) { }
+  constructor(private readonly publicationService: ContentItemService) {}
 
   @Post()
   @ApiOkResponse({ type: CreatedOkResponse })
   @UseInterceptors(CreateContentItemInfoInterceptor)
-  async create(
-    @Body() data: CreateContentItemDto
-  ) {
-    return await this.publicationService.create(data)
+  async create(@Body() data: CreateContentItemDto) {
+    return await this.publicationService.create(data);
   }
 
   @Get(ID_PARAM)
   @ApiOkResponse({ type: CreatedOkResponse })
-  @ApiOkResponse( {type: GetContentItemOkResponse} )
+  @ApiOkResponse({ type: GetContentItemOkResponse })
   @UseInterceptors(GetContentItemInterceptor)
-  async getContentItem(
-    @Param('id', ParseIntPipe) id: number
-  ) {
-    return await this.publicationService.getContentItem(id)
+  async getContentItem(@Param('id', ParseIntPipe) id: number) {
+    return await this.publicationService.getContentItem(id);
   }
 
   @Get(ID_PARAM)
-  @ApiOkResponse( {type: GetContentItemsOkResponse} )
+  @ApiOkResponse({ type: GetContentItemsOkResponse })
   @UseInterceptors(GetContentItemInterceptor)
   async getContentItems(
-    @Query() {limit, offset}: QueryPaginationParam, 
-    @Param('id', ParseIntPipe) id: number
+    @Query() { limit, offset }: QueryPaginationParam,
+    @Param('id', ParseIntPipe) id: number,
   ) {
-    return await this.publicationService.getContentItems(id, offset, limit)
+    return await this.publicationService.getContentItems(id, offset, limit);
   }
 
   @Patch(ID_PARAM)
@@ -66,17 +77,16 @@ export class ContentItemController {
   @UseGuards(ContentItemAccessToDataGuard)
   async update(
     @Param('id', ParseIntPipe) id: number,
-    @Body() body: UpdateContentItemDto) {
-    return await this.publicationService.update(id, body)
+    @Body() body: UpdateContentItemDto,
+  ) {
+    return await this.publicationService.update(id, body);
   }
 
   @Delete(ID_PARAM)
   @ApiOkResponse({ type: DeletedOkResponse })
   @UseInterceptors(DeleteContentItemInterceptor)
-  async delete(
-    @Param('id', ParseIntPipe) id: number
-  ) {
-    return await this.publicationService.deleteContentItem(id)
+  async delete(@Param('id', ParseIntPipe) id: number) {
+    return await this.publicationService.deleteContentItem(id);
   }
 
   @Post(TRANSLATION_ROUTE_WITH_ID)
@@ -84,9 +94,9 @@ export class ContentItemController {
   @UseInterceptors(CreateContentItemInfoInterceptor)
   async createInfo(
     @Param() { id, langCode }: TranslationParamDto,
-    @Body() data: CreateContentItemInfoDto
+    @Body() data: CreateContentItemInfoDto,
   ) {
-    return await this.publicationService.createInfo(id, langCode, data)
+    return await this.publicationService.createInfo(id, langCode, data);
   }
 
   @Patch(TRANSLATION_ROUTE_WITH_ID)
@@ -94,7 +104,8 @@ export class ContentItemController {
   @UseInterceptors(UpdateContentItemInfoInterceptor)
   async updateInfo(
     @Param() { id, langCode }: TranslationParamDto,
-    @Body() body: UpdateContentItemInfoDto) {
-    return await this.publicationService.updateInfo(id, langCode, body)
+    @Body() body: UpdateContentItemInfoDto,
+  ) {
+    return await this.publicationService.updateInfo(id, langCode, body);
   }
 }

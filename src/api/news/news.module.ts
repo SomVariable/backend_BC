@@ -7,6 +7,6 @@ import { PhotoModule } from '../photo/photo.module';
 @Module({
   imports: [DatabaseModule, PhotoModule],
   controllers: [NewsController],
-  providers: [NewsService]
+  providers: [NewsService],
 })
 export class NewsModule {}

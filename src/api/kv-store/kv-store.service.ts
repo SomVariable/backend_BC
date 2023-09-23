@@ -1,4 +1,10 @@
-import { Inject, Injectable, InternalServerErrorException, BadRequestException, NotFoundException } from '@nestjs/common';
+import {
+  Inject,
+  Injectable,
+  InternalServerErrorException,
+  BadRequestException,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateSession, Session } from './kv-types/kv-store.type';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
@@ -8,142 +14,138 @@ import { UpdateSessionDto } from './dto/update-session.dto';
 
 @Injectable()
 export class KvStoreService {
-    constructor(@Inject(CACHE_MANAGER) private cacheManager: Cache) { }
+  constructor(@Inject(CACHE_MANAGER) private cacheManager: Cache) {}
 
-    async createSession({ id }: CreateSession): Promise<Session> {
-        try {
+  async createSession({ id }: CreateSession): Promise<Session> {
+    try {
+      const session: Session = {
+        id,
+        verificationKey: null,
+        verificationTimestamp: null,
+        status: 'ACTIVE',
+      };
 
-            const session: Session = {
-                id,
-                verificationKey: null,
-                verificationTimestamp: null,
-                status: 'ACTIVE'
-            }
+      await this.cacheManager.set(id, JSON.stringify(session));
+      const sessionJSON: string = await this.cacheManager.get(id);
+      const newSession: Session = await JSON.parse(sessionJSON);
+      return newSession;
+    } catch (error) {
+      throw new InternalServerErrorException();
+    }
+  }
 
-            await this.cacheManager.set(id, JSON.stringify(session));
-            const sessionJSON: string = await this.cacheManager.get(id)
-            const newSession: Session = await JSON.parse(sessionJSON)
-            return newSession
-        } catch (error) {
+  async setVerificationProps(
+    id: string,
+    data: UpdateVerifyDto,
+  ): Promise<Session> {
+    try {
+      const session: Session = await this.updateSession(id, data);
 
-            throw new InternalServerErrorException()
-        }
+      return session;
+    } catch (error) {
+      throw new InternalServerErrorException();
+    }
+  }
 
+  async updateSession(
+    id: string,
+    data: UpdateSessionDto,
+  ): Promise<Session | null> {
+    const session: Session = await JSON.parse(await this.cacheManager.get(id));
+
+    if (!session) {
+      throw new NotFoundException();
     }
 
-    async setVerificationProps(id: string, data: UpdateVerifyDto): Promise<Session> {
-        try {
-            const session: Session = await this.updateSession(id, data)
+    const updateObject = JSON.stringify({ ...session, ...data });
 
-            return session
+    await this.cacheManager.set(id, updateObject);
 
-        } catch (error) {
-            throw new InternalServerErrorException()
-        }
+    const isUpdated = await this.cacheManager.get(id);
+
+    if (isUpdated) {
+      const updatedSession: Session = await JSON.parse(
+        await this.cacheManager.get(id),
+      );
+
+      return updatedSession;
     }
 
-    async updateSession(id: string, data: UpdateSessionDto): Promise<Session | null> {
-        const session: Session = await JSON.parse(await this.cacheManager.get(id));
+    return null;
+  }
 
-        if (!session) {
-            throw new NotFoundException()
-        }
+  async getSession(id: string) {
+    const dataFromStore: Session | string = await this.cacheManager.get(id);
 
-        const updateObject = JSON.stringify({ ...session, ...data })
+    if (typeof dataFromStore === 'string') {
+      const session: Session = JSON.parse(dataFromStore);
 
-        await this.cacheManager.set(id, updateObject)
-
-        const isUpdated = await this.cacheManager.get(id)
-
-        if (isUpdated) {
-            const updatedSession: Session = await JSON.parse(await this.cacheManager.get(id))
-
-            return updatedSession
-        }
-
-        return null
+      return session;
     }
 
-    async getSession(id: string) {
-        let dataFromStore: Session | string = await this.cacheManager.get(id)
+    return dataFromStore;
+  }
 
-        if(!dataFromStore) {
-            throw new BadRequestException('there is no such session')
-        }
+  async blockSession(id: string) {
+    const session: Session = await JSON.parse(await this.cacheManager.get(id));
 
-        if (typeof dataFromStore === 'string') {
-            const session: Session = JSON.parse(dataFromStore)
-
-            return session
-        }
-
-        return dataFromStore
+    if (!session || session.status === 'BLOCKED') {
+      return null;
     }
 
+    const updateObject = JSON.stringify({ ...session, status: 'BLOCKED' });
+    await this.cacheManager.set(id, updateObject);
 
-    async blockSession( id: string) {
-        const session: Session = await JSON.parse(await this.cacheManager.get(id));
+    const updatedSession = await JSON.parse(await this.cacheManager.get(id));
 
-        if (!session || session.status === "BLOCKED") {
-            return null
-        }
+    if (updatedSession.status === 'BLOCKED') {
+      const updatedSession: Session = await JSON.parse(
+        await this.cacheManager.get(id),
+      );
 
-        const updateObject = JSON.stringify({ ...session, status: "BLOCKED" })
-        await this.cacheManager.set(id, updateObject)
-
-        const updatedSession = await JSON.parse(await this.cacheManager.get(id))
-
-        if (updatedSession.status === "BLOCKED") {
-            const updatedSession: Session = await JSON.parse(await this.cacheManager.get(id))
-
-            return updatedSession
-        }
-
-        return updatedSession
+      return updatedSession;
     }
 
-    async activeSession( id: string): Promise<Session> {
-        const session: Session = await JSON.parse(await this.cacheManager.get(id));
+    return updatedSession;
+  }
 
-        if (!session || session.status === "ACTIVE") {
-            return null
-        }
+  async activeSession(id: string): Promise<Session> {
+    const session: Session = await JSON.parse(await this.cacheManager.get(id));
 
-        const updateObject = JSON.stringify({ ...session, status: "ACTIVE" })
-        await this.cacheManager.set(id, updateObject)
-        const updatedSession: Session = await JSON.parse(await this.cacheManager.get(id))
-
-        if (updatedSession.status !== 'ACTIVE') {
-            return null
-        }
-
-        return updatedSession
+    if (!session || session.status === 'ACTIVE') {
+      return null;
     }
 
-    async deleteSession( id: string) {
-        try {
-            const session = await JSON.parse(await this.cacheManager.get(id))
+    const updateObject = JSON.stringify({ ...session, status: 'ACTIVE' });
+    await this.cacheManager.set(id, updateObject);
+    const updatedSession: Session = await JSON.parse(
+      await this.cacheManager.get(id),
+    );
 
-            if (!session) {
-                throw new BadRequestException(MISSING_SESSION_MESSAGE(id))
-            }
-
-            await this.cacheManager.del(id);
-
-
-            return session
-
-        } catch (error) {
-
-            throw new InternalServerErrorException()
-        }
+    if (updatedSession.status !== 'ACTIVE') {
+      return null;
     }
 
-    generateSessionKey(id : number, deviceType: string): string {
-        return `${id}:${deviceType}`
+    return updatedSession;
+  }
+
+  async deleteSession(id: string) {
+    try {
+      const session = await JSON.parse(await this.cacheManager.get(id));
+
+      if (!session) {
+        throw new BadRequestException(MISSING_SESSION_MESSAGE(id));
+      }
+
+      await this.cacheManager.del(id);
+
+      return session;
+    } catch (error) {
+      throw new InternalServerErrorException();
     }
+  }
+
+  generateSessionKey(id: number, deviceType: string): string {
+    return `${id}:${deviceType}`;
+  }
 }
-
-
-
-

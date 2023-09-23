@@ -1,7 +1,7 @@
-import { ConfigService } from "@nestjs/config";
-import * as AWS  from '@aws-sdk/client-s3'
+import { ConfigService } from '@nestjs/config';
+import * as AWS from '@aws-sdk/client-s3';
 
-const configService = new ConfigService()
+const configService = new ConfigService();
 
 export const s3Config = (): AWS.S3ClientConfig => {
   return {
@@ -20,6 +20,5 @@ export const s3Config = (): AWS.S3ClientConfig => {
           region: configService.get('S3_REGION'),
         }
       : {}),
-  }; 
-} 
-
+  };
+};

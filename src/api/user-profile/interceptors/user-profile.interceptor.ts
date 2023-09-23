@@ -1,5 +1,9 @@
-import { Injectable, NestInterceptor, ExecutionContext, CallHandler } from '@nestjs/common';
-import { User } from '@prisma/client';
+import {
+  Injectable,
+  NestInterceptor,
+  ExecutionContext,
+  CallHandler,
+} from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { USER_PROFILE_OK } from '../constants/user-profile.constants';
@@ -11,9 +15,9 @@ export class UserProfileInterceptor implements NestInterceptor {
       map((data: any) => {
         return {
           message: USER_PROFILE_OK.OK,
-          data: data
-        }
-      })
+          data: data,
+        };
+      }),
     );
   }
 }

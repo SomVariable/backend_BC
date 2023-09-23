@@ -1,4 +1,9 @@
-import { Injectable, NestInterceptor, ExecutionContext, CallHandler } from '@nestjs/common';
+import {
+  Injectable,
+  NestInterceptor,
+  ExecutionContext,
+  CallHandler,
+} from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { AUTH_OK } from '../constants/auth.constants';
@@ -10,9 +15,9 @@ export class AuthSignUpInterceptor implements NestInterceptor {
       map((data: any) => {
         return {
           person: data,
-          message: AUTH_OK.SIGN_UP
-        }
+          message: AUTH_OK.SIGN_UP,
+        };
       }),
     );
   }
-} 
+}

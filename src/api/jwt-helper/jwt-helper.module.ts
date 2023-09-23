@@ -10,6 +10,6 @@ import { RefreshJwtStrategy } from './strategies/refresh-jwt.strategy';
   imports: [JwtModule.register({ global: true }), KvStoreModule],
   controllers: [],
   providers: [JwtHelperService, AccessJwtStrategy, RefreshJwtStrategy],
-  exports: [JwtHelperService]
+  exports: [JwtHelperService],
 })
 export class JwtHelperModule {}

@@ -6,6 +6,6 @@ import { DatabaseModule } from 'src/api/database/database.module';
 @Module({
   imports: [DatabaseModule],
   controllers: [EducationController],
-  providers: [EducationService]
+  providers: [EducationService],
 })
 export class EducationModule {}

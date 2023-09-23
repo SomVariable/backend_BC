@@ -1,3 +1,3 @@
 export class CreateOfferDto {
-    practicesIds: number[]
+  practicesIds: number[];
 }

@@ -1,13 +1,13 @@
-import { ApiProperty } from "@nestjs/swagger";
-import { Role } from "@prisma/client";
+import { ApiProperty } from '@nestjs/swagger';
+import { Role } from '@prisma/client';
 
 export class UserResponse {
-    @ApiProperty()
-    id: number;
+  @ApiProperty()
+  id: number;
 
-    @ApiProperty()
-    email: string;
+  @ApiProperty()
+  email: string;
 
-    @ApiProperty()
-    role: Role;
+  @ApiProperty()
+  role: Role;
 }

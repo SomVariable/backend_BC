@@ -1,13 +1,12 @@
-import { User } from "@prisma/client";
+import { User } from '@prisma/client';
 
 export type authUserReturnType = {
-    data: User
-    message?: string
-}
-
+  data: User;
+  message?: string;
+};
 
 export type authVerifyReturnType = {
-    jwtToken: string,
-    refreshToken: string,
-    message?: string
-}
+  jwtToken: string;
+  refreshToken: string;
+  message?: string;
+};

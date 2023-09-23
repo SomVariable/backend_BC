@@ -4,99 +4,106 @@ import { CreateContentItemDto } from './dto/create-content-item.dto';
 import { UpdateContentItemDto } from './dto/update-content-item.dto';
 import { CreateContentItemInfoDto } from './dto/create-content-item-info.dto';
 import { UpdateContentItemInfoDto } from './dto/update-content-item-info.dto';
-import { CONTENT_ITEM_NOT_FOUND, ContentItemIncludeTranslation,  } from './constants/content-item.constants';
+import {
+  CONTENT_ITEM_NOT_FOUND,
+  ContentItemIncludeTranslation,
+} from './constants/content-item.constants';
 
 @Injectable()
 export class ContentItemService {
-  constructor(
-    private readonly prismaService: PrismaService
-  ){}
-  
+  constructor(private readonly prismaService: PrismaService) {}
+
   async create(data: CreateContentItemDto) {
     return await this.prismaService.contentItem.create({
       data: {
-        ...data
-      }
+        ...data,
+      },
     });
   }
 
-  async createInfo(contentItemId: number, langCode: string, data: CreateContentItemInfoDto) {
+  async createInfo(
+    contentItemId: number,
+    langCode: string,
+    data: CreateContentItemInfoDto,
+  ) {
+    const contentItem = await this.getContentItem(contentItemId);
 
-    const contentItem = await this.getContentItem(contentItemId)
-
-    if(!contentItem) {
-      throw new NotFoundException(CONTENT_ITEM_NOT_FOUND.MISSING_CONTENT_ITEM)
+    if (!contentItem) {
+      throw new NotFoundException(CONTENT_ITEM_NOT_FOUND.MISSING_CONTENT_ITEM);
     }
 
     return await this.prismaService.contentItemTranslation.create({
       data: {
         contentItemId,
         langCode,
-       ...data
-      }
+        ...data,
+      },
     });
   }
 
   async update(id: number, data: UpdateContentItemDto) {
+    const contentItem = await this.getContentItem(id);
 
-    const contentItem = await this.getContentItem(id)
-
-    if(!contentItem) {
-      throw new NotFoundException(CONTENT_ITEM_NOT_FOUND.MISSING_CONTENT_ITEM)
+    if (!contentItem) {
+      throw new NotFoundException(CONTENT_ITEM_NOT_FOUND.MISSING_CONTENT_ITEM);
     }
 
     return await this.prismaService.contentItem.update({
-      where: {id},
-      data
+      where: { id },
+      data,
     });
   }
 
-  async updateInfo(contentItemId: number, langCode: string, data: UpdateContentItemInfoDto) {
+  async updateInfo(
+    contentItemId: number,
+    langCode: string,
+    data: UpdateContentItemInfoDto,
+  ) {
+    const contentItem =
+      await this.prismaService.contentItemTranslation.findUnique({
+        where: {
+          langCode_contentItemId: { contentItemId, langCode },
+        },
+      });
 
-    const contentItem = await this.prismaService.contentItemTranslation.findUnique({
-      where: {
-        langCode_contentItemId: {contentItemId, langCode}
-      }
-    })
-    
-    if(!contentItem) {
-      throw new NotFoundException(CONTENT_ITEM_NOT_FOUND.MISSING_CONTENT_ITEM)
+    if (!contentItem) {
+      throw new NotFoundException(CONTENT_ITEM_NOT_FOUND.MISSING_CONTENT_ITEM);
     }
 
     return await this.prismaService.contentItemTranslation.update({
       where: {
-        langCode_contentItemId: {contentItemId, langCode}
+        langCode_contentItemId: { contentItemId, langCode },
       },
-      data
+      data,
     });
   }
 
-  async getContentItem(id: number){
+  async getContentItem(id: number) {
     return await this.prismaService.contentItem.findFirst({
-      include: {...ContentItemIncludeTranslation},
+      include: { ...ContentItemIncludeTranslation },
       where: {
-        id
-      }
-    })
+        id,
+      },
+    });
   }
 
-  async getContentItems(userId: number, skip: number, take: number){
+  async getContentItems(userId: number, skip: number, take: number) {
     return await this.prismaService.contentItem.findMany({
       where: {
         User: {
-          some: {id: userId}
-        }
+          some: { id: userId },
+        },
       },
       skip,
-      take
-    })
+      take,
+    });
   }
 
-  async deleteContentItem(id: number){
+  async deleteContentItem(id: number) {
     return await this.prismaService.contentItem.delete({
       where: {
-        id
-      }
-    })
+        id,
+      },
+    });
   }
 }

@@ -1,4 +1,9 @@
-import { Injectable, NestInterceptor, ExecutionContext, CallHandler } from '@nestjs/common';
+import {
+  Injectable,
+  NestInterceptor,
+  ExecutionContext,
+  CallHandler,
+} from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { P_INTEREST_OK } from '../constants/professional-interest.constants';
@@ -9,8 +14,8 @@ export class ProfessionalInterestInterceptor implements NestInterceptor {
     return next.handle().pipe(
       map((data: any) => {
         return {
-            message: P_INTEREST_OK.OK,
-            data
+          message: P_INTEREST_OK.OK,
+          data,
         };
       }),
     );

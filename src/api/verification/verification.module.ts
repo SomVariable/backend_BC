@@ -4,11 +4,10 @@ import { VerificationController } from './verification.controller';
 import { UserModule } from '../user/user.module';
 import { KvStoreModule } from '../kv-store/kv-store.module';
 
-
 @Module({
   imports: [UserModule, KvStoreModule],
   controllers: [VerificationController],
   providers: [VerificationService],
-  exports: [VerificationService]
+  exports: [VerificationService],
 })
 export class VerificationModule {}

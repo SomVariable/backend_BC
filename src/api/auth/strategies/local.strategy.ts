@@ -7,7 +7,7 @@ import { AUTH_BAD_REQUEST } from '../constants/auth.constants';
 @Injectable()
 export class LocalStrategy extends PassportStrategy(Strategy) {
   constructor(private authService: AuthService) {
-    super({usernameField: 'email'});
+    super({ usernameField: 'email' });
   }
 
   async validate(email: string, password: string): Promise<any> {

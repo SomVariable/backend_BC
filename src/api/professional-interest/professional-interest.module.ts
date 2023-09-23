@@ -6,6 +6,6 @@ import { DatabaseModule } from 'src/api/database/database.module';
 @Module({
   imports: [DatabaseModule],
   controllers: [ProfessionalInterestController],
-  providers: [ProfessionalInterestService]
+  providers: [ProfessionalInterestService],
 })
 export class ProfessionalInterestModule {}

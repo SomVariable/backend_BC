@@ -8,85 +8,81 @@ import { EDUCATION_NOT_FOUND } from './constants/education.constants';
 
 @Injectable()
 export class EducationService {
-
-  constructor(
-    private prismaService: PrismaService
-  ) {}
+  constructor(private prismaService: PrismaService) {}
 
   async create(userId, data: CreateEducationDto) {
-    return await this.prismaService.education.create({ 
-      data: {...data, userId}
+    return await this.prismaService.education.create({
+      data: { ...data, userId },
     });
   }
 
   async createInfo(educationId, langCode, data: CreateEducationInfoDto) {
-    const education = await this.findOne(educationId)
+    const education = await this.findOne(educationId);
 
-    if(!education) {
-      throw new NotFoundException(EDUCATION_NOT_FOUND.MISSING_EDUCATION)
+    if (!education) {
+      throw new NotFoundException(EDUCATION_NOT_FOUND.MISSING_EDUCATION);
     }
 
     return await this.prismaService.educationTranslation.create({
-      data: {educationId, langCode, ...data}
-    })
+      data: { educationId, langCode, ...data },
+    });
   }
 
   async update(id: number, data: UpdateEducationDto) {
-    const education = await this.findOne(id)
+    const education = await this.findOne(id);
 
-    if(!education) {
-      throw new NotFoundException(EDUCATION_NOT_FOUND.MISSING_EDUCATION)
+    if (!education) {
+      throw new NotFoundException(EDUCATION_NOT_FOUND.MISSING_EDUCATION);
     }
 
     return await this.prismaService.education.update({
       where: {
-        id
+        id,
       },
-      data
+      data,
     });
   }
 
   async updateInfo(educationId, langCode, data: UpdateEducationInfoDto) {
-    const educationInfo = await this.prismaService.educationTranslation.findUnique({
-      where: {
-        langCode_educationId: {educationId, langCode}
-      }
-    })
+    const educationInfo =
+      await this.prismaService.educationTranslation.findUnique({
+        where: {
+          langCode_educationId: { educationId, langCode },
+        },
+      });
 
-    if(!educationInfo) {
-      throw new NotFoundException(EDUCATION_NOT_FOUND.MISSING_EDUCATION)
+    if (!educationInfo) {
+      throw new NotFoundException(EDUCATION_NOT_FOUND.MISSING_EDUCATION);
     }
 
     return await this.prismaService.educationTranslation.update({
       where: {
-        langCode_educationId: {educationId, langCode}
+        langCode_educationId: { educationId, langCode },
       },
-      data
-    })
+      data,
+    });
   }
 
   async findAll(userId: number) {
     return await this.prismaService.education.findMany({
-      include: {educationInfo: true},
-      where: {userId}
+      include: { educationInfo: true },
+      where: { userId },
     });
   }
 
   async findOne(id: number) {
     return await this.prismaService.education.findFirst({
       where: {
-        id
-      }
+        id,
+      },
     });
   }
 
-  async remove( id: number) {
+  async remove(id: number) {
     return await this.prismaService.education.delete({
       where: {
-        id
-      }
+        id,
+      },
     });
   }
 }
-
-

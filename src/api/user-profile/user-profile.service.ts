@@ -5,44 +5,43 @@ import { UpdateUserProfileDto } from './dto/update-user-profile.dto';
 
 @Injectable()
 export class UserProfileService {
-
-  constructor(
-    private readonly prismaService: PrismaService
-  ) {}
+  constructor(private readonly prismaService: PrismaService) {}
 
   async create(userId: number, createUserProfileDto: CreateUserProfileDto) {
-    console.log(createUserProfileDto)
     return await this.prismaService.userTranslation.create({
       data: {
         ...createUserProfileDto,
-        userId
-      }
-    }) 
+        userId,
+      },
+    });
   }
 
-  async findAll(userId: number) { 
+  async findAll(userId: number) {
     return await this.prismaService.userTranslation.findMany({
-      where: {userId}
+      where: { userId },
     });
   }
 
   async findOne(userId: number, langCode: string) {
     return await this.prismaService.userTranslation.findUnique({
-      where: { 
-        langCode_userId: {langCode, userId}
-      }
+      where: {
+        langCode_userId: { langCode, userId },
+      },
     });
   }
 
-  async update(userId: number, updateUserProfileDto: UpdateUserProfileDto, langCode: string) {
+  async update(
+    userId: number,
+    updateUserProfileDto: UpdateUserProfileDto,
+    langCode: string,
+  ) {
     return await this.prismaService.userTranslation.update({
-      where: { 
-        langCode_userId: {langCode, userId}
+      where: {
+        langCode_userId: { langCode, userId },
       },
       data: {
-        ...updateUserProfileDto
-      }
+        ...updateUserProfileDto,
+      },
     });
   }
-
 }

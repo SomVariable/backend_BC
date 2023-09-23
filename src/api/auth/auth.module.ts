@@ -4,7 +4,6 @@ import { AuthController } from './auth.controller';
 import { PassportModule } from '@nestjs/passport';
 import { LocalStrategy } from './strategies/local.strategy';
 
-import { AccessJwtStrategy } from '../jwt-helper/strategies/access-jwt.strategy';
 import { UserModule } from '../user/user.module';
 import { VerificationModule } from '../verification/verification.module';
 import { KvStoreModule } from '../kv-store/kv-store.module';
@@ -18,10 +17,10 @@ import { JwtHelperModule } from '../jwt-helper/jwt-helper.module';
     JwtHelperModule,
     VerificationModule,
     KvStoreModule,
-    UserProfileModule 
+    UserProfileModule,
   ],
   controllers: [AuthController],
   providers: [AuthService, LocalStrategy],
-  exports: [AuthService]
+  exports: [AuthService],
 })
-export class AuthModule { }
+export class AuthModule {}

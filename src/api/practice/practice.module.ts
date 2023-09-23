@@ -6,6 +6,6 @@ import { DatabaseModule } from '../database/database.module';
 @Module({
   imports: [DatabaseModule],
   controllers: [PracticeController],
-  providers: [PracticeService]
+  providers: [PracticeService],
 })
 export class PracticeModule {}

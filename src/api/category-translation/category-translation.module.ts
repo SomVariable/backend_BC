@@ -7,6 +7,6 @@ import { CategoryTranslationController } from './category-translation.controller
   imports: [DatabaseModule],
   controllers: [CategoryTranslationController],
   providers: [CategoryTranslationService],
-  exports: [CategoryTranslationService]
+  exports: [CategoryTranslationService],
 })
 export class CategoryTranslationModule {}

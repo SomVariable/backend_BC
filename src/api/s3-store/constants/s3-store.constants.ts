@@ -1,1 +1,1 @@
-export const ERROR_MESSAGE = 'Failed to retrieve files'
+export const ERROR_MESSAGE = 'Failed to retrieve files';

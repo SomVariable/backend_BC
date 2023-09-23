@@ -6,6 +6,6 @@ import { DatabaseModule } from 'src/api/database/database.module';
 @Module({
   imports: [DatabaseModule],
   controllers: [AwardController],
-  providers: [AwardService]
+  providers: [AwardService],
 })
 export class AwardModule {}

@@ -1,20 +1,19 @@
 export type Session = {
-    id: string,
-    verificationKey: string,
-    verificationTimestamp: string,
-    status: 'ACTIVE' | 'BLOCKED'
-}
-
+  id: string;
+  verificationKey: string;
+  verificationTimestamp: string;
+  status: 'ACTIVE' | 'BLOCKED';
+};
 
 export type CreateSession = {
-    id: string
-}
+  id: string;
+};
 
 export type SetVerificationProps = {
-    verificationTimestamp: string,
-    verificationKey: string,
-}
+  verificationTimestamp: string;
+  verificationKey: string;
+};
 
 export type CloseSession = {
-    id: string
-}
+  id: string;
+};

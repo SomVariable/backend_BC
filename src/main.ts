@@ -7,20 +7,18 @@ import { ConfigService } from '@nestjs/config/dist';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  const config = new ConfigService()
+  const config = new ConfigService();
   const { httpAdapter } = app.get(HttpAdapterHost);
 
   app.enableCors({ credentials: true, origin: true });
 
-  
-  
-  app.useGlobalPipes(new ValidationPipe({transform: true, whitelist: true}));
-  app.useGlobalFilters(new PrismaClientExceptionFilter(httpAdapter))
+  app.useGlobalPipes(new ValidationPipe({ transform: true, whitelist: true }));
+  app.useGlobalFilters(new PrismaClientExceptionFilter(httpAdapter));
   const swaggerConfig = new DocumentBuilder()
     .setTitle('im-legal')
     .addBearerAuth()
     .build();
-  
+
   const document = SwaggerModule.createDocument(app, swaggerConfig);
   SwaggerModule.setup('api', app, document);
 

@@ -1,12 +1,9 @@
-import { ApiProperty } from "@nestjs/swagger";
-import { Area, User } from "@prisma/client";
-import { COUNT_EXAMPLE, USER_EXAMPLES } from "../../constants/user.constants";
+import { ApiProperty } from '@nestjs/swagger';
+import { COUNT_EXAMPLE } from '../../constants/user.constants';
 
 export class GetUsersCountOkResponse {
-
-    @ApiProperty({
-        example: COUNT_EXAMPLE
-    })
-    count: number
-
+  @ApiProperty({
+    example: COUNT_EXAMPLE,
+  })
+  count: number;
 }

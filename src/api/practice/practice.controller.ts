@@ -1,8 +1,26 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, UseInterceptors, ParseIntPipe, Query } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+  UseInterceptors,
+  ParseIntPipe,
+  Query,
+} from '@nestjs/common';
 import { PracticeService } from './practice.service';
 import { CreatePracticeDto } from './dto/create-practice.dto';
 import { UpdatePracticeDto } from './dto/update-practice.dto';
-import { ApiBadRequestResponse, ApiBearerAuth, ApiNotFoundResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBadRequestResponse,
+  ApiBearerAuth,
+  ApiNotFoundResponse,
+  ApiOkResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { AccessJwtAuthGuard } from '../jwt-helper/guards/access-jwt.guard';
 import { BaseInterceptor } from 'src/common/interceptors/data-to-json';
 import { ID_PARAM } from 'src/common/constants/app.constants';
@@ -14,40 +32,33 @@ import { UpdatePracticeInterceptor } from './interceptors/update-practice.interc
 import { PracticeInterceptor } from './interceptors/practice.interceptor';
 import { QueryPaginationParam } from 'src/common/dto/query-pagination.dto';
 
-
 @Controller('practice')
-@ApiTags("practice")
+@ApiTags('practice')
 @ApiBearerAuth()
 @ApiBadRequestResponse({ type: PracticeBadRequestErrorResponse })
 @ApiNotFoundResponse({ type: PracticeNotFoundErrorResponse })
 @UseGuards(AccessJwtAuthGuard)
 @UseInterceptors(BaseInterceptor)
 export class PracticeController {
-  constructor(private readonly practiceService: PracticeService) { }
+  constructor(private readonly practiceService: PracticeService) {}
 
   @Post()
   @ApiOkResponse({ type: CreatePracticeInterceptor })
   @UseInterceptors(CreatePracticeInterceptor)
-  async create(
-    @Body() data: CreatePracticeDto
-  ) {
-    return await this.practiceService.create(data)
+  async create(@Body() data: CreatePracticeDto) {
+    return await this.practiceService.create(data);
   }
 
   @Get()
   @UseInterceptors(PracticeInterceptor)
-  async getPractices(
-    @Query() {offset, limit}: QueryPaginationParam
-  ) {
-    return await this.practiceService.getPractices(offset, limit)
+  async getPractices(@Query() { offset, limit }: QueryPaginationParam) {
+    return await this.practiceService.getPractices(offset, limit);
   }
 
   @Get(ID_PARAM)
   @UseInterceptors(PracticeInterceptor)
-  async getPractice(
-    @Param('id', ParseIntPipe) id: number
-  ) {
-    return await this.practiceService.getPractice(id)
+  async getPractice(@Param('id', ParseIntPipe) id: number) {
+    return await this.practiceService.getPractice(id);
   }
 
   @Patch(ID_PARAM)
@@ -55,17 +66,15 @@ export class PracticeController {
   @UseInterceptors(UpdatePracticeInterceptor)
   async update(
     @Param('id', ParseIntPipe) id: number,
-    @Body() data: UpdatePracticeDto
+    @Body() data: UpdatePracticeDto,
   ) {
-    return await this.practiceService.update(id, data)
+    return await this.practiceService.update(id, data);
   }
 
   @Delete(ID_PARAM)
   @ApiOkResponse({ type: DeletePracticeInterceptor })
   @UseInterceptors(DeletePracticeInterceptor)
-  async delete(
-    @Param('id', ParseIntPipe) id: number,
-  ) {
-    return await this.practiceService.delete(id)
+  async delete(@Param('id', ParseIntPipe) id: number) {
+    return await this.practiceService.delete(id);
   }
 }

@@ -1,9 +1,13 @@
-import { Injectable, NestInterceptor, ExecutionContext, CallHandler } from '@nestjs/common';
+import {
+  Injectable,
+  NestInterceptor,
+  ExecutionContext,
+  CallHandler,
+} from '@nestjs/common';
 
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { KV_STORE_OK } from '../constants/kv-store.constants';
-
 
 @Injectable()
 export class KVStoreInterceptor implements NestInterceptor {
@@ -12,7 +16,7 @@ export class KVStoreInterceptor implements NestInterceptor {
       map((data: any) => {
         return {
           data: data,
-          message: KV_STORE_OK.OK
+          message: KV_STORE_OK.OK,
         };
       }),
     );

@@ -1,4 +1,9 @@
-import { Injectable, NestInterceptor, ExecutionContext, CallHandler } from '@nestjs/common';
+import {
+  Injectable,
+  NestInterceptor,
+  ExecutionContext,
+  CallHandler,
+} from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
@@ -8,7 +13,7 @@ export class GetContentItemInterceptor implements NestInterceptor {
     return next.handle().pipe(
       map((data: any) => {
         return {
-            data
+          data,
         };
       }),
     );

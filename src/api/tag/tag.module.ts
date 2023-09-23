@@ -6,6 +6,6 @@ import { DatabaseModule } from '../database/database.module';
 @Module({
   imports: [DatabaseModule],
   controllers: [TagController],
-  providers: [TagService]
+  providers: [TagService],
 })
 export class TagModule {}
