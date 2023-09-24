@@ -12,7 +12,7 @@ import { JwtHelperService } from '../jwt-helper/jwt-helper.service';
 import {
   AccessJwtConfig,
   RefreshJwtConfig,
-} from 'src/configuration/jwt.config';
+} from '../../configuration/jwt.config';
 import { AUTH_BAD_REQUEST, AUTH_NOT_FOUND } from './constants/auth.constants';
 
 @Injectable()

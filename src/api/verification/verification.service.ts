@@ -12,7 +12,7 @@ import {
   VERIFY_KEY_TIMESTAMP,
 } from './constants/constants';
 import { SetVerificationProps } from '../kv-store/kv-types/kv-store.type';
-import { generateSendObject } from 'src/configuration/mailer.config';
+import { generateSendObject } from '../../configuration/mailer.config';
 
 @Injectable()
 export class VerificationService {

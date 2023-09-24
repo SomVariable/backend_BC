@@ -6,7 +6,7 @@ import {
   CreateBucketCommand,
   GetObjectCommand,
   DeleteObjectCommand,
-  HeadBucketCommand,
+  HeadBucketCommand
 } from '@aws-sdk/client-s3';
 import { s3Config } from '../../configuration/s3.config';
 import { ERROR_MESSAGE } from './constants/s3-store.constants';
@@ -51,8 +51,8 @@ export class S3Service {
       if (answer.$metadata.httpStatusCode === 200) {
         return true;
       }
-    } catch (error) {
-      if (error.$metadata.httpStatusCode === 404) {
+    } catch (error: any) {
+      if (error?.$metadata?.httpStatusCode === 404) {
         return false;
       }
 

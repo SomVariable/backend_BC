@@ -18,11 +18,11 @@ import {
 } from '@nestjs/swagger';
 import { SignInDto } from './dto/sign-in.dto';
 import { VerifyUser } from './dto/verify-person.dto';
-import { DeviceType } from 'src/common/decorators/device-type.decorator';
+import { DeviceType } from '../../common/decorators/device-type.decorator';
 import { KvStoreService } from '../kv-store/kv-store.service';
 import { CreateUserDto } from './dto/create-person.dto';
 import { AuthSignUpInterceptor } from './interceptors/sign-up-user.interceptor';
-import { UserParam } from 'src/common/decorators/param-user.decorator';
+import { UserParam } from '../../common/decorators/param-user.decorator';
 import { jwtType } from '../jwt-helper/types/jwt-helper.types';
 import { LocalAuthGuard } from './guards/local.guard';
 import { UserService } from '../user/user.service';
@@ -35,10 +35,10 @@ import { LogoutOkResponse } from './dto/ok-response/logout.dto';
 import { VerificationOkResponse } from './dto/ok-response/verification.dto';
 import { ResendVerificationOkResponse } from './dto/ok-response/resend-verification.dto';
 import { RefreshTokensOkResponse } from './dto/ok-response/refresh-tokens.dto';
-import { UnauthorizedExceptionResponse } from 'src/common/dto/unauthorized-errors.dto';
+import { UnauthorizedExceptionResponse } from '../../common/dto/unauthorized-errors.dto';
 import { AccountStatus, Role } from '@prisma/client';
 import { FirstUserOkResponse } from './dto/ok-response/first-user.dto';
-import { BaseInterceptor } from 'src/common/interceptors/data-to-json';
+import { BaseInterceptor } from '../../common/interceptors/data-to-json';
 import { AuthInterceptor } from './interceptors/auth.interceptor';
 import { AuthLogoutInterceptor } from './interceptors/logout.interceptor';
 import { AuthUserInterceptor } from './interceptors/user.interceptor';
@@ -58,7 +58,7 @@ export class AuthController {
   ) {}
 
   @ApiOkResponse({ type: SignUpOkResponse })
-  @UseInterceptors(AuthSignUpInterceptor, AuthUserInterceptor)
+  @UseInterceptors( AuthUserInterceptor )
   @Post('sign-up')
   async signUp(@DeviceType() deviceType: string, @Body() data: CreateUserDto) {
     const hash = await this.authService.hashPassword(data.password);
@@ -116,7 +116,7 @@ export class AuthController {
 
   @ApiOkResponse({ type: VerificationOkResponse })
   @UseInterceptors(AuthVerificationInterceptor)
-  @Post('login/verification')
+  @Patch('login/verification')
   async loginVerification(
     @Body() { email, verifyCode }: VerifyUser,
     @DeviceType() deviceType: string,
@@ -132,7 +132,7 @@ export class AuthController {
 
   @ApiOkResponse({ type: VerificationOkResponse })
   @UseInterceptors(AuthVerificationInterceptor)
-  @Post('sign-up/verification')
+  @Patch('sign-up/verification')
   async signUpVerification(
     @Body() { email, verifyCode }: VerifyUser,
     @DeviceType() deviceType: string,
@@ -150,7 +150,7 @@ export class AuthController {
 
   @ApiOkResponse({ type: ResendVerificationOkResponse })
   @UseInterceptors(AuthResendVerifyKeyTokenInterceptor)
-  @Post('resend-verify-key')
+  @Patch('resend-verify-key')
   async resendVerifyKey(
     @Body() { email }: ResendVerifyKey,
     @DeviceType() deviceType: string,

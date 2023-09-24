@@ -38,6 +38,7 @@ import { GetUsersOkResponse } from './dto/ok-response/get-users.dto';
 import { UsersCountInterceptor } from './interceptors/count.interceptor';
 import { GetUsersCountOkResponse } from './dto/ok-response/count.dto';
 import { usersResponse } from './types/user.types';
+import { BaseUserInterceptor } from './interceptors/base-user.interceptor';
 
 @ApiTags('user')
 @ApiBearerAuth()
@@ -59,7 +60,9 @@ export class UserController {
   @Patch()
   @ApiOkResponse({ type: UpdatedOkResponse })
   @UseInterceptors(UserInterceptor)
-  async updateSelf(@UserParam() { id }: jwtType, @Body() body: UpdateUserDto) {
+  async updateSelf(
+    @UserParam() { id }: jwtType, 
+    @Body() body: UpdateUserDto) {
     return await this.userService.updateProperty(id, body);
   }
 
@@ -72,7 +75,7 @@ export class UserController {
 }
 
 @ApiTags('users')
-@UseInterceptors(BaseInterceptor)
+@UseInterceptors(BaseInterceptor, BaseUserInterceptor)
 @Controller('users')
 export class UsersController {
   constructor(
@@ -110,6 +113,13 @@ export class UsersController {
     return await this.userService.findById(id);
   }
 
+  @Get(`user/byEmail/:email`)
+  @ApiOkResponse({ type: GetUserOkResponse })
+  @UseInterceptors(UserInterceptor)
+  async findUserBy(@Param('email') email: string) {
+    return await this.userService.findBy({email});
+  }
+
   @Get(`user/${ID_PARAM}/fullData`)
   @ApiOkResponse({ type: GetUserOkResponse })
   @UseInterceptors(UserInterceptor)
@@ -117,7 +127,7 @@ export class UsersController {
     return await this.userService.getUserWithFullData(id);
   }
 
-  @Delete(ID_PARAM)
+  @Delete(`user/${ID_PARAM}`)
   @ApiOkResponse({ type: DeletedOkResponse })
   @UseInterceptors(UserInterceptor)
   async deleteUser(@Param('id', ParseIntPipe) id: number) {

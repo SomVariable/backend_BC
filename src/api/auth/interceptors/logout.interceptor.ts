@@ -14,7 +14,7 @@ export class AuthLogoutInterceptor implements NestInterceptor {
     return next.handle().pipe(
       map((data: any) => {
         const returnData = {
-          data: data,
+          data,
           message: AUTH_OK.LOGOUT,
         };
         return returnData;

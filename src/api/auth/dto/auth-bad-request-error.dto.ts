@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { AppErrorResponse } from 'src/common/dto/errors.dto';
+import { AppErrorResponse } from '../../../common/dto/errors.dto';
 import { AUTH_BAD_REQUEST } from '../constants/auth.constants';
 
 export class AuthBadRequestErrorResponse extends AppErrorResponse {

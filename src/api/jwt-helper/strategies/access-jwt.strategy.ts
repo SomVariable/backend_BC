@@ -15,7 +15,7 @@ export class AccessJwtStrategy extends PassportStrategy(
   ACCESS_JWT_STRATEGY,
 ) {
   constructor(
-    private readonly configService: ConfigService,
+    configService: ConfigService,
     private readonly KvStoreService: KvStoreService,
   ) {
     super({

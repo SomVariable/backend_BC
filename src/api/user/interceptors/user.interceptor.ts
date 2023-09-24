@@ -14,9 +14,8 @@ export class UserInterceptor implements NestInterceptor {
       map((data: any) => {
         delete data.hash;
         const returnObject = {
-          user: {
-            ...data,
-          },
+          ...data,
+
         };
         return returnObject;
       }),

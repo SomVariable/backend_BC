@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { AppErrorResponse } from 'src/common/dto/errors.dto';
+import { AppErrorResponse } from '../../../common/dto/errors.dto';
 import { AREA_NOT_FOUND } from '../constants/area.constants';
 
 export class AreaNotFoundErrorResponse extends AppErrorResponse {
