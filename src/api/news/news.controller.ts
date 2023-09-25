@@ -61,8 +61,8 @@ export class NewsController {
 
   @Post()
   @UseGuards(AccessJwtAuthGuard)
-  create(@Body() createNewsDto: CreateNewsDto) {
-    return this.newsService.create(createNewsDto);
+  async create(@Body() createNewsDto: CreateNewsDto) {
+    return await this.newsService.create(createNewsDto);
   }
 
   @Post(`${ID_PARAM}/preview`)
@@ -73,7 +73,7 @@ export class NewsController {
     @Param('id', ParseIntPipe) id: number,
     @UploadedFile(new ParseFilePipe(validateFile)) file: Express.Multer.File,
   ) {
-    return this.photoService.create(file, {
+    return await this.photoService.create(file, {
       type: 'NEWS',
       newsId: id,
       itemId: id,
@@ -81,36 +81,36 @@ export class NewsController {
   }
 
   @Get()
-  findAll(@Query() { limit, offset }: QueryPaginationParam) {
-    return this.newsService.findAll(offset, limit);
+  async findAll(@Query() { limit, offset }: QueryPaginationParam) {
+    return await this.newsService.findAll(offset, limit);
   }
 
   @Get('/byUser')
   @UseGuards(AccessJwtAuthGuard)
-  findAllByUser(
+  async findAllByUser(
     @UserParam() jwtData: jwtType,
     @Query() { limit, offset }: QueryPaginationParam,
   ) {
-    return this.newsService.findAll(offset, limit, jwtData.id, 'user');
+    return await this.newsService.findAll(offset, limit, jwtData.id, 'user');
   }
 
   @Get(`/byTag/${ID_PARAM}`)
-  findAllByTag(
+  async findAllByTag(
     @Param('id', ParseIntPipe) id: number,
     @Query() { limit, offset }: QueryPaginationParam,
   ) {
-    return this.newsService.findAll(offset, limit, id, 'tag');
+    return await this.newsService.findAll(offset, limit, id, 'tag');
   }
 
   @Get(ID_PARAM)
-  findOne(@Param('id', ParseIntPipe) id: number) {
-    return this.newsService.findOne(id);
+  async findOne(@Param('id', ParseIntPipe) id: number) {
+    return await this.newsService.findOne(id);
   }
 
   @Delete(ID_PARAM)
   @UseGuards(AccessJwtAuthGuard)
-  remove(@Param('id', ParseIntPipe) id: number) {
-    return this.newsService.remove(id);
+  async remove(@Param('id', ParseIntPipe) id: number) {
+    return await this.newsService.remove(id);
   }
 
   @Post(TRANSLATION_ROUTE)
@@ -119,7 +119,7 @@ export class NewsController {
     @Param() paramData: TranslationParamDto,
     @Body() bodyData: CreateNewsTranslationBodyDto,
   ) {
-    return this.newsService.addNewsInfo(paramData, bodyData);
+    return await this.newsService.addNewsInfo(paramData, bodyData);
   }
 
   @Patch(TRANSLATION_ROUTE)
@@ -128,6 +128,6 @@ export class NewsController {
     @Param() { id, langCode }: TranslationParamDto,
     @Body() updateNewsDto: UpdateNewsDto,
   ) {
-    return this.newsService.update(id, langCode, updateNewsDto);
+    return await this.newsService.update(id, langCode, updateNewsDto);
   }
 }

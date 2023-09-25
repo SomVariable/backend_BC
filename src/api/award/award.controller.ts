@@ -96,7 +96,7 @@ export class AwardController {
   @UseInterceptors(UpdateAwardInterceptor)
   @UseGuards(AwardAccessToDataGuard)
   async delete(@Param('id', ParseIntPipe) id: number) {
-    return this.awardService.delete(id);
+    return await this.awardService.delete(id);
   }
 
   @Post(TRANSLATION_ROUTE_WITH_ID)

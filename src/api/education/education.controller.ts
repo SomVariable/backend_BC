@@ -75,11 +75,11 @@ export class EducationController {
   @ApiOkResponse({ type: UpdatedOkResponse })
   @UseGuards(EducationAccessToDataGuard)
   @UseInterceptors(EducationUpdateInterceptor)
-  update(
+  async update(
     @Param('id') id: number,
     @Body() createEducationDto: UpdateEducationDto,
   ) {
-    return this.educationService.update(id, createEducationDto);
+    return await this.educationService.update(id, createEducationDto);
   }
 
   @Delete(ID_PARAM)
@@ -94,21 +94,21 @@ export class EducationController {
   @ApiOkResponse({ type: UpdatedOkResponse })
   @UseInterceptors(EducationCreateInfoInterceptor)
   @UseGuards(EducationAccessToDataGuard)
-  createInfo(
+  async createInfo(
     @Param() { id, langCode }: TranslationParamDto,
     @Body() createEducationDto: CreateEducationInfoDto,
   ) {
-    return this.educationService.createInfo(id, langCode, createEducationDto);
+    return await this.educationService.createInfo(id, langCode, createEducationDto);
   }
 
   @Patch(TRANSLATION_ROUTE)
   @UseGuards(EducationAccessToDataGuard)
   @UseInterceptors(EducationUpdateInfoInterceptor)
-  updateInfo(
+  async updateInfo(
     @Param() { id, langCode }: TranslationParamDto,
     @Body() createEducationInfoDto: CreateEducationInfoDto,
   ) {
-    return this.educationService.updateInfo(
+    return await this.educationService.updateInfo(
       id,
       langCode,
       createEducationInfoDto,
