@@ -11,7 +11,7 @@ import { ResendVerifyKey } from 'src/api/auth/dto/resend-verify-key.dto';
 import { AUTH_OK } from 'src/api/auth/constants/auth.constants';
 
 const mockUser = {
-  email: 'valid_email_40@gmail.com',
+  email: 'valid_email_50@gmail.com',
   password: '123QWE_qwe!@#13', 
   accessToken: '',
   refreshToken: ''
@@ -246,7 +246,7 @@ describe('AppController (e2e)', () => {
       .set('User-Agent', 'Mobile')
       .expect(200); 
 
-      return deleteUserResponse
+      return await app.close()
   })
 
 });
