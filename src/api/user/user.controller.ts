@@ -10,6 +10,7 @@ import {
   ParseIntPipe,
   UseInterceptors,
   UseGuards,
+  NotFoundException,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import {
@@ -39,13 +40,14 @@ import { UsersCountInterceptor } from './interceptors/count.interceptor';
 import { GetUsersCountOkResponse } from './dto/ok-response/count.dto';
 import { usersResponse } from './types/user.types';
 import { BaseUserInterceptor } from './interceptors/base-user.interceptor';
+import { USER_NOT_FOUND } from './constants/user.constants';
 
 @ApiTags('user')
 @ApiBearerAuth()
 @ApiBadRequestResponse({ type: UserBadRequestErrorResponse })
 @ApiNotFoundResponse({ type: UserNotFoundErrorResponse })
 @UseGuards(AccessJwtAuthGuard, RolesGuard)
-@UseInterceptors(BaseInterceptor)
+@UseInterceptors(BaseInterceptor, BaseUserInterceptor)
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
@@ -106,28 +108,39 @@ export class UsersController {
     return await this.userService.getTotalCount();
   }
 
-  @Get(`user/${ID_PARAM}`)
+  @Get(`user/byId/${ID_PARAM}`)
   @ApiOkResponse({ type: GetUserOkResponse })
   @UseInterceptors(UserInterceptor)
   async findUser(@Param('id', ParseIntPipe) id: number) {
-    return await this.userService.findById(id);
+    const user = await this.userService.findById(id);
+    if (!user) {
+      throw new NotFoundException(USER_NOT_FOUND.MISSING_USER);
+    }
+
+    return user
   }
 
   @Get(`user/byEmail/:email`)
   @ApiOkResponse({ type: GetUserOkResponse })
   @UseInterceptors(UserInterceptor)
   async findUserBy(@Param('email') email: string) {
-    return await this.userService.findBy({email});
+    const user = await this.userService.findBy({email});
+    
+    if (!user) {
+      throw new NotFoundException(USER_NOT_FOUND.MISSING_USER);
+    }
+
+    return user
   }
 
-  @Get(`user/${ID_PARAM}/fullData`)
+  @Get(`user/byId/${ID_PARAM}/fullData`)
   @ApiOkResponse({ type: GetUserOkResponse })
   @UseInterceptors(UserInterceptor)
   async findUserWithFullData(@Param('id', ParseIntPipe) id: number) {
     return await this.userService.getUserWithFullData(id);
   }
 
-  @Delete(`user/${ID_PARAM}`)
+  @Delete(`user/byId/${ID_PARAM}`)
   @ApiOkResponse({ type: DeletedOkResponse })
   @UseInterceptors(UserInterceptor)
   async deleteUser(@Param('id', ParseIntPipe) id: number) {

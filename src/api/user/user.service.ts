@@ -9,6 +9,7 @@ import {
   UserIncludeEducation,
   UserIncludeTranslation,
 } from './constants/user.constants';
+import { hashPassword } from 'src/common/helpers/hash-password.helper';
 
 @Injectable()
 export class UserService {
@@ -50,7 +51,7 @@ export class UserService {
   }
 
   async findBy(params: UpdateUserDto) {
-    const user: User = await this.prismaService.user.findFirst({
+    const user = await this.prismaService.user.findFirst({
       include: { UserTranslation: true },
       where: params,
     });
@@ -67,16 +68,25 @@ export class UserService {
     return user;
   }
 
-  async updateProperty(id: number, data: UpdateUserDto) {
-    const user = await this.findById(id);
+  async updateProperty(id: number, {
+    accountStatus, email, 
+    password, role 
+  }: UpdateUserDto) {
+    await this.findById(id);
 
-    if (!user) {
-      throw new NotFoundException(USER_NOT_FOUND.MISSING_USER);
+    const updateData: Prisma.UserUpdateInput = {
+      accountStatus, email, role
     }
 
-    const updatedUser: User = await this.prismaService.user.update({
+    if(password){
+      updateData['hash'] = await hashPassword(password);
+    }
+
+    const updatedUser = await this.prismaService.user.update({
       where: { id },
-      data,
+      data: {
+        ...updateData
+      },
     });
 
     return updatedUser;

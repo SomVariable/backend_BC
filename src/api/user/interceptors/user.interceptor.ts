@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { USER_OK } from '../constants/user.constants';
 
 @Injectable()
 export class UserInterceptor implements NestInterceptor {
@@ -13,11 +14,9 @@ export class UserInterceptor implements NestInterceptor {
     return next.handle().pipe(
       map((data: any) => {
         delete data.hash;
-        const returnObject = {
-          ...data,
-
+        return {
+          ...data
         };
-        return returnObject;
       }),
     );
   }

@@ -129,15 +129,6 @@ export class AuthService {
     });
   }
 
-  async hashPassword(password) {
-    try {
-      const saltRounds = 10;
-      const hashedPassword = await bcrypt.hash(password, saltRounds);
-      return hashedPassword;
-    } catch (error) {
-      throw new Error();
-    }
-  }
 
   async logout(sessionKey: string): Promise<void> {
     return await this.kvStoreService.blockSession(sessionKey);

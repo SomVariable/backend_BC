@@ -45,6 +45,7 @@ import { AuthUserInterceptor } from './interceptors/user.interceptor';
 import { AuthRefreshTokenInterceptor } from './interceptors/refresh-tokens.dto';
 import { AuthResendVerifyKeyTokenInterceptor } from './interceptors/resend-verify-key.interceptor';
 import { AuthVerificationInterceptor } from './interceptors/verification.interceptor';
+import { hashPassword } from 'src/common/helpers/hash-password.helper';
 
 @ApiTags('auth')
 @UseInterceptors(BaseInterceptor, AuthInterceptor)
@@ -60,8 +61,10 @@ export class AuthController {
   @ApiOkResponse({ type: SignUpOkResponse })
   @UseInterceptors( AuthUserInterceptor )
   @Post('sign-up')
-  async signUp(@DeviceType() deviceType: string, @Body() data: CreateUserDto) {
-    const hash = await this.authService.hashPassword(data.password);
+  async signUp(
+    @DeviceType() deviceType: string, 
+    @Body() data: CreateUserDto) {
+    const hash = await hashPassword(data.password);
     const user = await this.authService.singUp(
       { email: data.email, hash },
       deviceType,
@@ -77,7 +80,7 @@ export class AuthController {
     @DeviceType() deviceType: string,
     @Body() data: CreateUserDto,
   ) {
-    const hash = await this.authService.hashPassword(data.password);
+    const hash = await hashPassword(data.password);
     const admin = await this.authService.addFirstUser(
       {
         email: data.email,

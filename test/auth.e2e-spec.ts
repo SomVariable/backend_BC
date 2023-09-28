@@ -1,23 +1,25 @@
 
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
-import * as request from 'supertest';
 import { AppModule } from '../src/app.module';
 import { DatabaseModule } from 'src/api/database/database.module';
-import { CreateUserDto } from 'src/api/auth/dto/create-person.dto';
 import { validate } from 'class-validator';
 import { SignInDto } from 'src/api/auth/dto/sign-in.dto';
 import { ResendVerifyKey } from 'src/api/auth/dto/resend-verify-key.dto';
-import { AUTH_OK } from 'src/api/auth/constants/auth.constants';
+import {  fullSignUp, logoutUser, refreshToken, resendVerify, signIn,  signIn404,  verifyUserSignIn } from './helpers/auth.helper';
+import {  activeSession, blockSession, deleteSession, getSession } from './helpers/kv-store.helper';
+import { clearUser, deleteUser, getSelfBadRequest, getUserByEmail } from './helpers/user.helper';
+import { CreateUserDto } from 'src/api/auth/dto/create-person.dto';
+
 
 const mockUser = {
-  email: 'valid_email_50@gmail.com',
+  email: `e2e_auth_test_33@gmail.com`,
   password: '123QWE_qwe!@#13', 
   accessToken: '',
   refreshToken: ''
 }
 
-describe('AppController (e2e)', () => {
+describe('AuthController (e2e)', () => {
   let app: INestApplication;
 
   beforeAll(async () => {
@@ -28,151 +30,69 @@ describe('AppController (e2e)', () => {
     app = moduleFixture.createNestApplication();
     await app.init();
   });
-
+  
   it('should sign up new user, and verify it', async () => {
-    const dto = new CreateUserDto();
-    dto.email = mockUser.email; 
-    dto.password = mockUser.password;  
 
-    const validationErrors = await validate(dto);
+    const {responseBody} = await fullSignUp(app, {
+      email: mockUser.email,
+      password: mockUser.password
+    })
 
-    expect(validationErrors).toHaveLength(0);
 
-    const responseSignUp = await request(app.getHttpServer())
-      .post('/auth/sign-up')
-      .set('User-Agent', 'Mobile')
-      .send(dto)
-      .expect(201);
-    
-    const responseBody = await JSON.parse(responseSignUp.text);
-    expect(responseBody).toHaveProperty('message');
-    expect(responseBody).toHaveProperty('person');
-    expect(responseBody.person).toHaveProperty('id');
-    expect(responseBody.person).toHaveProperty('email');
-    expect(responseBody.person).toHaveProperty('accountStatus');
-    expect(responseBody.person).toHaveProperty('role');
-
-    const responseKvStore = await request(app.getHttpServer())
-    .get(`/kv-store/session/${responseBody.person.id}`)
-    .set('User-Agent', 'Mobile')
-    .expect(200); 
-    const responseKvStoreBody = await JSON.parse(responseKvStore.text);
-    
-    expect(responseKvStoreBody).toHaveProperty('message');
-    expect(responseKvStoreBody).toHaveProperty('data');
-    expect(responseKvStoreBody.data).toHaveProperty('id');
-    expect(responseKvStoreBody.data).toHaveProperty('status');
-    expect(responseKvStoreBody.data).toHaveProperty('verificationKey');
-    expect(responseKvStoreBody.data).toHaveProperty('verificationTimestamp');
-
-    const responseVerify = await request(app.getHttpServer())
-      .patch('/auth/sign-up/verification')
-      .set('User-Agent', 'Mobile')
-      .send({
-        email: dto.email, 
-        verifyCode: responseKvStoreBody.data.verificationKey
-      })
-      .expect(200);
-
-    const responseVerifyBody = await JSON.parse(responseVerify.text);
-
-    expect(responseVerifyBody).toHaveProperty('message');
-    expect(responseVerifyBody).toHaveProperty('data');
-    expect(responseVerifyBody.data).toHaveProperty('jwtToken');
-    expect(responseVerifyBody.data).toHaveProperty('refreshToken');
-
-    mockUser.accessToken = responseVerifyBody.data.jwtToken
-    mockUser.refreshToken = responseVerifyBody.data.refreshToken
-
+    await deleteUser(app, responseBody.person.id)
+    await deleteSession(app, responseBody.person.id)
     return true
   });
 
   it('should reset data: jwt, verify', async () => {
+    const {responseBody, responseVerifyBody} = await fullSignUp(app, {
+      email: mockUser.email,
+      password: mockUser.password
+    })
     const dto = new ResendVerifyKey();
-    dto.email = mockUser.email; 
+    dto.email = responseBody.person.email; 
 
     const validationErrors = await validate(dto);
 
     expect(validationErrors).toHaveLength(0);
-
-    const response = await request(app.getHttpServer())
-    .get(`/users/user/byEmail/${dto.email}`)
-    .set('User-Agent', 'Mobile')
-    .expect(200); 
     
-    const responseBody = await JSON.parse(response.text);
+    const responseKvStoreBody = await getSession(app, responseBody.person.id)
     
-    expect(responseBody).toHaveProperty('message', );
-    expect(responseBody).toHaveProperty('data');
-    expect(responseBody.data).toHaveProperty('id');
-    expect(responseBody.data).toHaveProperty('email', dto.email);
-
-    const responseKvStore = await request(app.getHttpServer())
-    .get(`/kv-store/session/${responseBody.data.id}`)
-    .set('User-Agent', 'Mobile')
-    .expect(200); 
-    const responseKvStoreBody = await JSON.parse(responseKvStore.text);
+    await resendVerify(app, dto.email);
     
-    expect(responseKvStoreBody).toHaveProperty('message');
-    expect(responseKvStoreBody).toHaveProperty('data');
-    expect(responseKvStoreBody.data).toHaveProperty('id');
-    expect(responseKvStoreBody.data).toHaveProperty('status', 'ACTIVE');
-    expect(responseKvStoreBody.data).toHaveProperty('verificationKey');
-    expect(responseKvStoreBody.data).toHaveProperty('verificationTimestamp');
-
-    const responseResendVerify = await request(app.getHttpServer())
-      .patch('/auth/resend-verify-key')
-      .set('User-Agent', 'Mobile')
-      .send(dto)
-      .expect(200);
+    const responseKvStoreWithUpdateVerifyBody = await getSession(app, responseBody.person.id)
     
-    const responseResendVerifyBody = await JSON.parse(responseResendVerify.text);
-    
-    expect(responseResendVerifyBody).toHaveProperty('message', AUTH_OK.SEND_VERIFICATION_KEY);
-    
-    const responseKvStoreWithUpdateVerify = await request(app.getHttpServer())
-    .get(`/kv-store/session/${responseBody.data.id}`)
-    .set('User-Agent', 'Mobile')
-    .expect(200); 
-    const responseKvStoreWithUpdateVerifyBody = await JSON.parse(responseKvStoreWithUpdateVerify.text);
-    
-    expect(responseKvStoreWithUpdateVerifyBody).toHaveProperty('message');
-    expect(responseKvStoreWithUpdateVerifyBody).toHaveProperty('data');
-    expect(responseKvStoreWithUpdateVerifyBody.data).toHaveProperty('verificationKey');
     expect(responseKvStoreWithUpdateVerifyBody.data.verificationKey)
     .not.toEqual(responseKvStoreBody.data.verificationKey);
-
-    const refreshTokenResponse = await request(app.getHttpServer())
-    .get(`/auth/refresh-token`)
-    .set('User-Agent', 'Mobile')
-    .set('Authorization', `Bearer ${mockUser.refreshToken}`)
-    .expect(200); 
-    const refreshTokenResponseBody = await JSON.parse(refreshTokenResponse.text);
+ 
+    await refreshToken(app, responseVerifyBody.data.refreshToken);
     
-    expect(refreshTokenResponseBody).toHaveProperty('message');
-    expect(refreshTokenResponseBody).toHaveProperty('data');
-    expect(refreshTokenResponseBody.data).toHaveProperty('jwtToken');
-    expect(refreshTokenResponseBody.data).toHaveProperty('refreshToken');
-
+    await deleteUser(app, responseBody.person.id)
+    await deleteSession(app, responseBody.person.id)
+    
     return true
   })
   
   it('should logout user', async () => {
-    const responseLogout = await request(app.getHttpServer())
-      .patch('/auth/logout')
-      .set('User-Agent', 'Mobile')
-      .set('Authorization', `Bearer ${mockUser.accessToken}`)
-      .expect(200);
+    const {responseBody, responseVerifyBody} = await fullSignUp(app, {
+      email: mockUser.email,
+      password: mockUser.password
+    })
     
-    const responseBody = await JSON.parse(responseLogout.text);
-
-    expect(responseBody).toHaveProperty('message');
-    expect(responseBody).toHaveProperty('data');
-    expect(responseBody.data).toHaveProperty('id');
-    expect(responseBody.data).toHaveProperty('status', 'BLOCKED');
+    await logoutUser(app, responseVerifyBody.data.jwtToken)
+    
+    await deleteUser(app, responseBody.person.id)
+    await deleteSession(app, responseBody.person.id)
   })
 
   it('should login user', async () => {
+    const {responseBody, responseVerifyBody} = await fullSignUp(app, {
+      email: mockUser.email,
+      password: mockUser.password
+    })
+    
+    await logoutUser(app, responseVerifyBody.data.jwtToken)
+
     const dto = new SignInDto();
     dto.email = mockUser.email; 
     dto.password = mockUser.password;  
@@ -181,72 +101,72 @@ describe('AppController (e2e)', () => {
 
     expect(validationErrors).toHaveLength(0);
 
-    const responseSignIn = await request(app.getHttpServer())
-      .post('/auth/sign-in')
-      .set('User-Agent', 'Mobile')
-      .send(dto)
-      .expect(201);
+
+    const responseBodySignIn = await signIn(app, dto)
+    const responseKvStoreBody = await getSession(app, responseBodySignIn.person.id);
+    expect(responseKvStoreBody.data).toHaveProperty('status', 'BLOCKED')
     
-    const responseBody = await JSON.parse(responseSignIn.text);
+    await verifyUserSignIn(app, dto.email, responseKvStoreBody.data)
 
-    expect(responseBody).toHaveProperty('message');
-    expect(responseBody).toHaveProperty('person');
-    expect(responseBody.person).toHaveProperty('id');
-    expect(responseBody.person).toHaveProperty('email')
-    expect(responseBody.person).toHaveProperty('role')
-    expect(responseBody.person).toHaveProperty('accountStatus')
-
-    const responseKvStore = await request(app.getHttpServer())
-    .get(`/kv-store/session/${responseBody.person.id}`)
-    .set('User-Agent', 'Mobile')
-    .expect(200); 
-    const responseKvStoreBody = await JSON.parse(responseKvStore.text);
-    
-    expect(responseKvStoreBody).toHaveProperty('message');
-    expect(responseKvStoreBody).toHaveProperty('data');
-    expect(responseKvStoreBody.data).toHaveProperty('id');
-    expect(responseKvStoreBody.data).toHaveProperty('status', 'BLOCKED');
-    expect(responseKvStoreBody.data).toHaveProperty('verificationKey');
-    expect(responseKvStoreBody.data).toHaveProperty('verificationTimestamp');
-
-    const responseVerify = await request(app.getHttpServer())
-      .patch('/auth/sign-up/verification')
-      .set('User-Agent', 'Mobile')
-      .send({
-        email: dto.email, 
-        verifyCode: responseKvStoreBody.data.verificationKey
-      })
-      .expect(200);
-
-    const responseVerifyBody = await JSON.parse(responseVerify.text);
-
-    expect(responseVerifyBody).toHaveProperty('message');
-    expect(responseVerifyBody).toHaveProperty('data');
-    expect(responseVerifyBody.data).toHaveProperty('jwtToken');
-    expect(responseVerifyBody.data).toHaveProperty('refreshToken');
-
-    mockUser.accessToken = responseVerifyBody.data.jwtToken
-    mockUser.refreshToken = responseVerifyBody.data.refreshToken
-
-    const responseKvStoreWithActive = await request(app.getHttpServer())
-    .get(`/kv-store/session/${responseBody.person.id}`)
-    .set('User-Agent', 'Mobile')
-    .expect(200); 
-    const responseKvStoreWithActiveBody = await JSON.parse(responseKvStoreWithActive.text);
+    const responseKvStoreWithActiveBody = await getSession(app, responseBodySignIn.person.id);
     
     expect(responseKvStoreWithActiveBody.data).toHaveProperty('status', 'ACTIVE');
+    
+    await deleteUser(app, responseBody.person.id)
+    await deleteSession(app, responseBody.person.id)
     return true
   })
-  
+
+  it('should block request because of block session ', async () => {
+    const {responseBody, responseVerifyBody} = await fullSignUp(app, {
+      email: mockUser.email,
+      password: mockUser.password
+    })
+    
+    let responseKvStoreBody = await getSession(app, responseBody.person.id);
+    
+    if( responseKvStoreBody.data.status !== 'BLOCKED' ) {
+        responseKvStoreBody = await blockSession(app, responseBody.person.id)
+    }
+
+    await getSelfBadRequest(app, responseVerifyBody.data.jwtToken) 
+    await activeSession(app, responseBody.person.id)
+    await deleteUser(app, responseBody.person.id)
+    await deleteSession(app, responseBody.person.id)
+  })
+
+  it('should check user creation with wrong data', async () => {
+    const mockUser = {
+      email: 'valid_email_51',
+      password: 'week_password', 
+      accessToken: '',
+      refreshToken: ''
+    }
+    
+    const dto_fake = new CreateUserDto();
+    dto_fake.email = mockUser.email; 
+    dto_fake.password = mockUser.password;  
+
+    const validationErrors = await validate(dto_fake);
+
+    expect(validationErrors).toHaveLength(2);
+  })
+
+  it('should check login with non-existent user at login', async () => {
+    const dto = new SignInDto();
+    dto.email = "i_don\`t_exist@gmail.com"; 
+    dto.password = mockUser.password;  
+
+    const validationErrors = await validate(dto);
+
+    expect(validationErrors).toHaveLength(0);
+
+    await signIn404(app, dto)
+  })
+
   afterAll(async () => {
-
-    const deleteUserResponse = await request(app.getHttpServer())
-      .delete(`/user`)
-      .set('Authorization', `Bearer ${mockUser.accessToken}`)
-      .set('User-Agent', 'Mobile')
-      .expect(200); 
-
-      return await app.close()
+    await clearUser(app, mockUser)
+    return await app.close()
   })
 
 });
