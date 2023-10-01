@@ -14,15 +14,14 @@ import { MISSING_SESSION_MESSAGE } from './constants/kv-store.constants';
 import { UpdateSessionDto } from './dto/update-session.dto';
 
 @Injectable()
-export class KvStoreService implements OnModuleDestroy {
+export class KvStoreService  {
     constructor(
-        @Inject(CACHE_MANAGER) private cacheManager: Cache,
-        @Inject('RedisStore') private readonly store: any,
+        @Inject(CACHE_MANAGER) private cacheManager: Cache
     ) { }
 
-    async onModuleDestroy() {
-        await this.store.getClient().quit()
-    }
+    // async onModuleDestroy() {
+    //     await this.store.getClient().quit()
+    // }
     
     async createSession({ id }: CreateSession): Promise<Session> {
         try {

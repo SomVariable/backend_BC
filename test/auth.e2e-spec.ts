@@ -1,19 +1,22 @@
+import { HttpAdapterHost } from '@nestjs/core';
 
 import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication } from '@nestjs/common';
+import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { AppModule } from '../src/app.module';
 import { DatabaseModule } from 'src/api/database/database.module';
 import { validate } from 'class-validator';
 import { SignInDto } from 'src/api/auth/dto/sign-in.dto';
 import { ResendVerifyKey } from 'src/api/auth/dto/resend-verify-key.dto';
-import {  fullLogin, fullLogout, fullReset, fullSignUp, logoutUser, refreshToken, resendVerify, signIn,  signIn404,  userControl,  verifyUserSignIn } from './helpers/auth.helper';
+import { fullLogin, fullLogout, fullReset, fullSignUp, logoutUser, refreshToken, resendVerify, signIn, signIn404, signUpAdmin, userControl, verifyUserSignIn, requestWithAdminPermission } from './helpers/auth.helper';
 import {  activeSession, blockSession, deleteSession, getSession } from './helpers/kv-store.helper';
-import { clearUser, deleteUser, getSelfBadRequest, getUserByEmail } from './helpers/user.helper';
+import { clearUser, deleteSelf, getSelfBadRequest, getUserByEmail } from './helpers/user.helper';
 import { CreateUserDto } from 'src/api/auth/dto/create-person.dto';
+import { PrismaClientExceptionFilter } from 'nestjs-prisma';
+import { STRONG_PASSWORD } from './constants/test.constants';
 
 
 const mockUser = {
-  email: `e2e_auth_test_33@gmail.com`,
+  email: `e2e_auth_tst_1@gmail.com`,
   password: '123QWE_qwe!@#13', 
   accessToken: '',
   refreshToken: ''
@@ -26,22 +29,38 @@ describe('AuthController (e2e)', () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule, DatabaseModule],
     }).compile();
-
+    
     app = moduleFixture.createNestApplication();
+    
+    const { httpAdapter } = app.get(HttpAdapterHost);
+    app.useGlobalPipes(new ValidationPipe({ transform: true, whitelist: true }))
+    app.useGlobalFilters(new PrismaClientExceptionFilter(httpAdapter));
+
     await app.init();
   });
   
   it('should sign up new user, and verify it', async () => {
-    const {responseBody} = await fullSignUp(app, {
+    const {responseBody, responseVerifyBody} = await fullSignUp(app, {
       email: mockUser.email,
       password: mockUser.password
     })
 
 
-    await deleteUser(app, responseBody.person.id)
+    await deleteSelf(app, responseVerifyBody.data.jwtToken)
     await deleteSession(app, responseBody.person.id)
     
   });
+
+  it('should sign up admin', async () => {
+    const adminData: CreateUserDto = {
+      email: 'admin@gmail.com',
+      password: STRONG_PASSWORD
+    }
+    const { responseBody } = await signUpAdmin(app, adminData)
+
+    await deleteSelf(app, responseBody.jwtToken)
+    await deleteSession(app, responseBody.user.id)
+  })
 
   it('should reset data: jwt, verify', async () => {
     const controlFunc = userControl(app, mockUser)
@@ -72,7 +91,7 @@ describe('AuthController (e2e)', () => {
 
     await getSelfBadRequest(app, responseVerifyBody.data.jwtToken) 
     await activeSession(app, responseBody.person.id)
-    await deleteUser(app, responseBody.person.id)
+    await deleteSelf(app, responseVerifyBody.data.jwtToken)
     await deleteSession(app, responseBody.person.id)
 
   })
@@ -107,6 +126,10 @@ describe('AuthController (e2e)', () => {
   })
 
   afterAll(async () => {
+    const {responseBody, responseVerifyBody} = await fullSignUp(app, {
+      email: mockUser.email,
+      password: mockUser.password
+    })
     await clearUser(app, mockUser)
     return await app.close()
   })

@@ -347,4 +347,4 @@ Ref: CategoryTranslation.practiceId > Practice.id [delete: Cascade]
 
 Ref: CategoryTranslation.serviceId > Service.id [delete: Cascade]
 
-Ref: UserTranslation.userId > User.id
+Ref: UserTranslation.userId > User.id [delete: Cascade]

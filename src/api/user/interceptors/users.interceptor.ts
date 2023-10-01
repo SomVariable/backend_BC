@@ -26,7 +26,7 @@ export class UsersInterceptor implements NestInterceptor {
             role,
           };
         });
-        return { ...data, data: updatedUsers };
+        return { ...data, users: updatedUsers };
       }),
     );
   }

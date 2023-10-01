@@ -12,7 +12,7 @@ import { userResponse } from '../types/user.types';
 export class UsersCountInterceptor implements NestInterceptor {
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     return next.handle().pipe(
-      map((data: userResponse) => {
+      map((data: any) => {
         return {
           count: data,
         };

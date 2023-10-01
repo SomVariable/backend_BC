@@ -14,7 +14,7 @@ import { USER_OK } from '../constants/user.constants';
       return next.handle().pipe(
         map((data: any) => {
           return {
-            data: {...data},
+            data,
             message: USER_OK.OK
           };
         }),

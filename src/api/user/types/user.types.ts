@@ -12,7 +12,7 @@ type UserWithTranslations = User & {
 
 export type usersResponse = {
   users: UserWithTranslations[];
-  totalCountUsers?: number;
+  totalCount?: number;
   offset?: number;
   limit?: number;
   message?: string;

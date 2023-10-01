@@ -105,4 +105,14 @@ export class UserService {
 
     return deletedUser;
   }
+
+  async removeMany(){
+    return await this.prismaService.user.deleteMany({
+      where: {
+        NOT: {
+          role: 'ADMIN'
+        }
+      }
+    })
+  }
 }

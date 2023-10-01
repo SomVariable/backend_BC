@@ -296,7 +296,7 @@ model UserTranslation {
   status           String?
   position         String?
 
-  userProfile User @relation(fields: [userId], references: [id])
+  userProfile User @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId      Int
 
   @@id([langCode, userId])

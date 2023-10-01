@@ -42,8 +42,7 @@ export class AuthService {
 
   async addFirstUser(data: Prisma.UserCreateInput, deviceType: string) {
     const user = await this.userService.findUsers();
-
-    if (user.length === 0) {
+    if (user.length === 0 || process.env.NODE_ENV === 'test') {
       const user = await this.userService.create({ ...data });
       const { id } = user;
 

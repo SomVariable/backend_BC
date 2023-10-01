@@ -7,15 +7,26 @@ import { redisConfig } from 'src/configuration/redis.config';
 import * as redisStore from 'cache-manager-redis-store';
 import { RedisClient } from 'redis';
 
-const store: RedisClient = redisStore.create()
+console.log('ON_MODULE_INIT')
+console.log('------------------------------------------------------------------------------------------')
+console.log('------------------------------------------------------------------------------------------')
+console.log('------------------------------------------------------------------------------------------')
+console.log('------------------------------------------------------------------------------------------')
+console.log('------------------------------------------------------------------------------------------')
+console.log('------------------------------------------------------------------------------------------')
+console.log('------------------------------------------------------------------------------------------')
+console.log('------------------------------------------------------------------------------------------')
+console.log('------------------------------------------------------------------------------------------')
+console.log('------------------------------------------------------------------------------------------')
+console.log('------------------------------------------------------------------------------------------')
 
 
 @Module({
   imports: [
-    CacheModule.register<RedisClientOptions>(redisConfig( store )),
+    CacheModule.register<RedisClientOptions>(redisConfig( redisStore.create() )),
   ],
   controllers: [KvStoreController],
-  providers: [KvStoreService, { provide: 'RedisStore', useValue: store }],
+  providers: [KvStoreService],
   exports: [KvStoreService],
 })
 export class KvStoreModule {}

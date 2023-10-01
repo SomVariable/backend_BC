@@ -41,6 +41,9 @@ import { GetUsersCountOkResponse } from './dto/ok-response/count.dto';
 import { usersResponse } from './types/user.types';
 import { BaseUserInterceptor } from './interceptors/base-user.interceptor';
 import { USER_NOT_FOUND } from './constants/user.constants';
+import { RolesDecorator } from '../roles/roles.decorator';
+import { Role } from '@prisma/client';
+import { LocalAuthGuard } from '../auth/guards/local.guard';
 
 @ApiTags('user')
 @ApiBearerAuth()
@@ -50,7 +53,7 @@ import { USER_NOT_FOUND } from './constants/user.constants';
 @UseInterceptors(BaseInterceptor, BaseUserInterceptor)
 @Controller('user')
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(private readonly userService: UserService) { }
 
   @Get('')
   @ApiOkResponse({ type: GetUserOkResponse })
@@ -63,7 +66,7 @@ export class UserController {
   @ApiOkResponse({ type: UpdatedOkResponse })
   @UseInterceptors(UserInterceptor)
   async updateSelf(
-    @UserParam() { id }: jwtType, 
+    @UserParam() { id }: jwtType,
     @Body() body: UpdateUserDto) {
     return await this.userService.updateProperty(id, body);
   }
@@ -83,17 +86,18 @@ export class UsersController {
   constructor(
     private readonly userService: UserService,
     private readonly userProfileService: UserProfileService,
-  ) {}
+  ) { }
 
   @Get()
   @UseInterceptors(UsersInterceptor)
   @ApiOkResponse({ type: GetUsersOkResponse })
   async findUsers(@Query() { limit, offset }: QueryPaginationParam) {
+
     const users = await this.userService.findUsers(offset, limit);
-    const totalCountUsers = await this.userService.getTotalCount();
+    const totalCount = await this.userService.getTotalCount();
     const returnData: usersResponse = {
       users,
-      totalCountUsers,
+      totalCount,
       limit,
       offset,
     };
@@ -124,8 +128,8 @@ export class UsersController {
   @ApiOkResponse({ type: GetUserOkResponse })
   @UseInterceptors(UserInterceptor)
   async findUserBy(@Param('email') email: string) {
-    const user = await this.userService.findBy({email});
-    
+    const user = await this.userService.findBy({ email });
+
     if (!user) {
       throw new NotFoundException(USER_NOT_FOUND.MISSING_USER);
     }
@@ -142,8 +146,30 @@ export class UsersController {
 
   @Delete(`user/byId/${ID_PARAM}`)
   @ApiOkResponse({ type: DeletedOkResponse })
+  @UseGuards(
+    AccessJwtAuthGuard, 
+  )
   @UseInterceptors(UserInterceptor)
-  async deleteUser(@Param('id', ParseIntPipe) id: number) {
+  async deleteUser(
+    @Param('id', ParseIntPipe) id: number
+    ) {
     return await this.userService.remove(id);
+  }
+
+  @Patch(`user/byId/${ID_PARAM}`)
+  async updateUser(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() data: UpdateUserDto
+  ) {
+    return await this.userService.updateProperty(id, data)
+  }
+
+  @Delete(`user/drop`)
+  // @ApiOkResponse({ type: DeletedOkResponse })
+  // @RolesDecorator(Role.ADMIN)
+  // @UseGuards(RolesGuard)
+  @UseInterceptors(UserInterceptor)
+  async deleteUsers() {
+    return await this.userService.removeMany();
   }
 }
