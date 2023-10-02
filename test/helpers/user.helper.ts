@@ -4,8 +4,18 @@ import { UpdateUserDto } from 'src/api/user/dto/update-user.dto';
 import { deleteSession } from './kv-store.helper';
 import { fullSignUpType } from 'test/types/test.types';
 import { requestWithAdminPermission } from './auth.helper';
+import { CreateEducationDto } from 'src/api/education/dto/create-education.dto';
+import { CreatedOkResponse } from 'src/api/education/dto/ok-response/created.dto';
+import { UpdatedOkResponse } from 'src/api/education/dto/ok-response/updated.dto';
+import { UpdateEducationDto } from 'src/api/education/dto/update-education.dto';
+import { DeletedOkResponse } from 'src/api/education/dto/ok-response/deleted.dto';
+import { Education } from '@prisma/client';
+import { CreateEducationInfoDto } from 'src/api/education/dto/create-education-info.dto';
+import { InfoCreatedOkResponse } from 'src/api/education/dto/ok-response/info-created';
+import { UpdateEducationInfoDto } from 'src/api/education/dto/update-education-info.dto';
+import { InfoUpdatedOkResponse } from 'src/api/education/dto/ok-response/info-updated';
 
-export const clearUser = async (app,  mockUser) => {
+export const clearUser = async (app, mockUser) => {
   const response = await request(app.getHttpServer())
     .get(`/users/user/byEmail/${mockUser.email}`)
     .set('User-Agent', 'Mobile')
@@ -249,6 +259,172 @@ export const deleteUser = async (app, id: number, adminAccessToken: string) => {
 
 }
 
+// education 
+
+export const createEducation = async (
+  app, { responseVerifyBody }: fullSignUpType
+): Promise<CreatedOkResponse> => {
+  const educationDTO: CreateEducationDto = {
+    specialty: "programmer",
+    graduationYear: "2010-10-10",
+    studyYear: "2015-10-10",
+    qualification: "specialist"
+  }
+
+  const response = await request(app.getHttpServer())
+    .post(`/education`)
+    .set('Authorization', `Bearer ${responseVerifyBody.data.jwtToken}`)
+    .set('User-Agent', 'Mobile')
+    .send(educationDTO)
+    .expect(201);
+
+  const responseBody: CreatedOkResponse = await JSON.parse(response.text);
+
+  expect(responseBody).toHaveProperty('message');
+  expect(responseBody).toHaveProperty('data');
+  expect(responseBody.data).toHaveProperty('graduationYear');
+  expect(responseBody.data).toHaveProperty('studyYear');
+  expect(responseBody.data).toHaveProperty('qualification');
+  expect(responseBody.data).toHaveProperty('specialty');
+  expect(responseBody.data).toHaveProperty('userId');
+
+  return responseBody
+}
+
+export const getEducation = async (
+  app, 
+  { responseVerifyBody }: fullSignUpType,
+  education: Education) => {
+  const response = await request(app.getHttpServer())
+    .get(`/education/${education.id}`)
+    .set('Authorization', `Bearer ${responseVerifyBody.data.jwtToken}`)
+    .set('User-Agent', 'Mobile')
+    .expect(200);
+
+  const responseBody: UpdatedOkResponse = await JSON.parse(response.text);
+
+  expect(responseBody).toHaveProperty('message');
+  expect(responseBody).toHaveProperty('data');
+  expect(responseBody.data).toHaveProperty('graduationYear');
+  expect(responseBody.data).toHaveProperty('studyYear');
+  expect(responseBody.data).toHaveProperty('qualification');
+  expect(responseBody.data).toHaveProperty('specialty');
+  expect(responseBody.data).toHaveProperty('userId');
+
+  return responseBody
+}
+
+export const updateEducation = async (
+  app, 
+  { responseVerifyBody }: fullSignUpType, 
+  education: Education): Promise<UpdatedOkResponse> => {
+  const educationDTO: UpdateEducationDto = {
+    specialty: "programmer",
+    graduationYear: "2010-10-10",
+    studyYear: "2015-10-10",
+    qualification: "specialist"
+  }
+
+  const response = await request(app.getHttpServer())
+    .patch(`/education/${education.id}`)
+    .set('Authorization', `Bearer ${responseVerifyBody.data.jwtToken}`)
+    .set('User-Agent', 'Mobile')
+    .send(educationDTO)
+    .expect(200);
+
+  const responseBody: UpdatedOkResponse = await JSON.parse(response.text);
+
+  expect(responseBody).toHaveProperty('message');
+  expect(responseBody).toHaveProperty('data');
+  expect(responseBody.data).toHaveProperty('graduationYear');
+  expect(responseBody.data).toHaveProperty('studyYear');
+  expect(responseBody.data).toHaveProperty('qualification');
+  expect(responseBody.data).toHaveProperty('specialty');
+  expect(responseBody.data).toHaveProperty('userId');
+
+  return responseBody
+}
+
+export const deleteEducation = async (
+  app, { responseVerifyBody }: fullSignUpType,
+  education: Education
+): Promise<DeletedOkResponse> => {
+  const response = await request(app.getHttpServer())
+    .delete(`/education/${education.id}`)
+    .set('Authorization', `Bearer ${responseVerifyBody.data.jwtToken}`)
+    .set('User-Agent', 'Mobile')
+    .expect(200);
+
+  const responseBody: DeletedOkResponse = await JSON.parse(response.text);
+
+  expect(responseBody).toHaveProperty('message');
+  expect(responseBody).toHaveProperty('data');
+  expect(responseBody.data).toHaveProperty('graduationYear');
+  expect(responseBody.data).toHaveProperty('studyYear');
+  expect(responseBody.data).toHaveProperty('qualification');
+  expect(responseBody.data).toHaveProperty('specialty');
+  expect(responseBody.data).toHaveProperty('userId');
+
+  return responseBody
+}
+
+export const createEducationTransl = async (
+  app, { responseVerifyBody }: fullSignUpType,
+  education: Education) => {
+    const langCode = 'en' 
+    const educationDTO: CreateEducationInfoDto = {
+    title: "title",
+    university: "university"
+  }
+
+  const response = await request(app.getHttpServer())
+    .post(`/education/${education.id}/translation/${langCode}`)
+    .set('Authorization', `Bearer ${responseVerifyBody.data.jwtToken}`)
+    .set('User-Agent', 'Mobile')
+    .send(educationDTO)
+    .expect(201);
+
+  const responseBody: InfoCreatedOkResponse = await JSON.parse(response.text);
+
+  expect(responseBody).toHaveProperty('message');
+  expect(responseBody).toHaveProperty('data');
+  expect(responseBody.data).toHaveProperty('educationId', education.id);
+  expect(responseBody.data).toHaveProperty('id');
+  expect(responseBody.data).toHaveProperty('langCode', langCode);
+  expect(responseBody.data).toHaveProperty('title', educationDTO.title);
+  expect(responseBody.data).toHaveProperty('university', educationDTO.university);
+
+  return responseBody
+}
+
+export const updateEducationTransl = async (app, { responseVerifyBody }: fullSignUpType,
+  education: Education) => {
+    const langCode = 'en' 
+    const educationDTO: UpdateEducationInfoDto = {
+    title: "title2",
+    university: "university2"
+  }
+
+  const response = await request(app.getHttpServer())
+    .patch(`/education/${education.id}/translation/${langCode}`)
+    .set('Authorization', `Bearer ${responseVerifyBody.data.jwtToken}`)
+    .set('User-Agent', 'Mobile')
+    .send(educationDTO)
+    .expect(200);
+
+  const responseBody: InfoUpdatedOkResponse = await JSON.parse(response.text);
+
+  expect(responseBody).toHaveProperty('message');
+  expect(responseBody).toHaveProperty('data');
+  expect(responseBody.data).toHaveProperty('educationId', education.id);
+  expect(responseBody.data).toHaveProperty('id');
+  expect(responseBody.data).toHaveProperty('langCode', langCode);
+  expect(responseBody.data).toHaveProperty('title', educationDTO.title);
+  expect(responseBody.data).toHaveProperty('university', educationDTO.university);
+
+  return responseBody
+}
+
 // full 
 //self
 export const getSelfF = async (app, { responseVerifyBody }, mockUser) => {
@@ -288,10 +464,27 @@ export const deleteAnotherF = async (
   app, data,
   mockUser,
   AdminData: fullSignUpType) => {
-    console.log(data)
   await deleteUser(
     app,
     data.id,
     AdminData.responseBody.jwtToken
   )
 }
+
+export const educationCRUD= async (app, data, _) => {
+  const educationRes = await createEducation(app, data)
+  await getEducation(app, data, educationRes.data)
+  
+  await createEducationTransl(app, data, educationRes.data)
+  await updateEducationTransl(app, data, educationRes.data)
+
+  await updateEducation(app, data, educationRes.data)
+  
+  await deleteEducation(app, data, educationRes.data)
+}
+
+// education
+
+// export const createEducationF = async () => {
+//   await createEducation()
+// }

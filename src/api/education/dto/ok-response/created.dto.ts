@@ -3,6 +3,7 @@ import {
   EDUCATION_EXAMPLES,
   EDUCATION_OK,
 } from '../../constants/education.constants';
+import { Education } from '@prisma/client';
 
 export class CreatedOkResponse {
   @ApiProperty({
@@ -15,5 +16,5 @@ export class CreatedOkResponse {
   @ApiProperty({
     example: EDUCATION_EXAMPLES,
   })
-  data: any;
+  data: Education;
 }

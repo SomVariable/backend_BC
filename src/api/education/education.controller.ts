@@ -27,6 +27,7 @@ import { CreateEducationInfoDto } from './dto/create-education-info.dto';
 import {
   ID_PARAM,
   TRANSLATION_ROUTE,
+  TRANSLATION_ROUTE_WITH_ID,
 } from 'src/common/constants/app.constants';
 import { BaseInterceptor } from 'src/common/interceptors/data-to-json';
 import { AccessJwtAuthGuard } from '../jwt-helper/guards/access-jwt.guard';
@@ -43,6 +44,8 @@ import { EducationCreateInfoInterceptor } from './interceptors/education-create-
 import { EducationUpdateInterceptor } from './interceptors/education-update.interceptor';
 import { EducationUpdateInfoInterceptor } from './interceptors/education-update-info.interceptor';
 import { EducationDeleteInterceptor } from './interceptors/education-delete.interceptor';
+import { UpdateEducationInfoDto } from './dto/update-education-info.dto';
+import { EducationGetInterceptor } from './interceptors/education-get.interceptor';
 
 @ApiTags('education')
 @ApiBearerAuth()
@@ -62,11 +65,12 @@ export class EducationController {
     @UserParam() jwtData: jwtType,
     @Body() createEducationDto: CreateEducationDto,
   ) {
-    return this.educationService.create(jwtData.id, createEducationDto);
+    return await this.educationService.create(jwtData.id, createEducationDto);
   }
 
   @Get(ID_PARAM)
   @UseGuards(EducationAccessToDataGuard)
+  @UseInterceptors(EducationGetInterceptor)
   async getEducation(@Param('id', ParseIntPipe) id: number) {
     return await this.educationService.findOne(id);
   }
@@ -90,7 +94,7 @@ export class EducationController {
     return await this.educationService.remove(educationId);
   }
 
-  @Post(TRANSLATION_ROUTE)
+  @Post(TRANSLATION_ROUTE_WITH_ID)
   @ApiOkResponse({ type: UpdatedOkResponse })
   @UseInterceptors(EducationCreateInfoInterceptor)
   @UseGuards(EducationAccessToDataGuard)
@@ -101,17 +105,17 @@ export class EducationController {
     return await this.educationService.createInfo(id, langCode, createEducationDto);
   }
 
-  @Patch(TRANSLATION_ROUTE)
+  @Patch(TRANSLATION_ROUTE_WITH_ID)
   @UseGuards(EducationAccessToDataGuard)
   @UseInterceptors(EducationUpdateInfoInterceptor)
   async updateInfo(
     @Param() { id, langCode }: TranslationParamDto,
-    @Body() createEducationInfoDto: CreateEducationInfoDto,
+    @Body() updateEducationInfoDto: UpdateEducationInfoDto,
   ) {
     return await this.educationService.updateInfo(
       id,
       langCode,
-      createEducationInfoDto,
+      updateEducationInfoDto,
     );
   }
 }

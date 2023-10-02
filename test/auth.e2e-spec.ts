@@ -30,13 +30,14 @@ describe('AuthController (e2e)', () => {
       imports: [AppModule, DatabaseModule],
     }).compile();
     
-    app = moduleFixture.createNestApplication();
+    app = await  moduleFixture.createNestApplication();
     
     const { httpAdapter } = app.get(HttpAdapterHost);
     app.useGlobalPipes(new ValidationPipe({ transform: true, whitelist: true }))
     app.useGlobalFilters(new PrismaClientExceptionFilter(httpAdapter));
 
     await app.init();
+    await app.listen(3000 + Math.floor(Math.random() * 20));
   });
   
   it('should sign up new user, and verify it', async () => {

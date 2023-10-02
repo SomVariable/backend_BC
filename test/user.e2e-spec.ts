@@ -15,7 +15,8 @@ import { createUserTest, fullSignUp, logoutUser, refreshToken, requestWithAdminP
 import { activeSession, blockSession, getSession } from './helpers/kv-store.helper';
 import { verifyUserSignUp } from './helpers/auth.helper';
 import { 
-  clearUser, deleteAnotherF, deleteSelf, 
+  clearUser, createEducation, deleteAnotherF, deleteSelf, 
+  educationCRUD, 
   getAnotherF, getOtherF, 
   getSelf, getSelfBadRequest, getSelfF, 
   getUserByEmail, updateSelf, updateSelfF } from './helpers/user.helper';
@@ -39,12 +40,13 @@ describe('User (e2e)', () => {
     })
     .compile();
 
-    app = moduleFixture.createNestApplication();
+    app = await moduleFixture.createNestApplication();
     const { httpAdapter } = app.get(HttpAdapterHost);
     app.useGlobalPipes(new ValidationPipe({ transform: true, whitelist: true }))
     app.useGlobalFilters(new PrismaClientExceptionFilter(httpAdapter));
     
     await app.init();
+    await app.listen(3000 + Math.floor(Math.random() * 20));
   });
 
   // // self
@@ -91,11 +93,17 @@ describe('User (e2e)', () => {
 
   //education:
 
-  it('should test CRUD education', async () => {
-    
+  it('should test create education', async () => {
+    const controlFunc = userControl(app, mockUser)
+    await controlFunc(createEducation)
   })
 
+  it('should test create education', async () => {
+    const controlFunc = userControl(app, mockUser)
+    await controlFunc(educationCRUD)
+  })
 
+  
   //avatar:
 
 

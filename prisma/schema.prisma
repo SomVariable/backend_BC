@@ -216,7 +216,7 @@ model EducationTranslation {
   langCode    String
   title       String
   university  String
-  Education   Education @relation(references: [id], fields: [educationId])
+  Education   Education @relation(references: [id], fields: [educationId], onDelete: Cascade)
   educationId Int       @unique
 
   @@id([langCode, educationId])

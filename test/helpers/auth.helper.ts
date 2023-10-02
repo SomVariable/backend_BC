@@ -189,8 +189,8 @@ export const userVerify = async (app, email: string, session: Session) => {
 }
 
 
-export const userControl = (app, mockUser) => {
-  return async (func: (app, data, mockUser) => void) => {
+export const userControl = (app, mockUser, _?: any) => {
+  return async (func: (app, data, mockUser, _?) => void) => {
     const data = await fullSignUp(app, {
       email: mockUser.email,
       password: mockUser.password
@@ -198,7 +198,7 @@ export const userControl = (app, mockUser) => {
 
     const { responseBody, responseVerifyBody } = data
 
-    await func(app, data, mockUser)
+    await func(app, data, mockUser, _)
 
     await deleteSelf(app, responseVerifyBody.data.jwtToken)
     await deleteSession(app, responseBody.person.id)

@@ -15,7 +15,7 @@ export class EducationInterceptor implements NestInterceptor {
       map((data: any) => {
         return {
           message: EDUCATION_OK.OK,
-          data,
+          ...data,
         };
       }),
     );

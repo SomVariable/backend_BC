@@ -331,7 +331,7 @@ Ref: ProfessionalInterest.userId > User.id [delete: Cascade]
 
 Ref: Award.userId > User.id [delete: Cascade]
 
-Ref: EducationTranslation.educationId > Education.id
+Ref: EducationTranslation.educationId > Education.id [delete: Cascade]
 
 Ref: TagTranslation.tagId > Tag.id [delete: Cascade]
 

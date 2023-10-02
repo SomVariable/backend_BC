@@ -1,3 +1,4 @@
+import { RedisClient } from 'redis';
 import {
     Inject,
     Injectable,
@@ -14,14 +15,17 @@ import { MISSING_SESSION_MESSAGE } from './constants/kv-store.constants';
 import { UpdateSessionDto } from './dto/update-session.dto';
 
 @Injectable()
-export class KvStoreService  {
+export class KvStoreService implements OnModuleDestroy {
     constructor(
-        @Inject(CACHE_MANAGER) private cacheManager: Cache
+        @Inject(CACHE_MANAGER) private cacheManager: Cache,
+        @Inject('REDIS_STORE') private readonly store: RedisClient,
     ) { }
 
-    // async onModuleDestroy() {
-    //     await this.store.getClient().quit()
-    // }
+    async onModuleDestroy() {
+        if(process.env.NODE_ENV === 'test'){
+            await this.store.getClient().quit()
+        }
+    }
     
     async createSession({ id }: CreateSession): Promise<Session> {
         try {

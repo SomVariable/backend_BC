@@ -4,8 +4,8 @@
 /.env
 /.vscode
 /schemas
-prisma/dbml
-prisma/migrations
+./prisma/dbml
+./prisma/migrations
 
 # Logs
 logs
