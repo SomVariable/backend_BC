@@ -17,6 +17,7 @@ import { verifyUserSignUp } from './helpers/auth.helper';
 import { 
   clearUser, createEducation, deleteAnotherF, deleteSelf, 
   educationCRUD, 
+  educationERRORS, 
   getAnotherF, getOtherF, 
   getSelf, getSelfBadRequest, getSelfF, 
   getUserByEmail, updateSelf, updateSelfF } from './helpers/user.helper';
@@ -93,16 +94,15 @@ describe('User (e2e)', () => {
 
   //education:
 
-  it('should test create education', async () => {
-    const controlFunc = userControl(app, mockUser)
-    await controlFunc(createEducation)
-  })
-
-  it('should test create education', async () => {
+  it('should test CRUD education', async () => {
     const controlFunc = userControl(app, mockUser)
     await controlFunc(educationCRUD)
   })
 
+  it('should test ERRORS education', async () => {
+    const controlFunc = userControl(app, mockUser)
+    await controlFunc(educationERRORS)
+  })
   
   //avatar:
 

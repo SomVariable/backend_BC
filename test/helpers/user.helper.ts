@@ -3,7 +3,7 @@ import * as request from 'supertest';
 import { UpdateUserDto } from 'src/api/user/dto/update-user.dto';
 import { deleteSession } from './kv-store.helper';
 import { fullSignUpType } from 'test/types/test.types';
-import { requestWithAdminPermission } from './auth.helper';
+import { fullSignUp, requestWithAdminPermission, userControl } from './auth.helper';
 import { CreateEducationDto } from 'src/api/education/dto/create-education.dto';
 import { CreatedOkResponse } from 'src/api/education/dto/ok-response/created.dto';
 import { UpdatedOkResponse } from 'src/api/education/dto/ok-response/updated.dto';
@@ -14,6 +14,7 @@ import { CreateEducationInfoDto } from 'src/api/education/dto/create-education-i
 import { InfoCreatedOkResponse } from 'src/api/education/dto/ok-response/info-created';
 import { UpdateEducationInfoDto } from 'src/api/education/dto/update-education-info.dto';
 import { InfoUpdatedOkResponse } from 'src/api/education/dto/ok-response/info-updated';
+import { STRONG_PASSWORD } from 'test/constants/test.constants';
 
 export const clearUser = async (app, mockUser) => {
   const response = await request(app.getHttpServer())
@@ -425,6 +426,70 @@ export const updateEducationTransl = async (app, { responseVerifyBody }: fullSig
   return responseBody
 }
 
+export const wrongEdDataCreate = async (app, {responseVerifyBody}) => {
+  const educationDTO = {
+    specialty: 123,
+    graduationYear: "10-2000-10",
+    studyYear: "Hello world",
+    qualification: {
+      something: 13
+    }
+  }
+
+  await request(app.getHttpServer())
+    .post(`/education`)
+    .set('Authorization', `Bearer ${responseVerifyBody.data.jwtToken}`)
+    .set('User-Agent', 'Mobile')
+    .send(educationDTO)
+    .expect(400);
+}
+
+export const wrongEdIdGet = async (app, {responseVerifyBody}) => {
+  
+  await request(app.getHttpServer())
+  .get(`/education/9999999`)
+  .set('Authorization', `Bearer ${responseVerifyBody.data.jwtToken}`)
+  .set('User-Agent', 'Mobile')
+  .expect(404);
+}
+
+export const wrongEdIdUpdate = async (app, {responseVerifyBody}) => {
+  await request(app.getHttpServer())
+  .patch(`/education/9999999`)
+  .set('Authorization', `Bearer ${responseVerifyBody.data.jwtToken}`)
+  .set('User-Agent', 'Mobile')
+  .expect(404);
+}
+
+export const wrongEdIdDelete = async (app, {responseVerifyBody}) => {
+  await request(app.getHttpServer())
+  .delete(`/education/9999999`)
+  .set('Authorization', `Bearer ${responseVerifyBody.data.jwtToken}`)
+  .set('User-Agent', 'Mobile')
+  .expect(404);
+}
+
+export const wrongEdUser = async (app, {responseVerifyBody}, education: Education) => {
+  await request(app.getHttpServer())
+  .get(`/education/${education.id}`)
+  .set('Authorization', `Bearer ${responseVerifyBody.data.jwtToken}`)
+  .set('User-Agent', 'Mobile')
+  .expect(403);
+
+  await request(app.getHttpServer())
+  .patch(`/education/${education.id}`)
+  .set('Authorization', `Bearer ${responseVerifyBody.data.jwtToken}`)
+  .set('User-Agent', 'Mobile')
+  .expect(403);
+
+  await request(app.getHttpServer())
+  .delete(`/education/${education.id}`)
+  .set('Authorization', `Bearer ${responseVerifyBody.data.jwtToken}`)
+  .set('User-Agent', 'Mobile')
+  .expect(403);
+}
+
+
 // full 
 //self
 export const getSelfF = async (app, { responseVerifyBody }, mockUser) => {
@@ -483,8 +548,20 @@ export const educationCRUD= async (app, data, _) => {
   await deleteEducation(app, data, educationRes.data)
 }
 
-// education
+export const educationERRORS = async (app, data, _ ) => {
+  const educationRes = await createEducation(app, data)
+  
+  const secondUserData = await fullSignUp(app, {
+    email: 'anotherUser@gmail.com',
+    password: STRONG_PASSWORD
+  })
 
-// export const createEducationF = async () => {
-//   await createEducation()
-// }
+  await wrongEdDataCreate(app, data)
+  await wrongEdIdGet(app, data)
+  await wrongEdIdUpdate(app, data)
+  await wrongEdIdDelete(app, data)
+  await wrongEdUser(app, secondUserData, educationRes.data)
+  await deleteEducation(app, data, educationRes.data)
+
+  await deleteSelf(app, secondUserData.responseVerifyBody.data.jwtToken)
+}

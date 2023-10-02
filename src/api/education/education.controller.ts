@@ -46,6 +46,7 @@ import { EducationUpdateInfoInterceptor } from './interceptors/education-update-
 import { EducationDeleteInterceptor } from './interceptors/education-delete.interceptor';
 import { UpdateEducationInfoDto } from './dto/update-education-info.dto';
 import { EducationGetInterceptor } from './interceptors/education-get.interceptor';
+import { EducationExistenceGuard } from './guards/data_existence_check.guard';
 
 @ApiTags('education')
 @ApiBearerAuth()
@@ -69,7 +70,7 @@ export class EducationController {
   }
 
   @Get(ID_PARAM)
-  @UseGuards(EducationAccessToDataGuard)
+  @UseGuards(EducationExistenceGuard, EducationAccessToDataGuard)
   @UseInterceptors(EducationGetInterceptor)
   async getEducation(@Param('id', ParseIntPipe) id: number) {
     return await this.educationService.findOne(id);
@@ -77,7 +78,7 @@ export class EducationController {
 
   @Patch(ID_PARAM)
   @ApiOkResponse({ type: UpdatedOkResponse })
-  @UseGuards(EducationAccessToDataGuard)
+  @UseGuards(EducationExistenceGuard, EducationAccessToDataGuard)
   @UseInterceptors(EducationUpdateInterceptor)
   async update(
     @Param('id') id: number,
@@ -88,7 +89,7 @@ export class EducationController {
 
   @Delete(ID_PARAM)
   @ApiOkResponse({ type: DeletedOkResponse })
-  @UseGuards(EducationAccessToDataGuard)
+  @UseGuards(EducationExistenceGuard, EducationAccessToDataGuard)
   @UseInterceptors(EducationDeleteInterceptor)
   async delete(@Param('id', ParseIntPipe) educationId: number) {
     return await this.educationService.remove(educationId);
@@ -97,7 +98,7 @@ export class EducationController {
   @Post(TRANSLATION_ROUTE_WITH_ID)
   @ApiOkResponse({ type: UpdatedOkResponse })
   @UseInterceptors(EducationCreateInfoInterceptor)
-  @UseGuards(EducationAccessToDataGuard)
+  @UseGuards(EducationExistenceGuard, EducationAccessToDataGuard)
   async createInfo(
     @Param() { id, langCode }: TranslationParamDto,
     @Body() createEducationDto: CreateEducationInfoDto,
@@ -106,7 +107,7 @@ export class EducationController {
   }
 
   @Patch(TRANSLATION_ROUTE_WITH_ID)
-  @UseGuards(EducationAccessToDataGuard)
+  @UseGuards(EducationExistenceGuard, EducationAccessToDataGuard)
   @UseInterceptors(EducationUpdateInfoInterceptor)
   async updateInfo(
     @Param() { id, langCode }: TranslationParamDto,

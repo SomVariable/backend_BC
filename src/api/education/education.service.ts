@@ -17,11 +17,7 @@ export class EducationService {
   }
 
   async createInfo(educationId, langCode, data: CreateEducationInfoDto) {
-    const education = await this.findOne(educationId);
-
-    if (!education) {
-      throw new NotFoundException(EDUCATION_NOT_FOUND.MISSING_EDUCATION);
-    }
+    await this.findOne(educationId);
 
     return await this.prismaService.educationTranslation.create({
       data: { educationId, langCode, ...data },
@@ -29,11 +25,7 @@ export class EducationService {
   }
 
   async update(id: number, data: UpdateEducationDto) {
-    const education = await this.findOne(id);
-
-    if (!education) {
-      throw new NotFoundException(EDUCATION_NOT_FOUND.MISSING_EDUCATION);
-    }
+    await this.findOne(id);
 
     return await this.prismaService.education.update({
       where: {
@@ -71,11 +63,17 @@ export class EducationService {
   }
 
   async findOne(id: number) {
-    return await this.prismaService.education.findFirst({
+    const education = await this.prismaService.education.findFirst({
       where: {
         id,
       },
     });
+
+    if(!education) {
+      throw new NotFoundException(EDUCATION_NOT_FOUND.MISSING_EDUCATION)
+    }
+
+    return education
   }
 
   async remove(id: number) {
