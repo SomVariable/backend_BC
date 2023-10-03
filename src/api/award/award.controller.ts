@@ -38,9 +38,9 @@ import { AccessJwtAuthGuard } from '../jwt-helper/guards/access-jwt.guard';
 import { AwardBadRequestErrorResponse } from './dto/award-bad-request-error.dto';
 import { AwardNotFoundErrorResponse } from './dto/award-not-found-error.dto';
 import { GetAwardOkResponse } from './dto/ok-response/get-award.dto';
-import { CreatedOkResponse } from './dto/ok-response/created.dto';
+import { CreatedAwardOkResponse } from './dto/ok-response/created.dto';
 import { GetAwardsOkResponse } from './dto/ok-response/get-awards.dto';
-import { DeletedOkResponse } from './dto/ok-response/deleted.dto';
+import { DeletedAwardOkResponse } from './dto/ok-response/deleted.dto';
 import { CreatedInfoAwardOkResponse } from './dto/ok-response/info-created.dto';
 import { UpdatedInfoAwardOkResponse } from './dto/ok-response/info-updated.dto';
 import { CreateAwardInterceptor } from './interceptors/create.interceptor';
@@ -61,7 +61,7 @@ export class AwardController {
   constructor(private readonly awardService: AwardService) {}
 
   @Post()
-  @ApiOkResponse({ type: CreatedOkResponse })
+  @ApiOkResponse({ type: CreatedAwardOkResponse })
   @UseInterceptors(CreateAwardInterceptor)
   async create(@UserParam() jwtData: jwtType) {
     return await this.awardService.create(jwtData.id);
@@ -92,7 +92,7 @@ export class AwardController {
   }
 
   @Delete(ID_PARAM)
-  @ApiOkResponse({ type: DeletedOkResponse })
+  @ApiOkResponse({ type: DeletedAwardOkResponse })
   @UseInterceptors(UpdateAwardInterceptor)
   @UseGuards(AwardAccessToDataGuard)
   async delete(@Param('id', ParseIntPipe) id: number) {

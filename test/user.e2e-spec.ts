@@ -16,12 +16,13 @@ import { activeSession, blockSession, getSession } from './helpers/kv-store.help
 import { verifyUserSignUp } from './helpers/auth.helper';
 import { 
   avatarF,
+  awardsF,
   clearUser, createEducation, deleteAnotherF, deleteSelf, 
   educationCRUD, 
   educationERRORS, 
   getAnotherF, getOtherF, 
   getSelf, getSelfBadRequest, getSelfF, 
-  getUserByEmail, updateSelf, updateSelfF } from './helpers/user.helper';
+  getUserByEmail, professionalInterestF, updateSelf, updateSelfF } from './helpers/user.helper';
 import { UpdateUserDto } from 'src/api/user/dto/update-user.dto';
 import { PrismaClientExceptionFilter } from 'nestjs-prisma';
 
@@ -105,7 +106,7 @@ describe('User (e2e)', () => {
     await controlFunc(educationERRORS)
   })
   
-  //avatar:  connect ECONNREFUSED 127.0.0.1:80
+  //avatar:
 
   it('should test avatar', async () => {
     const controlFunc = userControl(app, mockUser)
@@ -115,13 +116,15 @@ describe('User (e2e)', () => {
   //professional_interests: 
   
   it('should test CRUD professional_interests', async () => {
-    
+    const controlFunc = userControl(app, mockUser)
+    await controlFunc(professionalInterestF)
   })
 
   //awards 
 
   it('should test CRUD awards', async () => {
-    
+    const controlFunc = userControl(app, mockUser)
+    await controlFunc(awardsF)
   })
 
   //news

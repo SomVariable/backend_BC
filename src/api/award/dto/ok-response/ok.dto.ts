@@ -12,5 +12,5 @@ export class AwardOkResponse {
   @ApiProperty({
     example: AWARD_EXAMPLES,
   })
-  data: Award;
+  data: any;
 }

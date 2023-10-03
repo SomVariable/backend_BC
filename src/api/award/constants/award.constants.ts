@@ -1,4 +1,5 @@
 export enum AWARD_OK {
+  OK = 'OK',
   CREATED = 'the area has been successfully established',
   UPDATED = 'the area has been successfully update',
   DELETED = 'the area has been successfully deleted',

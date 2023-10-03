@@ -34,10 +34,10 @@ import { ProfessionalInterestInterceptor } from './interceptors/professional-int
 import { PInterestOkResponse } from './dto/ok-response/ok.dto';
 import { PInterestBadRequestErrorResponse } from './dto/professional-interest-bad-request-error.dto';
 import { PInterestNotFoundErrorResponse } from './dto/professional-interest-not-found-error.dto';
+import { PInterestInfoOkResponse } from './dto/ok-response/ok-info.dto';
 
 @ApiTags('professional-interests')
 @ApiBearerAuth()
-@ApiOkResponse({ type: PInterestOkResponse })
 @ApiBadRequestResponse({ type: PInterestBadRequestErrorResponse })
 @ApiNotFoundResponse({ type: PInterestNotFoundErrorResponse })
 @UseInterceptors(BaseInterceptor, ProfessionalInterestInterceptor)
@@ -49,11 +49,13 @@ export class ProfessionalInterestController {
   ) {}
 
   @Post()
+  @ApiOkResponse({ type: PInterestOkResponse })
   async create(@UserParam() jwtData: jwtType) {
     return await this.professionalInterestService.create(jwtData.id);
   }
 
   @Post(TRANSLATION_ROUTE_WITH_ID)
+  @ApiOkResponse({ type: PInterestInfoOkResponse })
   @UseGuards(PIAccessToDataGuard)
   async createInfo(
     @Param() { id, langCode }: TranslationParamDto,
@@ -67,17 +69,20 @@ export class ProfessionalInterestController {
   }
 
   @Get(ID_PARAM)
+  @ApiOkResponse({ type: PInterestOkResponse })
   @UseGuards(PIAccessToDataGuard)
   async getInterest(@Param('id') id: number) {
     return await this.professionalInterestService.findOne(id);
   }
 
   @Get()
+  @ApiOkResponse({ type: PInterestOkResponse })
   async getInterests(@UserParam() jwtData: jwtType) {
     return await this.professionalInterestService.findOne(jwtData.id);
   }
 
   @Patch(TRANSLATION_ROUTE_WITH_ID)
+  @ApiOkResponse({ type: PInterestInfoOkResponse })
   @UseGuards(PIAccessToDataGuard)
   async updateInfo(
     @Param() { id, langCode }: TranslationParamDto,
@@ -91,6 +96,7 @@ export class ProfessionalInterestController {
   }
 
   @Delete(ID_PARAM)
+  @ApiOkResponse({ type: PInterestOkResponse })
   @UseGuards(PIAccessToDataGuard)
   async deleteInterest(@Param('id', ParseIntPipe) id: number) {
     return await this.professionalInterestService.remove(id);
