@@ -15,6 +15,7 @@ import { createUserTest, fullSignUp, logoutUser, refreshToken, requestWithAdminP
 import { activeSession, blockSession, getSession } from './helpers/kv-store.helper';
 import { verifyUserSignUp } from './helpers/auth.helper';
 import { 
+  avatarF,
   clearUser, createEducation, deleteAnotherF, deleteSelf, 
   educationCRUD, 
   educationERRORS, 
@@ -47,7 +48,7 @@ describe('User (e2e)', () => {
     app.useGlobalFilters(new PrismaClientExceptionFilter(httpAdapter));
     
     await app.init();
-    await app.listen(3000 + Math.floor(Math.random() * 20));
+    await app.listen(3000 + Math.floor(Math.random() * 10 + 1));
   });
 
   // // self
@@ -104,8 +105,12 @@ describe('User (e2e)', () => {
     await controlFunc(educationERRORS)
   })
   
-  //avatar:
+  //avatar:  connect ECONNREFUSED 127.0.0.1:80
 
+  it('should test avatar', async () => {
+    const controlFunc = userControl(app, mockUser)
+    await controlFunc(avatarF)
+  })
 
   //professional_interests: 
   

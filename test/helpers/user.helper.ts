@@ -293,7 +293,7 @@ export const createEducation = async (
 }
 
 export const getEducation = async (
-  app, 
+  app,
   { responseVerifyBody }: fullSignUpType,
   education: Education) => {
   const response = await request(app.getHttpServer())
@@ -316,8 +316,8 @@ export const getEducation = async (
 }
 
 export const updateEducation = async (
-  app, 
-  { responseVerifyBody }: fullSignUpType, 
+  app,
+  { responseVerifyBody }: fullSignUpType,
   education: Education): Promise<UpdatedOkResponse> => {
   const educationDTO: UpdateEducationDto = {
     specialty: "programmer",
@@ -372,8 +372,8 @@ export const deleteEducation = async (
 export const createEducationTransl = async (
   app, { responseVerifyBody }: fullSignUpType,
   education: Education) => {
-    const langCode = 'en' 
-    const educationDTO: CreateEducationInfoDto = {
+  const langCode = 'en'
+  const educationDTO: CreateEducationInfoDto = {
     title: "title",
     university: "university"
   }
@@ -400,8 +400,8 @@ export const createEducationTransl = async (
 
 export const updateEducationTransl = async (app, { responseVerifyBody }: fullSignUpType,
   education: Education) => {
-    const langCode = 'en' 
-    const educationDTO: UpdateEducationInfoDto = {
+  const langCode = 'en'
+  const educationDTO: UpdateEducationInfoDto = {
     title: "title2",
     university: "university2"
   }
@@ -426,7 +426,7 @@ export const updateEducationTransl = async (app, { responseVerifyBody }: fullSig
   return responseBody
 }
 
-export const wrongEdDataCreate = async (app, {responseVerifyBody}) => {
+export const wrongEdDataCreate = async (app, { responseVerifyBody }) => {
   const educationDTO = {
     specialty: 123,
     graduationYear: "10-2000-10",
@@ -444,49 +444,49 @@ export const wrongEdDataCreate = async (app, {responseVerifyBody}) => {
     .expect(400);
 }
 
-export const wrongEdIdGet = async (app, {responseVerifyBody}) => {
-  
+export const wrongEdIdGet = async (app, { responseVerifyBody }) => {
+
   await request(app.getHttpServer())
-  .get(`/education/9999999`)
-  .set('Authorization', `Bearer ${responseVerifyBody.data.jwtToken}`)
-  .set('User-Agent', 'Mobile')
-  .expect(404);
+    .get(`/education/9999999`)
+    .set('Authorization', `Bearer ${responseVerifyBody.data.jwtToken}`)
+    .set('User-Agent', 'Mobile')
+    .expect(404);
 }
 
-export const wrongEdIdUpdate = async (app, {responseVerifyBody}) => {
+export const wrongEdIdUpdate = async (app, { responseVerifyBody }) => {
   await request(app.getHttpServer())
-  .patch(`/education/9999999`)
-  .set('Authorization', `Bearer ${responseVerifyBody.data.jwtToken}`)
-  .set('User-Agent', 'Mobile')
-  .expect(404);
+    .patch(`/education/9999999`)
+    .set('Authorization', `Bearer ${responseVerifyBody.data.jwtToken}`)
+    .set('User-Agent', 'Mobile')
+    .expect(404);
 }
 
-export const wrongEdIdDelete = async (app, {responseVerifyBody}) => {
+export const wrongEdIdDelete = async (app, { responseVerifyBody }) => {
   await request(app.getHttpServer())
-  .delete(`/education/9999999`)
-  .set('Authorization', `Bearer ${responseVerifyBody.data.jwtToken}`)
-  .set('User-Agent', 'Mobile')
-  .expect(404);
+    .delete(`/education/9999999`)
+    .set('Authorization', `Bearer ${responseVerifyBody.data.jwtToken}`)
+    .set('User-Agent', 'Mobile')
+    .expect(404);
 }
 
-export const wrongEdUser = async (app, {responseVerifyBody}, education: Education) => {
+export const wrongEdUser = async (app, { responseVerifyBody }, education: Education) => {
   await request(app.getHttpServer())
-  .get(`/education/${education.id}`)
-  .set('Authorization', `Bearer ${responseVerifyBody.data.jwtToken}`)
-  .set('User-Agent', 'Mobile')
-  .expect(403);
+    .get(`/education/${education.id}`)
+    .set('Authorization', `Bearer ${responseVerifyBody.data.jwtToken}`)
+    .set('User-Agent', 'Mobile')
+    .expect(403);
 
   await request(app.getHttpServer())
-  .patch(`/education/${education.id}`)
-  .set('Authorization', `Bearer ${responseVerifyBody.data.jwtToken}`)
-  .set('User-Agent', 'Mobile')
-  .expect(403);
+    .patch(`/education/${education.id}`)
+    .set('Authorization', `Bearer ${responseVerifyBody.data.jwtToken}`)
+    .set('User-Agent', 'Mobile')
+    .expect(403);
 
   await request(app.getHttpServer())
-  .delete(`/education/${education.id}`)
-  .set('Authorization', `Bearer ${responseVerifyBody.data.jwtToken}`)
-  .set('User-Agent', 'Mobile')
-  .expect(403);
+    .delete(`/education/${education.id}`)
+    .set('Authorization', `Bearer ${responseVerifyBody.data.jwtToken}`)
+    .set('User-Agent', 'Mobile')
+    .expect(403);
 }
 
 
@@ -536,21 +536,22 @@ export const deleteAnotherF = async (
   )
 }
 
-export const educationCRUD= async (app, data, _) => {
+
+export const educationCRUD = async (app, data, _) => {
   const educationRes = await createEducation(app, data)
   await getEducation(app, data, educationRes.data)
-  
+
   await createEducationTransl(app, data, educationRes.data)
   await updateEducationTransl(app, data, educationRes.data)
 
   await updateEducation(app, data, educationRes.data)
-  
+
   await deleteEducation(app, data, educationRes.data)
 }
 
-export const educationERRORS = async (app, data, _ ) => {
+export const educationERRORS = async (app, data, _) => {
   const educationRes = await createEducation(app, data)
-  
+
   const secondUserData = await fullSignUp(app, {
     email: 'anotherUser@gmail.com',
     password: STRONG_PASSWORD
@@ -564,4 +565,51 @@ export const educationERRORS = async (app, data, _ ) => {
   await deleteEducation(app, data, educationRes.data)
 
   await deleteSelf(app, secondUserData.responseVerifyBody.data.jwtToken)
+}
+
+
+//avatar
+
+export const uploadAvatar = async (app, data: fullSignUpType) => {
+  const response = await request(app.getHttpServer())
+    .post('/user-profile/avatar')
+    .attach('file', './test/test-images/avatar.png')
+    .set('Authorization', `Bearer ${data.responseVerifyBody.data.jwtToken}`);
+
+  expect(response.status).toBe(201);
+}
+
+export const getAvatarData = async (app, data: fullSignUpType) => {
+  const response = await request(app.getHttpServer())
+    .get('/user-profile/avatar')
+    .set('Authorization', `Bearer ${data.responseVerifyBody.data.jwtToken}`);
+
+  expect(response.status).toBe(200);
+  return response
+}
+
+export const getAvatarImage = async (app, {responseBody, responseVerifyBody}: fullSignUpType) => {
+  const response = await request(app.getHttpServer())
+    .get(`/photo/${responseBody.person.id}/AVATAR`) 
+    .set('Authorization', `Bearer ${responseVerifyBody.data.jwtToken}`);
+
+
+  expect(response.status).toBe(200); 
+  expect(response.header['content-type']).toBe('application/octet-stream');
+  expect(response.header['content-disposition']).toContain('attachment;');
+}
+
+export const deleteAvatar = async (app, {responseBody, responseVerifyBody}: fullSignUpType) => {
+  const response = await request(app.getHttpServer())
+    .get(`/photo/${responseBody.person.id}/AVATAR`) 
+    .set('Authorization', `Bearer ${responseVerifyBody.data.jwtToken}`);
+  
+  expect(response.status).toBe(200); 
+}
+
+export const avatarF = async (app, data, _) => {
+  await uploadAvatar(app, data)
+  await getAvatarData(app, data)
+  await getAvatarImage(app, data)
+  await deleteAvatar(app, data)
 }

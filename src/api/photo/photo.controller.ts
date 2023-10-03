@@ -51,15 +51,7 @@ export class PhotoController {
     return await this.photoService.create(file, body);
   }
 
-  @Get(`${ID_PARAM}/:photoType/file-info`)
-  async getFileInfo(
-    @Param('id', ParseIntPipe) id: number,
-    @Param('photoType') photoType: PhotoType,
-  ) {
-    return await this.photoService.findOne(id, photoType);
-  }
-
-  @Get(`${ID_PARAM}/:photoType`)
+  @Get(`${ID_PARAM}/${PHOTO_TYPE_PATH}`)
   async fileInfo(
     @Param('id', ParseIntPipe) id: number,
     @Param('photoType') photoType: PhotoType,
@@ -76,6 +68,14 @@ export class PhotoController {
     );
 
     return stream.pipe(res);
+  }
+
+  @Get(`${ID_PARAM}/${PHOTO_TYPE_PATH}/file-info`)
+  async getFileInfo(
+    @Param('id', ParseIntPipe) id: number,
+    @Param('photoType') photoType: PhotoType,
+  ) {
+    return await this.photoService.findOne(id, photoType);
   }
 
   @Delete(`${ID_PARAM}/${PHOTO_TYPE_PATH}`)

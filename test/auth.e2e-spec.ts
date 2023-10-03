@@ -37,7 +37,7 @@ describe('AuthController (e2e)', () => {
     app.useGlobalFilters(new PrismaClientExceptionFilter(httpAdapter));
 
     await app.init();
-    await app.listen(3000 + Math.floor(Math.random() * 20));
+    await app.listen(3000 + Math.floor(Math.random() * 10 + 12));
   });
   
   it('should sign up new user, and verify it', async () => {
