@@ -25,15 +25,19 @@ import { ID_PARAM } from 'src/common/constants/app.constants';
 import { UpdateOfferDto } from './dto/update-offer.dto';
 import { OfferBadRequestErrorResponse } from './dto/offer-bad-request-error.dto';
 import { OfferNotFoundErrorResponse } from './dto/offer-not-found-error.dto';
-import { CreatedOkResponse } from './dto/ok-response/created.dto';
-import { UpdatedOkResponse } from './dto/ok-response/updated.dto';
-import { DeletedOkResponse } from './dto/ok-response/deleted.dto';
-import { GetOfferingsOkResponse } from './dto/ok-response/get-areas.dto';
-import { GetOfferOkResponse } from './dto/ok-response/get-area.dto';
+import { CreatedOfferOkResponse } from './dto/ok-response/created.dto';
+import { UpdatedOfferOkResponse } from './dto/ok-response/updated.dto';
+import { DeletedOfferOkResponse } from './dto/ok-response/deleted.dto';
+import { GetOfferingsOkResponse } from './dto/ok-response/get-offerings.dto';
+import { GetOfferOkResponse } from './dto/ok-response/get-offer.dto';
 import { CreateOfferInterceptor } from './interceptors/create-area.interceptor';
 import { GetOfferInterceptor } from './interceptors/get-area.interceptor';
 import { UpdateOfferInterceptor } from './interceptors/update-area.interceptor';
 import { DeleteOfferInterceptor } from './interceptors/delete-area.interceptor';
+import { RolesDecorator } from '../roles/roles.decorator';
+import { Role } from '@prisma/client';
+import { RolesGuard } from '../auth/guards/roles.guard';
+import { OfferOkResponse } from './dto/ok-response/ok.dto';
 
 @Controller('service')
 @ApiTags('service')
@@ -41,12 +45,13 @@ import { DeleteOfferInterceptor } from './interceptors/delete-area.interceptor';
 @ApiBadRequestResponse({ type: OfferBadRequestErrorResponse })
 @ApiNotFoundResponse({ type: OfferNotFoundErrorResponse })
 @UseInterceptors(BaseInterceptor)
-@UseGuards(AccessJwtAuthGuard)
 export class OfferingsController {
   constructor(private readonly offeringsService: OfferingsService) {}
 
   @Post()
-  @ApiOkResponse({ type: CreatedOkResponse })
+  @RolesDecorator(Role.ADMIN)
+  @UseGuards(AccessJwtAuthGuard, RolesGuard)
+  @ApiOkResponse({ type: CreatedOfferOkResponse })
   @UseInterceptors(CreateOfferInterceptor)
   async create(@Body() data: CreateOfferDto) {
     return await this.offeringsService.create(data);
@@ -67,7 +72,9 @@ export class OfferingsController {
   }
 
   @Patch(ID_PARAM)
-  @ApiOkResponse({ type: UpdatedOkResponse })
+  @RolesDecorator(Role.ADMIN)
+  @UseGuards(AccessJwtAuthGuard, RolesGuard)
+  @ApiOkResponse({ type: UpdatedOfferOkResponse })
   @UseInterceptors(UpdateOfferInterceptor)
   async update(
     @Param('id', ParseIntPipe) id: number,
@@ -76,8 +83,19 @@ export class OfferingsController {
     return await this.offeringsService.update(id, data);
   }
 
+  @Delete()
+  @RolesDecorator(Role.ADMIN)
+  @UseGuards(AccessJwtAuthGuard, RolesGuard)
+  @ApiOkResponse({ type: DeletedOfferOkResponse })
+  @UseInterceptors(DeleteOfferInterceptor)
+  async deleteMany() {
+    return await this.offeringsService.deleteMany();
+  }
+
   @Delete(ID_PARAM)
-  @ApiOkResponse({ type: DeletedOkResponse })
+  @RolesDecorator(Role.ADMIN)
+  @UseGuards(AccessJwtAuthGuard, RolesGuard)
+  @ApiOkResponse({ type: DeletedOfferOkResponse })
   @UseInterceptors(DeleteOfferInterceptor)
   async delete(@Param('id', ParseIntPipe) id: number) {
     return await this.offeringsService.delete(id);

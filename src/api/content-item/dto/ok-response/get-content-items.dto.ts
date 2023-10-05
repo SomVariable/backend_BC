@@ -7,5 +7,5 @@ export class GetContentItemsOkResponse extends ContentItemOkResponse {
   @ApiProperty({
     example: CONTENT_ITEM_WITH_TRANSLATION,
   })
-  data: ContentItem;
+  data: ContentItem[];
 }

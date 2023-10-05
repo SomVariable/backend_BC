@@ -17,7 +17,7 @@ import { verifyUserSignUp } from './helpers/auth.helper';
 import { 
   avatarF,
   awardsF,
-  clearUser, createEducation, deleteAnotherF, deleteSelf, 
+  clearUser, contentItemF, createEducation, deleteAnotherF, deleteSelf, 
   educationCRUD, 
   educationERRORS, 
   getAnotherF, getOtherF, 
@@ -50,6 +50,8 @@ describe('User (e2e)', () => {
     
     await app.init();
     await app.listen(3000 + Math.floor(Math.random() * 10 + 1));
+
+    await clearUser(app, mockUser)
   });
 
   // // self
@@ -73,7 +75,7 @@ describe('User (e2e)', () => {
     await deleteSelf(app, responseVerifyBody.data.jwtToken)
   })
 
-  // //other:
+  //other:
 
   it('should get another user', async () => {
     const controlFunc = userControl(app, mockUser)
@@ -125,6 +127,20 @@ describe('User (e2e)', () => {
   it('should test CRUD awards', async () => {
     const controlFunc = userControl(app, mockUser)
     await controlFunc(awardsF)
+  })
+
+  // content-item
+
+  it('should test content-item ok response', async () => {
+    const controlFunc = userControl(app, mockUser)
+    await controlFunc(contentItemF)
+  })
+
+  //tag
+
+  it('should test tag ok response', async () => {
+    const controlFunc = userControl(app, mockUser)
+    await controlFunc(contentItemF)
   })
 
   //news

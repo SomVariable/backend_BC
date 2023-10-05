@@ -1,3 +1,25 @@
+import { Area, CategoryTranslation, Practice, Prisma, Service } from "@prisma/client"
+
+
+export type PracticeWithTranslation = Practice & {
+  CategoryTranslation: CategoryTranslation[]
+}
+
+export type PracticeWithFullData = Practice & {
+  CategoryTranslation: CategoryTranslation[]
+  areasIds: Area[],
+  servicesIds: Service[]
+}
+
+export const PracticeIncludeTranslation: Prisma.PracticeInclude = {
+  CategoryTranslation: true,
+};
+
+export const PracticeIncludePractices: Prisma.PracticeInclude = {
+  areasIds: true,
+  servicesIds: true
+};
+
 export enum PRACTICE_OK {
   OK = 'OK',
   CREATED = 'the practice has been successfully established',

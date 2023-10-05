@@ -15,5 +15,5 @@ export class ContentItemOkResponse {
   @ApiProperty({
     example: CONTENT_ITEM_EXAMPLES,
   })
-  data: ContentItem;
+  data: any;
 }

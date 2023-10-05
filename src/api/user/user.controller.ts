@@ -92,7 +92,6 @@ export class UsersController {
   @UseInterceptors(UsersInterceptor)
   @ApiOkResponse({ type: GetUsersOkResponse })
   async findUsers(@Query() { limit, offset }: QueryPaginationParam) {
-
     const users = await this.userService.findUsers(offset, limit);
     const totalCount = await this.userService.getTotalCount();
     const returnData: usersResponse = {

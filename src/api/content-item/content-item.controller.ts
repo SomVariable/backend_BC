@@ -25,18 +25,20 @@ import {
 } from 'src/common/constants/app.constants';
 import { ContentItemAccessToDataGuard } from './guards/access-to-data.guard';
 import { BaseInterceptor } from 'src/common/interceptors/data-to-json';
-import { CreatedOkResponse } from './dto/ok-response/created.dto';
+import { CreatedContentItemOkResponse } from './dto/ok-response/created.dto';
 import { CreateContentItemInfoInterceptor } from './interceptors/create-content-item-info.interceptor';
 import { UpdateContentItemInterceptor } from './interceptors/update-content-item.interceptor';
-import { DeletedOkResponse } from './dto/ok-response/deleted.dto';
+import { DeletedContentItemOkResponse } from './dto/ok-response/deleted.dto';
 import { DeleteContentItemInterceptor } from './interceptors/delete-content-item.interceptor';
-import { CreatedInfoOkResponse } from './dto/ok-response/created-info.dto';
+import { CreatedContentItemInfoOkResponse } from './dto/ok-response/created-info.dto';
 import { UpdateContentItemInfoInterceptor } from './interceptors/update-content-item-info.interceptor';
-import { UpdatedInfoOkResponse } from './dto/ok-response/updated-info.dto';
+import { UpdatedContentItemInfoOkResponse } from './dto/ok-response/updated-info.dto';
 import { GetContentItemInterceptor } from './interceptors/get-content-item.interceptor';
 import { GetContentItemOkResponse } from './dto/ok-response/get-content-item.dto';
 import { GetContentItemsOkResponse } from './dto/ok-response/get-content-items.dto';
 import { QueryPaginationParam } from 'src/common/dto/query-pagination.dto';
+import { UserParam } from 'src/common/decorators/param-user.decorator';
+import { jwtType } from '../jwt-helper/types/jwt-helper.types';
 
 @ApiTags('content-item')
 @ApiBearerAuth()
@@ -47,26 +49,27 @@ export class ContentItemController {
   constructor(private readonly publicationService: ContentItemService) {}
 
   @Post()
-  @ApiOkResponse({ type: CreatedOkResponse })
+  @ApiOkResponse({ type: CreatedContentItemOkResponse })
   @UseInterceptors(CreateContentItemInfoInterceptor)
   async create(@Body() data: CreateContentItemDto) {
     return await this.publicationService.create(data);
   }
 
   @Get(ID_PARAM)
-  @ApiOkResponse({ type: CreatedOkResponse })
+  @ApiOkResponse({ type: CreatedContentItemOkResponse })
   @ApiOkResponse({ type: GetContentItemOkResponse })
   @UseInterceptors(GetContentItemInterceptor)
   async getContentItem(@Param('id', ParseIntPipe) id: number) {
     return await this.publicationService.getContentItem(id);
   }
 
-  @Get(ID_PARAM)
+  @Get()
   @ApiOkResponse({ type: GetContentItemsOkResponse })
+  @UseGuards(AccessJwtAuthGuard)
   @UseInterceptors(GetContentItemInterceptor)
   async getContentItems(
     @Query() { limit, offset }: QueryPaginationParam,
-    @Param('id', ParseIntPipe) id: number,
+    @UserParam() {id}: jwtType,
   ) {
     return await this.publicationService.getContentItems(id, offset, limit);
   }
@@ -83,14 +86,14 @@ export class ContentItemController {
   }
 
   @Delete(ID_PARAM)
-  @ApiOkResponse({ type: DeletedOkResponse })
+  @ApiOkResponse({ type: DeletedContentItemOkResponse })
   @UseInterceptors(DeleteContentItemInterceptor)
   async delete(@Param('id', ParseIntPipe) id: number) {
     return await this.publicationService.deleteContentItem(id);
   }
 
   @Post(TRANSLATION_ROUTE_WITH_ID)
-  @ApiOkResponse({ type: CreatedInfoOkResponse })
+  @ApiOkResponse({ type: CreatedContentItemInfoOkResponse })
   @UseInterceptors(CreateContentItemInfoInterceptor)
   async createInfo(
     @Param() { id, langCode }: TranslationParamDto,
@@ -100,7 +103,7 @@ export class ContentItemController {
   }
 
   @Patch(TRANSLATION_ROUTE_WITH_ID)
-  @ApiOkResponse({ type: UpdatedInfoOkResponse })
+  @ApiOkResponse({ type: UpdatedContentItemInfoOkResponse })
   @UseInterceptors(UpdateContentItemInfoInterceptor)
   async updateInfo(
     @Param() { id, langCode }: TranslationParamDto,

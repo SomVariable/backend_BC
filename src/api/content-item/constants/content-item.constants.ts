@@ -27,32 +27,26 @@ export const CONTENT_ITEM_EXAMPLES = {
   updated_at: '2023-08-31T13:39:36.767Z',
 };
 
+export const CONTENT_ITEM_TRANSLATION = {
+  id: 1,
+  langCode: 'ru',
+  categoryTranslationType: 'AREA',
+  title: 'test',
+  text: 'test',
+  areaId: 1,
+  practiceId: null,
+  serviceId: null,
+}
+
 export const CONTENT_ITEM_WITH_TRANSLATION = {
   data: {
     id: 1,
     created_at: '2023-08-31T13:39:36.767Z',
     updated_at: '2023-08-31T13:39:36.767Z',
     CategoryTranslation: [
-      {
-        id: 1,
-        langCode: 'ru',
-        categoryTranslationType: 'AREA',
-        title: 'test',
-        text: 'test',
-        areaId: 1,
-        practiceId: null,
-        serviceId: null,
-      },
-      {
-        id: 2,
-        langCode: 'en',
-        categoryTranslationType: 'AREA',
-        title: 'test',
-        text: 'test',
-        areaId: 1,
-        practiceId: null,
-        serviceId: null,
-      },
+      CONTENT_ITEM_TRANSLATION,
+      '...n',
     ],
   },
 };
+

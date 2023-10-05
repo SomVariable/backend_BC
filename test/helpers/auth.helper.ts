@@ -12,6 +12,7 @@ import { STRONG_PASSWORD } from 'test/constants/test.constants';
 import { VerificationOkResponse } from 'src/api/auth/dto/ok-response/verification.dto';
 import { Role } from '@prisma/client';
 import { FirstUserOkResponse } from 'src/api/auth/dto/ok-response/first-user.dto';
+import { fullSignUpType, signUpAdminType } from 'test/types/test.types';
 
 export const createUserTest = async (
   app: INestApplication,
@@ -191,7 +192,7 @@ export const userVerify = async (app, email: string, session: Session) => {
 
 export const userControl = (app, mockUser, _?: any) => {
   return async (func: (app, data, mockUser, _?) => void) => {
-    const data = await fullSignUp(app, {
+    const data: fullSignUpType = await fullSignUp(app, {
       email: mockUser.email,
       password: mockUser.password
     })
@@ -208,7 +209,7 @@ export const userControl = (app, mockUser, _?: any) => {
 export const requestWithAdminPermission = (app, data, mockUser: CreateUserDto) => {
   return async (func) => {
     const adminData: CreateUserDto = {
-      email: 'admin@gmail.com',
+      email: `a${Math.floor(Math.random() * 4000000)}@gmail.com`,
       password: STRONG_PASSWORD
     }
     const reqAdminData = await signUpAdmin(app, adminData)
@@ -297,7 +298,9 @@ export const fullLogin = async (app, { responseVerifyBody }, mockUser) => {
 
 }
 
-export const signUpAdmin = async (app, mockUser) => {
+
+
+export const signUpAdmin = async (app, mockUser): Promise<signUpAdminType> => {
   const dto = new CreateUserDto();
   dto.email = mockUser.email;
   dto.password = mockUser.password;

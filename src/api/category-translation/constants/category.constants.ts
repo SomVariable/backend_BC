@@ -1,5 +1,7 @@
+import { TRANSLATION_ROUTE_WITH_ID } from "src/common/constants/app.constants";
+
 export const TRANSLATION_ROUTE_WITH_CATEGORY_TYPE =
-  ':categoryTranslationType/translation/:langCode';
+  `${TRANSLATION_ROUTE_WITH_ID}/:categoryTranslationType`;
 
 export enum CATEGORY_INFO_OK {
   CREATED = 'the category info has been successfully established',

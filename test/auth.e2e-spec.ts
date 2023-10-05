@@ -38,6 +38,8 @@ describe('AuthController (e2e)', () => {
 
     await app.init();
     await app.listen(3000 + Math.floor(Math.random() * 10 + 12));
+
+    await clearUser(app, mockUser)
   });
   
   it('should sign up new user, and verify it', async () => {
@@ -45,7 +47,6 @@ describe('AuthController (e2e)', () => {
       email: mockUser.email,
       password: mockUser.password
     })
-
 
     await deleteSelf(app, responseVerifyBody.data.jwtToken)
     await deleteSession(app, responseBody.person.id)
@@ -127,10 +128,6 @@ describe('AuthController (e2e)', () => {
   })
 
   afterAll(async () => {
-    const {responseBody, responseVerifyBody} = await fullSignUp(app, {
-      email: mockUser.email,
-      password: mockUser.password
-    })
     await clearUser(app, mockUser)
     return await app.close()
   })

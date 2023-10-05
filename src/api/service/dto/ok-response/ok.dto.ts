@@ -8,9 +8,4 @@ export class OfferOkResponse {
     enum: Offer_OK,
   })
   message: Offer_OK;
-
-  @ApiProperty({
-    example: Offer_EXAMPLES,
-  })
-  data: Service;
 }

@@ -29,6 +29,9 @@ import { CategoryTranslationNotFoundErrorResponse } from './dto/category-not-fou
 import { CategoryTranslationBadRequestErrorResponse } from './dto/category-bad-request-error.dto';
 import { CreateCategoryTranslationInterceptor } from './interceptors/create.interceptor';
 import { UpdateCategoryTranslationInterceptor } from './interceptors/update.interceptor';
+import { RolesGuard } from '../auth/guards/roles.guard';
+import { RolesDecorator } from '../roles/roles.decorator';
+import { Role } from '@prisma/client';
 
 @ApiTags('category-translation')
 @ApiBearerAuth()
@@ -47,6 +50,8 @@ export class CategoryTranslationController {
   ) {}
 
   @Post(TRANSLATION_ROUTE_WITH_ID)
+  @RolesDecorator(Role.ADMIN)
+  @UseGuards(AccessJwtAuthGuard, RolesGuard)
   @ApiOkResponse({ type: CategoryTranslationCreatedOkResponse })
   @UseInterceptors(CreateCategoryTranslationInterceptor)
   async createCategoryDto(
@@ -57,6 +62,8 @@ export class CategoryTranslationController {
   }
 
   @Patch(TRANSLATION_ROUTE_WITH_CATEGORY_TYPE)
+  @RolesDecorator(Role.ADMIN)
+  @UseGuards(AccessJwtAuthGuard, RolesGuard)
   @ApiOkResponse({ type: CategoryTranslationUpdatedOkResponse })
   @UseInterceptors(UpdateCategoryTranslationInterceptor)
   async updateInfo(

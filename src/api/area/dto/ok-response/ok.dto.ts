@@ -8,9 +8,4 @@ export class AreaOkResponse {
     enum: AREA_OK,
   })
   message: AREA_OK;
-
-  @ApiProperty({
-    example: AREA_EXAMPLES,
-  })
-  data: Area;
 }

@@ -5,15 +5,10 @@ import {
 } from '../../constants/practice.constants';
 import { Practice } from '@prisma/client';
 
-export class AreaOkResponse {
+export class PracticeOkResponse {
   @ApiProperty({
     type: PRACTICE_OK,
     enum: PRACTICE_OK,
   })
   message: PRACTICE_OK;
-
-  @ApiProperty({
-    example: PRACTICE_EXAMPLES,
-  })
-  data: Practice;
 }

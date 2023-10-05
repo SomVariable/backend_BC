@@ -1,4 +1,25 @@
+import { Area, CategoryTranslation, Practice, Prisma } from "@prisma/client";
+
+
+export type AreaWithTranslation = Area & {
+  CategoryTranslation: CategoryTranslation[]
+}
+
+export type AreaWithFullData = Area & {
+  CategoryTranslation: CategoryTranslation[]
+  practicesIds: Practice[]
+}
+
+export const AreaIncludeTranslation: Prisma.AreaInclude = {
+  CategoryTranslation: true,
+};
+
+export const AreaIncludePractices: Prisma.AreaInclude = {
+  practicesIds: true,
+};
+
 export enum AREA_OK {
+  OK = "OK",
   CREATED = 'the area has been successfully established',
   UPDATED = 'the area has been successfully update',
   DELETED = 'the area has been successfully deleted',
@@ -17,7 +38,6 @@ export const AREA_EXAMPLES = {
 };
 
 export const AREA_WITH_TRANSLATION = {
-  data: {
     id: 1,
     created_at: '2023-08-31T13:39:36.767Z',
     updated_at: '2023-08-31T13:39:36.767Z',
@@ -43,5 +63,4 @@ export const AREA_WITH_TRANSLATION = {
         serviceId: null,
       },
     ],
-  },
-};
+  };

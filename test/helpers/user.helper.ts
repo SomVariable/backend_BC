@@ -10,7 +10,7 @@ import { UpdatedOkResponse } from 'src/api/education/dto/ok-response/updated.dto
 import { UpdateEducationDto } from 'src/api/education/dto/update-education.dto';
 import { DeletedOkResponse } from 'src/api/education/dto/ok-response/deleted.dto';
 import { DeletedAwardOkResponse } from 'src/api/award/dto/ok-response/deleted.dto';
-import { Award, Education, ProfessionalInterest } from '@prisma/client';
+import { Award, ContentItem, Education, ProfessionalInterest } from '@prisma/client';
 import { CreateEducationInfoDto } from 'src/api/education/dto/create-education-info.dto';
 import { InfoCreatedOkResponse } from 'src/api/education/dto/ok-response/info-created';
 import { UpdateEducationInfoDto } from 'src/api/education/dto/update-education-info.dto';
@@ -27,6 +27,16 @@ import { PInterestOkResponse } from 'src/api/professional-interest/dto/ok-respon
 import { PInterestInfoOkResponse } from 'src/api/professional-interest/dto/ok-response/ok-info.dto';
 import { CreateProfessionalInterestDto } from 'src/api/professional-interest/dto/create-professional-interest.dto';
 import { UpdateProfessionalInterestDto } from 'src/api/professional-interest/dto/update-professional-interest.dto';
+import { CreateContentItemDto } from 'src/api/content-item/dto/create-content-item.dto';
+import { CreatedContentItemInfoOkResponse } from 'src/api/content-item/dto/ok-response/created-info.dto';
+import { UpdatedContentItemInfoOkResponse } from 'src/api/content-item/dto/ok-response/updated-info.dto';
+import { GetContentItemOkResponse } from 'src/api/content-item/dto/ok-response/get-content-item.dto';
+import { UpdatedContentItemOkResponse } from 'src/api/content-item/dto/ok-response/updated.dto';
+import { DeletedContentItemOkResponse } from 'src/api/content-item/dto/ok-response/deleted.dto';
+import { CreatedContentItemOkResponse } from 'src/api/content-item/dto/ok-response/created.dto';
+import { CreateContentItemInfoDto } from 'src/api/content-item/dto/create-content-item-info.dto';
+import { UpdateContentItemInfoDto } from 'src/api/content-item/dto/update-content-item-info.dto';
+import { CreateTagDto } from 'src/api/tag/dto/create-tag.dto';
 
 export const clearUser = async (app, mockUser) => {
   const response = await request(app.getHttpServer())
@@ -34,7 +44,6 @@ export const clearUser = async (app, mockUser) => {
     .set('User-Agent', 'Mobile')
 
   const data = await JSON.parse(response.text);
-
   if (data.data?.id) {
     const reqWithAdminPermission = requestWithAdminPermission(app, data.data, mockUser)
     await reqWithAdminPermission(deleteAnotherF)
@@ -761,11 +770,11 @@ export const avatarF = async (app, data, _) => {
 }
 
 export const awardsF = async (app, data: fullSignUpType, _) => {
-  const awardReq = await createAward(app, data)
-  await getAward(app, data, awardReq.data)
-  await createAwardInfo(app, data, awardReq.data)
-  await updateAwardInfo(app, data, awardReq.data)
-  await deleteAward(app, data, awardReq.data)
+  const awardRes = await createAward(app, data)
+  await getAward(app, data, awardRes.data)
+  await createAwardInfo(app, data, awardRes.data)
+  await updateAwardInfo(app, data, awardRes.data)
+  await deleteAward(app, data, awardRes.data)
 }
 
 export const createPI = async (app, { responseVerifyBody }: fullSignUpType) => {
@@ -813,7 +822,7 @@ export const createInfoPI = async (
   const dto: CreateProfessionalInterestDto = {
     title: "programming"
   }
-  
+
   const response = await request(app.getHttpServer())
     .post(`/professional-interest/${PI.id}/translation/en`)
     .set('Authorization', `Bearer ${responseVerifyBody.data.jwtToken}`)
@@ -839,7 +848,7 @@ export const updateInfoPI = async (
   const dto: UpdateProfessionalInterestDto = {
     title: "programming_2"
   }
-  
+
   const response = await request(app.getHttpServer())
     .patch(`/professional-interest/${PI.id}/translation/en`)
     .set('Authorization', `Bearer ${responseVerifyBody.data.jwtToken}`)
@@ -859,8 +868,202 @@ export const updateInfoPI = async (
 }
 
 export const professionalInterestF = async (app, data: fullSignUpType, _) => {
-  const PIReq = await createPI(app, data)
-  await createInfoPI(app, data, PIReq.data)
-  await updateInfoPI(app, data, PIReq.data)
-  await deletePI(app, data, PIReq.data)
+  const PIRes = await createPI(app, data)
+  await createInfoPI(app, data, PIRes.data)
+  await updateInfoPI(app, data, PIRes.data)
+  await deletePI(app, data, PIRes.data)
 }
+
+export const createContentItem = async (
+  app,
+  { responseVerifyBody }: fullSignUpType
+): Promise<CreatedContentItemOkResponse> => {
+  const dto: CreateContentItemDto = {
+    type: 'PUBLISH'
+  }
+
+  const response = await request(app.getHttpServer())
+    .post(`/content-item`)
+    .set('Authorization', `Bearer ${responseVerifyBody.data.jwtToken}`)
+    .set('User-Agent', 'Desktop')
+    .send(dto)
+    .expect(201);
+
+  const responseBody: CreatedContentItemOkResponse = await JSON.parse(response.text);
+
+  expect(responseBody).toHaveProperty('message');
+  expect(responseBody).toHaveProperty('data');
+  expect(responseBody.data).toHaveProperty('id');
+  expect(responseBody.data).toHaveProperty('videoLink');
+  expect(responseBody.data).toHaveProperty('type');
+  expect(responseBody.data).toHaveProperty('publicationDate');
+
+  return responseBody
+}
+
+export const getContentItem = async (
+  app,
+  { responseVerifyBody }: fullSignUpType,
+  contentItem: ContentItem 
+): Promise<GetContentItemOkResponse> => {
+  const response = await request(app.getHttpServer())
+    .get(`/content-item/${contentItem.id}`)
+    .set('Authorization', `Bearer ${responseVerifyBody.data.jwtToken}`)
+    .set('User-Agent', 'Desktop')
+    .expect(200);
+
+  const responseBody: GetContentItemOkResponse = await JSON.parse(response.text);
+
+  expect(responseBody).toHaveProperty('message');
+  expect(responseBody).toHaveProperty('data');
+  expect(responseBody.data).toHaveProperty('id');
+  expect(responseBody.data).toHaveProperty('videoLink');
+  expect(responseBody.data).toHaveProperty('type');
+  expect(responseBody.data).toHaveProperty('publicationDate');
+
+  return responseBody
+}
+
+export const deleteContentItem = async (
+  app, 
+  { responseVerifyBody }: fullSignUpType,
+  contentItem: ContentItem 
+): Promise<DeletedContentItemOkResponse> => {
+  const response = await request(app.getHttpServer())
+    .delete(`/content-item/${contentItem.id}`)
+    .set('Authorization', `Bearer ${responseVerifyBody.data.jwtToken}`)
+    .set('User-Agent', 'Desktop')
+    .expect(200);
+
+  const responseBody: DeletedContentItemOkResponse = await JSON.parse(response.text);
+
+  expect(responseBody).toHaveProperty('message');
+  expect(responseBody).toHaveProperty('data');
+  expect(responseBody.data).toHaveProperty('id');
+  expect(responseBody.data).toHaveProperty('videoLink');
+  expect(responseBody.data).toHaveProperty('type');
+  expect(responseBody.data).toHaveProperty('publicationDate');
+
+  return responseBody
+}
+
+export const createContentItemInfo = async (
+  app,
+  { responseVerifyBody}: fullSignUpType,
+  contentItem: ContentItem 
+): Promise<CreatedContentItemInfoOkResponse> => {
+  const dto: CreateContentItemInfoDto = {
+    title: 'title',
+    content: 'som content',
+    description: 'som description'
+  }
+
+  const response = await request(app.getHttpServer())
+    .post(`/content-item/${contentItem.id}/translation/ru`)
+    .set('Authorization', `Bearer ${responseVerifyBody.data.jwtToken}`)
+    .set('User-Agent', 'Desktop')
+    .send(dto)
+    .expect(201);
+
+  const _responseBody: CreatedContentItemInfoOkResponse = await JSON.parse(response.text);
+
+  expect(_responseBody).toHaveProperty('message');
+  expect(_responseBody).toHaveProperty('data');
+  expect(_responseBody.data).toHaveProperty('id');
+  expect(_responseBody.data).toHaveProperty('content', dto.content);
+  expect(_responseBody.data).toHaveProperty('contentItemId', contentItem.id);
+  expect(_responseBody.data).toHaveProperty('description', dto.description);
+  expect(_responseBody.data).toHaveProperty('langCode');
+  expect(_responseBody.data).toHaveProperty('title', dto.title);
+
+
+  return _responseBody
+}
+
+export const updateContentItemInfo = async (
+  app,
+  { responseVerifyBody }: fullSignUpType,
+  contentItem: ContentItem 
+  ): Promise<UpdatedContentItemInfoOkResponse> => {
+    const dto: UpdateContentItemInfoDto = {
+      title: 'title_2',
+      content: 'som content_2',
+      description: 'som description_2'
+    }
+  
+    const response = await request(app.getHttpServer())
+      .patch(`/content-item/${contentItem.id}/translation/ru`)
+      .set('Authorization', `Bearer ${responseVerifyBody.data.jwtToken}`)
+      .set('User-Agent', 'Desktop')
+      .send(dto)
+      .expect(200);
+  
+    const responseBody: UpdatedContentItemInfoOkResponse = await JSON.parse(response.text);
+  
+    expect(responseBody).toHaveProperty('message');
+    expect(responseBody).toHaveProperty('data');
+    expect(responseBody.data).toHaveProperty('id');
+    expect(responseBody.data).toHaveProperty('content', dto.content);
+    expect(responseBody.data).toHaveProperty('contentItemId', contentItem.id);
+    expect(responseBody.data).toHaveProperty('description', dto.description);
+    expect(responseBody.data).toHaveProperty('langCode');
+    expect(responseBody.data).toHaveProperty('title', dto.title);
+  
+  
+    return responseBody
+}
+
+
+export const contentItemF = async (app, data: fullSignUpType, _) => {
+  const createContentItemRes = await createContentItem(app, data)
+  
+  try {
+    await getContentItem(app, data, createContentItemRes.data)
+    await createContentItemInfo(app, data, createContentItemRes.data)
+    await updateContentItemInfo(app, data, createContentItemRes.data)
+    await deleteContentItem(app, data, createContentItemRes.data)  
+  } catch (error) {
+    await deleteContentItem(app, data, createContentItemRes.data)
+  }
+
+}
+
+export const createTag = async (app, {responseVerifyBody}: fullSignUpType) => {
+  const educationDTO: CreateTagDto = {
+    practiceId: 1
+  }
+
+  const response = await request(app.getHttpServer())
+    .post(`/education`)
+    .set('Authorization', `Bearer ${responseVerifyBody.data.jwtToken}`)
+    .set('User-Agent', 'Mobile')
+    .send(educationDTO)
+    .expect(201);
+
+  const responseBody: CreatedOkResponse = await JSON.parse(response.text);
+
+  expect(responseBody).toHaveProperty('message');
+  expect(responseBody).toHaveProperty('data');
+  expect(responseBody.data).toHaveProperty('graduationYear');
+  expect(responseBody.data).toHaveProperty('studyYear');
+  expect(responseBody.data).toHaveProperty('qualification');
+  expect(responseBody.data).toHaveProperty('specialty');
+  expect(responseBody.data).toHaveProperty('userId');
+
+  return responseBody
+} 
+
+export const tagF = async (app, data: fullSignUpType) => {
+  //const createTag = await createTag(app, data)
+
+  try {
+    //await deleteTag(app, data, createTag.data)
+  } catch (error) {
+    //await deleteTag(app, data, createTag.data)
+  }
+}
+
+// export const newsF = async (app, data: fullSignUpType, _) => {
+//   // const newsRes = await createNews()
+//   // await  
+// }
