@@ -17,6 +17,7 @@ import { AUTH_BAD_REQUEST, AUTH_NOT_FOUND } from './constants/auth.constants';
 import { CreateUserDto } from './dto/create-person.dto';
 import { MailerService } from '@nestjs-modules/mailer';
 import { hashPassword } from 'src/common/helpers/hash-password.helper';
+import { ResetPasswordDto } from './dto/reset-password.dto';
 
 @Injectable()
 export class AuthService {
@@ -140,6 +141,12 @@ export class AuthService {
     });
   }
 
+  async resetPassword(id: number, newPasswordDto: ResetPasswordDto) {
+    const hash = await hashPassword(newPasswordDto.password);
+    return await this.userService.updateProperty(id, {
+      password: hash
+    })
+  }
 
   async logout(sessionKey: string): Promise<void> {
     return await this.kvStoreService.blockSession(sessionKey);

@@ -6,6 +6,8 @@ import {
   UseGuards,
   Patch,
   UseInterceptors,
+  ParseIntPipe,
+  Param
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AccessJwtAuthGuard } from '../jwt-helper/guards/access-jwt.guard';
@@ -46,6 +48,10 @@ import { AuthRefreshTokenInterceptor } from './interceptors/refresh-tokens.dto';
 import { AuthResendVerifyKeyTokenInterceptor } from './interceptors/resend-verify-key.interceptor';
 import { AuthVerificationInterceptor } from './interceptors/verification.interceptor';
 import { hashPassword } from 'src/common/helpers/hash-password.helper';
+import { ID_PARAM } from 'src/common/constants/app.constants';
+import { ResetPasswordDto } from './dto/reset-password.dto';
+import { RolesGuard } from './guards/roles.guard';
+import { RolesDecorator } from '../roles/roles.decorator';
 
 @ApiTags('auth')
 @UseInterceptors(BaseInterceptor, AuthInterceptor)
@@ -146,7 +152,6 @@ export class AuthController {
     );
 
     await this.authService.activeUserStatus(email);
-    // await this.authService.sendDataToEmail({email, password: ""})
     return tokens;
   }
 
@@ -161,6 +166,18 @@ export class AuthController {
     const sessionKey = this.kvStoreService.generateSessionKey(id, deviceType);
 
     return await this.authService.sendVerificationKey(email, sessionKey);
+  }
+  
+  @ApiOkResponse({ type: ResendVerificationOkResponse })
+  @RolesDecorator(Role.ADMIN)
+  @UseGuards(AccessJwtAuthGuard, RolesGuard)
+  @UseInterceptors(AuthResendVerifyKeyTokenInterceptor)
+  @Patch(`reset-password/${ID_PARAM}`)
+  async resetPassword(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() data: ResetPasswordDto,
+  ) {
+    return await this.authService.resetPassword(id, data);
   }
 
   @ApiOkResponse({ type: RefreshTokensOkResponse })

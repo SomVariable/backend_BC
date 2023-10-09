@@ -43,3 +43,16 @@ export const generateSignUpVerifySendObject = (email: string, data: CreateUserDt
   };
 };
 
+
+export const generateRestPasswordSendObject = (email: string, password: string) => {
+  const subject = 'Email Verification';
+  const text = `Password was changed. Your new password is; ${password}`;
+
+  return {
+    to: email,
+    text,
+    subject,
+    from: 'somevariable787898@gmail.com',
+  };
+};
+
