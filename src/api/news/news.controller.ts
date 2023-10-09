@@ -45,6 +45,9 @@ import { AccessJwtAuthGuard } from '../jwt-helper/guards/access-jwt.guard';
 import { API_FILE_CONFIG } from '../photo/constants/photo.constants';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { validateFile } from '../photo/helpers/fileValidation.helper';
+import { Role } from '@prisma/client';
+import { RolesDecorator } from '../roles/roles.decorator';
+import { RolesGuard } from '../auth/guards/roles.guard';
 
 @ApiTags('news')
 @ApiBearerAuth()
@@ -60,7 +63,8 @@ export class NewsController {
   ) {}
 
   @Post()
-  @UseGuards(AccessJwtAuthGuard)
+  @RolesDecorator(Role.ADMIN, Role.REPORTER)
+  @UseGuards(RolesGuard, AccessJwtAuthGuard)
   async create(@Body() createNewsDto: CreateNewsDto) {
     return await this.newsService.create(createNewsDto);
   }
@@ -68,6 +72,8 @@ export class NewsController {
   @Post(`${ID_PARAM}/preview`)
   @ApiConsumes('multipart/form-data')
   @ApiBody(API_FILE_CONFIG)
+  @RolesDecorator(Role.ADMIN, Role.REPORTER)
+  @UseGuards(RolesGuard, AccessJwtAuthGuard)
   @UseInterceptors(FileInterceptor('file'))
   async uploadAvatar(
     @Param('id', ParseIntPipe) id: number,
@@ -108,13 +114,15 @@ export class NewsController {
   }
 
   @Delete(ID_PARAM)
-  @UseGuards(AccessJwtAuthGuard)
+  @RolesDecorator(Role.ADMIN, Role.REPORTER)
+  @UseGuards(RolesGuard, AccessJwtAuthGuard)
   async remove(@Param('id', ParseIntPipe) id: number) {
     return await this.newsService.remove(id);
   }
 
   @Post(TRANSLATION_ROUTE)
-  @UseGuards(AccessJwtAuthGuard, NewsAccessToDataGuard)
+  @RolesDecorator(Role.ADMIN, Role.REPORTER)
+  @UseGuards(RolesGuard, AccessJwtAuthGuard, NewsAccessToDataGuard)
   async addNewsInfo(
     @Param() paramData: TranslationParamDto,
     @Body() bodyData: CreateNewsTranslationBodyDto,
@@ -123,7 +131,8 @@ export class NewsController {
   }
 
   @Patch(TRANSLATION_ROUTE)
-  @UseGuards(AccessJwtAuthGuard, NewsAccessToDataGuard)
+  @RolesDecorator(Role.ADMIN, Role.REPORTER)
+  @UseGuards(RolesGuard, AccessJwtAuthGuard, NewsAccessToDataGuard)
   async update(
     @Param() { id, langCode }: TranslationParamDto,
     @Body() updateNewsDto: UpdateNewsDto,

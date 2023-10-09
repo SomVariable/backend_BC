@@ -53,6 +53,8 @@ export class ContentItemController {
 
   @Post()
   @ApiOkResponse({ type: CreatedContentItemOkResponse })
+  @RolesDecorator(Role.ADMIN, Role.REPORTER)
+  @UseGuards(RolesGuard)
   @UseInterceptors(CreateContentItemInfoInterceptor)
   async create(@Body() data: CreateContentItemDto) {
     return await this.publicationService.create(data);
@@ -79,8 +81,9 @@ export class ContentItemController {
 
   @Patch(ID_PARAM)
   @ApiOkResponse({ type: UpdateContentItemInterceptor })
+  @RolesDecorator(Role.ADMIN, Role.REPORTER)
   @UseInterceptors(UpdateContentItemInterceptor)
-  @UseGuards(ContentItemAccessToDataGuard)
+  @UseGuards(RolesGuard, ContentItemAccessToDataGuard)
   async update(
     @Param('id', ParseIntPipe) id: number,
     @Body() body: UpdateContentItemDto,
@@ -90,6 +93,8 @@ export class ContentItemController {
 
   @Delete(ID_PARAM)
   @ApiOkResponse({ type: DeletedContentItemOkResponse })
+  @RolesDecorator(Role.ADMIN, Role.REPORTER)
+  @UseGuards(RolesGuard)
   @UseInterceptors(DeleteContentItemInterceptor)
   async delete(@Param('id', ParseIntPipe) id: number) {
     return await this.publicationService.deleteContentItem(id);
@@ -106,6 +111,8 @@ export class ContentItemController {
 
   @Post(TRANSLATION_ROUTE_WITH_ID)
   @ApiOkResponse({ type: CreatedContentItemInfoOkResponse })
+  @RolesDecorator(Role.ADMIN, Role.REPORTER)
+  @UseGuards(RolesGuard)
   @UseInterceptors(CreateContentItemInfoInterceptor)
   async createInfo(
     @Param() { id, langCode }: TranslationParamDto,
@@ -116,6 +123,8 @@ export class ContentItemController {
 
   @Patch(TRANSLATION_ROUTE_WITH_ID)
   @ApiOkResponse({ type: UpdatedContentItemInfoOkResponse })
+  @RolesDecorator(Role.ADMIN, Role.REPORTER)
+  @UseGuards(RolesGuard)
   @UseInterceptors(UpdateContentItemInfoInterceptor)
   async updateInfo(
     @Param() { id, langCode }: TranslationParamDto,
