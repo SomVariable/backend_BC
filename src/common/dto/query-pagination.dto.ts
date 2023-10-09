@@ -7,11 +7,11 @@ export class QueryPaginationParam {
   @Type(() => Number)
   @Max(100)
   @IsOptional()
-  limit = 10;
+  limit: number = 10;
 
   @ApiPropertyOptional()
   @Type(() => Number)
   @Min(0)
   @IsOptional()
-  offset = 0;
+  offset: number = 0;
 }

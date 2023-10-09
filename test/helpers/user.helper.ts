@@ -2,7 +2,7 @@ import { INestApplication, NotFoundException } from '@nestjs/common';
 import * as request from 'supertest';
 import { UpdateUserDto } from 'src/api/user/dto/update-user.dto';
 import { deleteSession } from './kv-store.helper';
-import { fullSignUpType } from 'test/types/test.types';
+import { fullSignUpType, signUpAdminType } from 'test/types/test.types';
 import { fullSignUp, requestWithAdminPermission, userControl } from './auth.helper';
 import { CreateEducationDto } from 'src/api/education/dto/create-education.dto';
 import { CreatedOkResponse } from 'src/api/education/dto/ok-response/created.dto';
@@ -10,7 +10,7 @@ import { UpdatedOkResponse } from 'src/api/education/dto/ok-response/updated.dto
 import { UpdateEducationDto } from 'src/api/education/dto/update-education.dto';
 import { DeletedOkResponse } from 'src/api/education/dto/ok-response/deleted.dto';
 import { DeletedAwardOkResponse } from 'src/api/award/dto/ok-response/deleted.dto';
-import { Award, ContentItem, Education, ProfessionalInterest } from '@prisma/client';
+import { Award, ContentItem, Education, Practice, ProfessionalInterest, Tag } from '@prisma/client';
 import { CreateEducationInfoDto } from 'src/api/education/dto/create-education-info.dto';
 import { InfoCreatedOkResponse } from 'src/api/education/dto/ok-response/info-created';
 import { UpdateEducationInfoDto } from 'src/api/education/dto/update-education-info.dto';
@@ -37,6 +37,16 @@ import { CreatedContentItemOkResponse } from 'src/api/content-item/dto/ok-respon
 import { CreateContentItemInfoDto } from 'src/api/content-item/dto/create-content-item-info.dto';
 import { UpdateContentItemInfoDto } from 'src/api/content-item/dto/update-content-item-info.dto';
 import { CreateTagDto } from 'src/api/tag/dto/create-tag.dto';
+import { TagOkResponse } from 'src/api/tag/dto/ok-response/ok.dto';
+import { UpdateTagInfoDto } from 'src/api/tag/dto/update-tag-info';
+import { CreateTagInfoDto } from 'src/api/tag/dto/create-tag-info';
+import { createPractice } from './category.helper';
+import { GetTagOkResponse } from 'src/api/tag/dto/ok-response/get-tag.dto';
+import { GetTagsOkResponse } from 'src/api/tag/dto/ok-response/get-tags.dto';
+import { QueryPaginationParam } from 'src/common/dto/query-pagination.dto';
+import { GetTagDto } from 'src/api/tag/dto/get-tag.dto';
+import { GetTagsQueryDto } from 'src/api/tag/dto/get-tags.dto';
+import { TagInfoOkResponse } from 'src/api/tag/dto/ok-response/ok-info.dto';
 
 export const clearUser = async (app, mockUser) => {
   const response = await request(app.getHttpServer())
@@ -876,7 +886,7 @@ export const professionalInterestF = async (app, data: fullSignUpType, _) => {
 
 export const createContentItem = async (
   app,
-  { responseVerifyBody }: fullSignUpType
+  jwtToken: string
 ): Promise<CreatedContentItemOkResponse> => {
   const dto: CreateContentItemDto = {
     type: 'PUBLISH'
@@ -884,7 +894,7 @@ export const createContentItem = async (
 
   const response = await request(app.getHttpServer())
     .post(`/content-item`)
-    .set('Authorization', `Bearer ${responseVerifyBody.data.jwtToken}`)
+    .set('Authorization', `Bearer ${jwtToken}`)
     .set('User-Agent', 'Desktop')
     .send(dto)
     .expect(201);
@@ -904,7 +914,7 @@ export const createContentItem = async (
 export const getContentItem = async (
   app,
   { responseVerifyBody }: fullSignUpType,
-  contentItem: ContentItem 
+  contentItem: ContentItem
 ): Promise<GetContentItemOkResponse> => {
   const response = await request(app.getHttpServer())
     .get(`/content-item/${contentItem.id}`)
@@ -925,9 +935,9 @@ export const getContentItem = async (
 }
 
 export const deleteContentItem = async (
-  app, 
+  app,
   { responseVerifyBody }: fullSignUpType,
-  contentItem: ContentItem 
+  contentItem: ContentItem
 ): Promise<DeletedContentItemOkResponse> => {
   const response = await request(app.getHttpServer())
     .delete(`/content-item/${contentItem.id}`)
@@ -949,8 +959,8 @@ export const deleteContentItem = async (
 
 export const createContentItemInfo = async (
   app,
-  { responseVerifyBody}: fullSignUpType,
-  contentItem: ContentItem 
+  { responseVerifyBody }: fullSignUpType,
+  contentItem: ContentItem
 ): Promise<CreatedContentItemInfoOkResponse> => {
   const dto: CreateContentItemInfoDto = {
     title: 'title',
@@ -983,87 +993,201 @@ export const createContentItemInfo = async (
 export const updateContentItemInfo = async (
   app,
   { responseVerifyBody }: fullSignUpType,
-  contentItem: ContentItem 
-  ): Promise<UpdatedContentItemInfoOkResponse> => {
-    const dto: UpdateContentItemInfoDto = {
-      title: 'title_2',
-      content: 'som content_2',
-      description: 'som description_2'
-    }
-  
-    const response = await request(app.getHttpServer())
-      .patch(`/content-item/${contentItem.id}/translation/ru`)
-      .set('Authorization', `Bearer ${responseVerifyBody.data.jwtToken}`)
-      .set('User-Agent', 'Desktop')
-      .send(dto)
-      .expect(200);
-  
-    const responseBody: UpdatedContentItemInfoOkResponse = await JSON.parse(response.text);
-  
-    expect(responseBody).toHaveProperty('message');
-    expect(responseBody).toHaveProperty('data');
-    expect(responseBody.data).toHaveProperty('id');
-    expect(responseBody.data).toHaveProperty('content', dto.content);
-    expect(responseBody.data).toHaveProperty('contentItemId', contentItem.id);
-    expect(responseBody.data).toHaveProperty('description', dto.description);
-    expect(responseBody.data).toHaveProperty('langCode');
-    expect(responseBody.data).toHaveProperty('title', dto.title);
-  
-  
-    return responseBody
+  contentItem: ContentItem
+): Promise<UpdatedContentItemInfoOkResponse> => {
+  const dto: UpdateContentItemInfoDto = {
+    title: 'title_2',
+    content: 'som content_2',
+    description: 'som description_2'
+  }
+
+  const response = await request(app.getHttpServer())
+    .patch(`/content-item/${contentItem.id}/translation/ru`)
+    .set('Authorization', `Bearer ${responseVerifyBody.data.jwtToken}`)
+    .set('User-Agent', 'Desktop')
+    .send(dto)
+    .expect(200);
+
+  const responseBody: UpdatedContentItemInfoOkResponse = await JSON.parse(response.text);
+
+  expect(responseBody).toHaveProperty('message');
+  expect(responseBody).toHaveProperty('data');
+  expect(responseBody.data).toHaveProperty('id');
+  expect(responseBody.data).toHaveProperty('content', dto.content);
+  expect(responseBody.data).toHaveProperty('contentItemId', contentItem.id);
+  expect(responseBody.data).toHaveProperty('description', dto.description);
+  expect(responseBody.data).toHaveProperty('langCode');
+  expect(responseBody.data).toHaveProperty('title', dto.title);
+
+
+  return responseBody
 }
 
 
 export const contentItemF = async (app, data: fullSignUpType, _) => {
-  const createContentItemRes = await createContentItem(app, data)
-  
+  const createContentItemRes = await createContentItem(app, data.responseVerifyBody.data.jwtToken)
+
   try {
     await getContentItem(app, data, createContentItemRes.data)
     await createContentItemInfo(app, data, createContentItemRes.data)
     await updateContentItemInfo(app, data, createContentItemRes.data)
-    await deleteContentItem(app, data, createContentItemRes.data)  
+    await deleteContentItem(app, data, createContentItemRes.data)
   } catch (error) {
     await deleteContentItem(app, data, createContentItemRes.data)
   }
 
 }
 
-export const createTag = async (app, {responseVerifyBody}: fullSignUpType) => {
-  const educationDTO: CreateTagDto = {
-    practiceId: 1
-  }
+export const createTag = async (
+  app,
+  jwt: string,
+  tagDTO: CreateTagDto) => {
 
   const response = await request(app.getHttpServer())
-    .post(`/education`)
-    .set('Authorization', `Bearer ${responseVerifyBody.data.jwtToken}`)
+    .post(`/tag`)
+    .set('Authorization', `Bearer ${jwt}`)
     .set('User-Agent', 'Mobile')
-    .send(educationDTO)
+    .send(tagDTO)
     .expect(201);
 
-  const responseBody: CreatedOkResponse = await JSON.parse(response.text);
+  const responseBody: TagOkResponse = await JSON.parse(response.text);
 
   expect(responseBody).toHaveProperty('message');
   expect(responseBody).toHaveProperty('data');
-  expect(responseBody.data).toHaveProperty('graduationYear');
-  expect(responseBody.data).toHaveProperty('studyYear');
-  expect(responseBody.data).toHaveProperty('qualification');
-  expect(responseBody.data).toHaveProperty('specialty');
-  expect(responseBody.data).toHaveProperty('userId');
+  expect(responseBody.data).toHaveProperty('practiceId', tagDTO.practiceId);
+  expect(responseBody.data).toHaveProperty('contentItemId', tagDTO.contentItemId);
+  expect(responseBody.data).toHaveProperty('newsId');
 
   return responseBody
-} 
-
-export const tagF = async (app, data: fullSignUpType) => {
-  //const createTag = await createTag(app, data)
-
-  try {
-    //await deleteTag(app, data, createTag.data)
-  } catch (error) {
-    //await deleteTag(app, data, createTag.data)
-  }
 }
 
-// export const newsF = async (app, data: fullSignUpType, _) => {
-//   // const newsRes = await createNews()
-//   // await  
-// }
+export const getTag = async (
+  app,
+  jwt: string,
+  tag: Tag
+) => {
+  const response = await request(app.getHttpServer())
+    .get(`/tag/${tag.id}`)
+    .set('Authorization', `Bearer ${jwt}`)
+    .set('User-Agent', 'Mobile')
+    .expect(200);
+
+  const responseBody: GetTagOkResponse = await JSON.parse(response.text);
+
+  expect(responseBody).toHaveProperty('message');
+  expect(responseBody).toHaveProperty('data');
+  expect(responseBody.data).toHaveProperty('newsId');
+  expect(responseBody.data).toHaveProperty('TagTranslation');
+}
+
+export const getTags = async (
+  app,
+  jwt: string,
+  pagination: GetTagsQueryDto = {
+    limit: 1,
+    offset: 0,
+  }
+) => {
+  const response = await request(app.getHttpServer())
+    .get(`/tag`)
+    .set('Authorization', `Bearer ${jwt}`)
+    .set('User-Agent', 'Mobile')
+    .query(pagination)
+    .expect(200);
+  const responseBody: GetTagsOkResponse = await JSON.parse(response.text);
+  
+  expect(responseBody).toHaveProperty('message');
+  expect(responseBody).toHaveProperty('data');
+  expect(responseBody).toHaveProperty('itemCount');
+  expect(responseBody).toHaveProperty('limit', pagination.limit);
+  expect(responseBody).toHaveProperty('offset', pagination.offset);
+}
+
+export const deleteTag = async (
+  app,
+  jwt: string,
+  tag: Tag) => {
+  const response = await request(app.getHttpServer())
+    .delete(`/tag/${tag.id}`)
+    .set('Authorization', `Bearer ${jwt}`)
+    .set('User-Agent', 'Mobile')
+    .expect(200);
+
+  const responseBody: TagOkResponse = await JSON.parse(response.text);
+
+  expect(responseBody).toHaveProperty('message');
+  expect(responseBody).toHaveProperty('data');
+  expect(responseBody.data).toHaveProperty('newsId');
+}
+
+export const createTagInfo = async (
+  app,
+  jwt: string,
+  tag: Tag
+) => {
+  const tagDTO: CreateTagInfoDto = {
+    tag: "tag"
+  }
+
+  const response = await request(app.getHttpServer())
+    .post(`/tag/${tag.id}/translation/ru`)
+    .set('Authorization', `Bearer ${jwt}`)
+    .set('User-Agent', 'Mobile')
+    .send(tagDTO)
+    .expect(201);
+
+  const responseBody: TagInfoOkResponse = await JSON.parse(response.text);
+
+  expect(responseBody).toHaveProperty('message');
+  expect(responseBody).toHaveProperty('data');
+  expect(responseBody.data).toHaveProperty('langCode');
+  expect(responseBody.data).toHaveProperty('tag', tagDTO.tag);
+  expect(responseBody.data).toHaveProperty('tagId', tag.id);
+
+  return response
+}
+
+export const updateTagInfo = async (
+  app,
+  jwt: string,
+  tag: Tag
+) => {
+  const tagDTO: CreateTagInfoDto = {
+    tag: "Tag@#$!$"
+  }
+  const response = await request(app.getHttpServer())
+    .patch(`/tag/${tag.id}/translation/ru`)
+    .set('Authorization', `Bearer ${jwt}`)
+    .set('User-Agent', 'Mobile')
+    .send(tagDTO)
+    .expect(200);
+
+  const responseBody: TagInfoOkResponse = await JSON.parse(response.text);
+
+  expect(responseBody).toHaveProperty('message');
+  expect(responseBody).toHaveProperty('data');
+  expect(responseBody.data).toHaveProperty('langCode');
+  expect(responseBody.data).toHaveProperty('tag', tagDTO.tag);
+  expect(responseBody.data).toHaveProperty('tagId', tag.id);
+  return response
+}
+
+export const tagF = async (app, _: null, mockUser, adminData: signUpAdminType) => {
+  const { responseBody } = adminData
+  const practice = await createPractice(app, responseBody)
+  const contentItem = await createContentItem(app, adminData.responseBody.jwtToken)
+  const createTagRes = await createTag(app, responseBody.jwtToken, {
+    practiceId: practice.data.id,
+    contentItemId: contentItem.data.id
+  })
+  await createTagInfo(app, responseBody.jwtToken, createTagRes.data)
+  await updateTagInfo(app, responseBody.jwtToken, createTagRes.data)
+
+  await getTag(app, responseBody.jwtToken, createTagRes.data)
+  await getTags(app, responseBody.jwtToken, {
+    limit: 1,
+    offset: 0,
+    practiceId: practice.data.id
+  })
+  await deleteTag(app, responseBody.jwtToken, createTagRes.data)
+}

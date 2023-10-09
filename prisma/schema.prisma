@@ -42,9 +42,10 @@ model Tag {
   id Int @id @default(autoincrement())
 
   practice   Practice @relation(fields: [practiceId], references: [id], onDelete: Cascade)
-  practiceId Int      @unique
+  practiceId Int      
 
-  contentItem ContentItem[]
+  contentItem ContentItem @relation(fields: [contentItemId], references: [id], onDelete: Cascade)
+  contentItemId Int 
 
   TagTranslation TagTranslation[]
 

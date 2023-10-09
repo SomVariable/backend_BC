@@ -1,4 +1,6 @@
-export enum APP_ERRORS {}
+
+//enums
+export enum APP_ERRORS { }
 
 export enum BAD_REQUEST_ERRORS {
   FORBIDDEN = 'You do not have access',
@@ -9,6 +11,14 @@ export enum PROPERTY_LENGTH {
   SMALL_DESCRIPTION = 100,
   DESCRIPTION = 200,
   TEXT = 400,
+}
+
+// types
+
+export type PAGINATION_TYPE = {
+  totalCount: number,
+  limit: number,
+  offset: number,
 }
 
 export const ID_PARAM = ':id';

@@ -9,6 +9,7 @@ import {
   Delete,
   UseGuards,
   UseInterceptors,
+  Query
 } from '@nestjs/common';
 import { TagService } from './tag.service';
 import { CreateTagDto } from './dto/create-tag.dto';
@@ -23,6 +24,7 @@ import {
   ApiBadRequestResponse,
   ApiBearerAuth,
   ApiNotFoundResponse,
+  ApiOkResponse,
   ApiTags,
 } from '@nestjs/swagger';
 import { RolesDecorator } from '../roles/roles.decorator';
@@ -33,6 +35,16 @@ import { BaseInterceptor } from 'src/common/interceptors/data-to-json';
 import { TagInterceptor } from './interceptors/tag.interceptor';
 import { TagBadRequestErrorResponse } from './dto/tag-bad-request-error.dto';
 import { TagNotFoundErrorResponse } from './dto/tag-not-found-error.dto';
+import { TagOkResponse } from './dto/ok-response/ok.dto';
+import { TagInfoOkResponse } from './dto/ok-response/ok-info.dto';
+import { TagsOkResponse } from './dto/ok-response/ok-tags.dto';
+import { GetTagOkResponse } from './dto/ok-response/get-tag.dto';
+import { GetTagsOkResponse } from './dto/ok-response/get-tags.dto';
+import { QueryPaginationParam } from 'src/common/dto/query-pagination.dto';
+import { GetTagDto } from './dto/get-tag.dto';
+import { TAG_OK } from './constants/tag.constants';
+import { TagsInterceptor } from './interceptors/tags.interceptor';
+import { GetTagsQueryDto } from './dto/get-tags.dto';
 
 @ApiTags('tag')
 @ApiBearerAuth()
@@ -40,17 +52,22 @@ import { TagNotFoundErrorResponse } from './dto/tag-not-found-error.dto';
 @ApiNotFoundResponse({ type: TagNotFoundErrorResponse })
 @RolesDecorator(Role.ADMIN)
 @UseGuards(AccessJwtAuthGuard, RolesGuard)
-@UseInterceptors(BaseInterceptor, TagInterceptor)
+@UseInterceptors(BaseInterceptor)
 @Controller('tag')
 export class TagController {
   constructor(private readonly tagService: TagService) {}
 
   @Post()
-  async createTag(data: CreateTagDto) {
+  @ApiOkResponse({type: TagOkResponse})
+  @UseInterceptors(TagInterceptor)
+  async createTag(
+    @Body() data: CreateTagDto) {
     return await this.tagService.create(data);
   }
 
   @Post(TRANSLATION_ROUTE_WITH_ID)
+  @ApiOkResponse({type: TagInfoOkResponse})
+  @UseInterceptors(TagInterceptor)
   async createTagInfo(
     @Param() { id, langCode }: TranslationParamDto,
     @Body() data: CreateTagInfoDto,
@@ -59,16 +76,31 @@ export class TagController {
   }
 
   @Get(ID_PARAM)
+  @ApiOkResponse({type: GetTagOkResponse})
+  @UseInterceptors(TagInterceptor)
   async getTag(@Param('id', ParseIntPipe) id: number) {
     return await this.tagService.getTag(id);
   }
 
   @Get()
-  async getTags() {
-    return await this.tagService.getTags();
+  @ApiOkResponse({type: GetTagsOkResponse})
+  @UseInterceptors(TagsInterceptor)
+  async getTags(
+    @Query() {limit, offset, ...data}: GetTagsQueryDto
+    ) {
+    const tags = await this.tagService.getTags(limit, offset, data)  
+    const itemCount = await this.tagService.tagsCount()
+    return  {
+      data: tags,
+      limit, 
+      offset, 
+      itemCount
+    };
   }
 
   @Patch(TRANSLATION_ROUTE_WITH_ID)
+  @ApiOkResponse({type: TagInfoOkResponse})
+  @UseInterceptors(TagInterceptor)
   async update(
     @Param() { id, langCode }: TranslationParamDto,
     @Body() data: UpdateTagInfoDto,
@@ -76,7 +108,9 @@ export class TagController {
     return await this.tagService.updateTagInfo(id, langCode, data);
   }
 
-  @Delete()
+  @Delete(ID_PARAM)
+  @ApiOkResponse({type: TagOkResponse})
+  @UseInterceptors(TagInterceptor)
   async delete(@Param('id', ParseIntPipe) id: number) {
     return await this.tagService.delete(id);
   }

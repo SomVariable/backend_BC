@@ -7,4 +7,10 @@ export class CreateTagDto {
   @IsPositive()
   @IsNotEmpty()
   practiceId: number;
+
+  @ApiProperty()
+  @IsInt()
+  @IsPositive()
+  @IsNotEmpty()
+  contentItemId: number;
 }

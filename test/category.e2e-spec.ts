@@ -41,7 +41,8 @@ describe('AuthController (e2e)', () => {
     await app.listen(3030);
 
     await clearUser(app, mockUser)
-
+    const reqWithAdminPermission = requestWithAdminPermission(app, null, mockUser)
+    await reqWithAdminPermission(clearCategory)
   });
   
   it('should test area CRUD', async () => {

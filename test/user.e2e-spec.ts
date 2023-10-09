@@ -22,9 +22,10 @@ import {
   educationERRORS, 
   getAnotherF, getOtherF, 
   getSelf, getSelfBadRequest, getSelfF, 
-  getUserByEmail, professionalInterestF, updateSelf, updateSelfF } from './helpers/user.helper';
+  getUserByEmail, professionalInterestF, tagF, updateSelf, updateSelfF } from './helpers/user.helper';
 import { UpdateUserDto } from 'src/api/user/dto/update-user.dto';
 import { PrismaClientExceptionFilter } from 'nestjs-prisma';
+import { clearCategory } from './helpers/category.helper';
 
 
 const mockUser = {
@@ -52,6 +53,8 @@ describe('User (e2e)', () => {
     await app.listen(3000 + Math.floor(Math.random() * 10 + 1));
 
     await clearUser(app, mockUser)
+    const reqWithAdminPermission = requestWithAdminPermission(app, null, mockUser)
+    await reqWithAdminPermission(clearCategory)
   });
 
   // // self
@@ -139,14 +142,17 @@ describe('User (e2e)', () => {
   //tag
 
   it('should test tag ok response', async () => {
-    const controlFunc = userControl(app, mockUser)
-    await controlFunc(contentItemF)
+    const reqWithAdminPermission = await requestWithAdminPermission(app, null, mockUser)
+    await reqWithAdminPermission(tagF)
+
   })
 
   //news
 
   afterAll(async () => {
     await clearUser(app, mockUser)
+    const reqWithAdminPermission = requestWithAdminPermission(app, null, mockUser)
+    await reqWithAdminPermission(clearCategory)
     return await app.close()
   })
 
