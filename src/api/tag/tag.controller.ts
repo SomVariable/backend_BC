@@ -98,6 +98,11 @@ export class TagController {
     };
   }
 
+  @Get(`/latest/:practiceId`)
+  async getLatest(@Param('practiceId') practiceId:  number) {
+    return await this.tagService.getLatest(practiceId)
+  }
+
   @Patch(TRANSLATION_ROUTE_WITH_ID)
   @ApiOkResponse({type: TagInfoOkResponse})
   @UseInterceptors(TagInterceptor)

@@ -64,6 +64,17 @@ export const clearUser = async (app, mockUser) => {
   return true
 }
 
+export const clearContentItem = async (app, data, mockUser, reqAdminData) => {
+  const token = `Bearer ${reqAdminData.responseBody.jwtToken}`
+  await request(app.getHttpServer())
+      .delete(`/content-item`)
+      .set('User-Agent', 'Mobile')
+      .set('Authorization', token)
+      .expect(200)
+
+  return true
+} 
+
 export const getSelf = async (app, jwt: string) => {
   const response = await request(app.getHttpServer())
     .get(`/user`)

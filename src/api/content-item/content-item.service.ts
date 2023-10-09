@@ -87,6 +87,7 @@ export class ContentItemService {
     });
   }
 
+
   async getContentItems(userId: number, skip: number, take: number) {
     return await this.prismaService.contentItem.findMany({
       where: {
@@ -105,5 +106,9 @@ export class ContentItemService {
         id,
       },
     });
+  }
+
+  async drop() {
+    return await this.prismaService.contentItem.deleteMany();
   }
 }

@@ -51,6 +51,9 @@ model Tag {
 
   News   News? @relation(fields: [newsId], references: [id])
   newsId Int?
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 }
 
 model Service {

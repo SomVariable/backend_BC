@@ -47,6 +47,18 @@ export class TagService {
     });
   }
 
+  async getLatest(practiceId: number) {
+    return await this.prismaService.tag.findMany({
+      where: {
+        practiceId
+      },
+      orderBy: {
+        created_at: 'desc',
+      },
+      take: 3,
+    })
+  }
+
   async tagsCount()  {
     return await this.prismaService.tag.count();
   }

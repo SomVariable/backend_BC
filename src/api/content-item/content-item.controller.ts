@@ -39,6 +39,9 @@ import { GetContentItemsOkResponse } from './dto/ok-response/get-content-items.d
 import { QueryPaginationParam } from 'src/common/dto/query-pagination.dto';
 import { UserParam } from 'src/common/decorators/param-user.decorator';
 import { jwtType } from '../jwt-helper/types/jwt-helper.types';
+import { RolesDecorator } from '../roles/roles.decorator';
+import { Role } from '@prisma/client';
+import { RolesGuard } from '../auth/guards/roles.guard';
 
 @ApiTags('content-item')
 @ApiBearerAuth()
@@ -90,6 +93,15 @@ export class ContentItemController {
   @UseInterceptors(DeleteContentItemInterceptor)
   async delete(@Param('id', ParseIntPipe) id: number) {
     return await this.publicationService.deleteContentItem(id);
+  }
+
+  @Delete()
+  @RolesDecorator(Role.ADMIN)
+  @UseGuards(RolesGuard)
+  @ApiOkResponse({ type: DeletedContentItemOkResponse })
+  @UseInterceptors(DeleteContentItemInterceptor)
+  async deleteAll() {
+    return await this.publicationService.drop();
   }
 
   @Post(TRANSLATION_ROUTE_WITH_ID)

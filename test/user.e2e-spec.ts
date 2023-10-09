@@ -17,6 +17,7 @@ import { verifyUserSignUp } from './helpers/auth.helper';
 import { 
   avatarF,
   awardsF,
+  clearContentItem,
   clearUser, contentItemF, createEducation, deleteAnotherF, deleteSelf, 
   educationCRUD, 
   educationERRORS, 
@@ -55,6 +56,7 @@ describe('User (e2e)', () => {
     await clearUser(app, mockUser)
     const reqWithAdminPermission = requestWithAdminPermission(app, null, mockUser)
     await reqWithAdminPermission(clearCategory)
+    await reqWithAdminPermission(clearContentItem)
   });
 
   // // self
@@ -153,6 +155,8 @@ describe('User (e2e)', () => {
     await clearUser(app, mockUser)
     const reqWithAdminPermission = requestWithAdminPermission(app, null, mockUser)
     await reqWithAdminPermission(clearCategory)
+    await reqWithAdminPermission(clearContentItem)
+    
     return await app.close()
   })
 
