@@ -151,7 +151,7 @@ model PartnerProfile {
   quote_ru String
   quote_en String
 
-  User   User @relation(fields: [userId], references: [id])
+  User   User @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId Int  @unique
 
 }
@@ -159,7 +159,7 @@ model PartnerProfile {
 model PracticeManagerProfile {
   id Int @id @default(autoincrement())
 
-  User   User @relation(fields: [userId], references: [id])
+  User   User @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId Int  @unique
 
 }
@@ -167,7 +167,7 @@ model PracticeManagerProfile {
 model EmployeeProfile {
   id Int @id @default(autoincrement())
 
-  User   User @relation(fields: [userId], references: [id])
+  User   User @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId Int  @unique
 }
 

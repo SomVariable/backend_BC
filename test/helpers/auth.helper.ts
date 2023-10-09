@@ -13,6 +13,7 @@ import { VerificationOkResponse } from 'src/api/auth/dto/ok-response/verificatio
 import { Role } from '@prisma/client';
 import { FirstUserOkResponse } from 'src/api/auth/dto/ok-response/first-user.dto';
 import { fullSignUpType, signUpAdminType } from 'test/types/test.types';
+import { SignUpOkResponse } from 'src/api/auth/dto/ok-response/sign-up.dto';
 
 export const createUserTest = async (
   app: INestApplication,
@@ -267,7 +268,7 @@ export const fullSignUp = async (app, mockUser: CreateUserDto) => {
 
   expect(validationErrors).toHaveLength(0);
 
-  const responseBody = await createUserTest(app, dto)
+  const responseBody: SignUpOkResponse = await createUserTest(app, dto)
   const sessionRes = await getSession(app, responseBody.person.id)
   const responseVerifyBody = await verifyUserSignUp(app, dto.email, sessionRes.data)
 
@@ -314,7 +315,6 @@ export const signUpAdmin = async (app, mockUser): Promise<signUpAdminType> => {
 
   return { sessionRes, responseBody, dto }
 }
-
 
 
 export const fullLogout = async (app, { responseBody, responseVerifyBody }, mockUser) => {

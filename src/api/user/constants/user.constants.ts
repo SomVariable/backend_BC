@@ -118,3 +118,15 @@ export const USERS_EXAMPLES_WITH_TRANSLATION = {
   limit: 1,
   offset: 2,
 };
+
+
+export const CATEGORY_EXAMPLE = {
+  id: 999,
+  userId: 888
+}
+
+export const PARTNER_CATEGORY_EXAMPLE = {
+  ...CATEGORY_EXAMPLE,
+  quote_ru: "текст",
+  quote_en: "text",
+}

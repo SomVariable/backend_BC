@@ -1,16 +1,26 @@
 // types 
 
-import { Prisma, Tag, TagTranslation } from "@prisma/client"
+import { ContentItem, Prisma, Tag, TagTranslation } from "@prisma/client"
 import { PAGINATION_TYPE } from "src/common/constants/app.constants";
 
-export type TagWithTranslation = Tag & {
+type TagTranslationType = {
   TagTranslation: TagTranslation[]
 }
 
-export type TagWithPagination = TagWithTranslation & PAGINATION_TYPE
+type ContentItemType = {
+  contentItem: ContentItem
+}
+
+export type TagWithTranslation = Tag & TagTranslationType
+export type TagWithContentItem = Tag & ContentItemType
+export type TagWithFullData = Tag & TagTranslationType & ContentItemType
 
 export const TagIncludeTranslation: Prisma.TagInclude = {
   TagTranslation: true,
+};
+
+export const TagIncludeContentItem: Prisma.TagInclude = {
+  contentItem: true
 };
 
 // utils

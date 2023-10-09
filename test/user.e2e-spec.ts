@@ -23,7 +23,7 @@ import {
   educationERRORS, 
   getAnotherF, getOtherF, 
   getSelf, getSelfBadRequest, getSelfF, 
-  getUserByEmail, professionalInterestF, tagF, updateSelf, updateSelfF } from './helpers/user.helper';
+  getUserByEmail, professionalInterestF, tagF, tagPracticeCI_F, updateSelf, updateSelfF, userCategoryF } from './helpers/user.helper';
 import { UpdateUserDto } from 'src/api/user/dto/update-user.dto';
 import { PrismaClientExceptionFilter } from 'nestjs-prisma';
 import { clearCategory } from './helpers/category.helper';
@@ -149,7 +149,34 @@ describe('User (e2e)', () => {
 
   })
 
-  //news
+  it('should return latest tags', async () => {
+    await clearUser(app, mockUser)
+    const reqWithAdminPermission = await requestWithAdminPermission(app, null, mockUser)
+    await reqWithAdminPermission(clearCategory)
+    await reqWithAdminPermission(clearContentItem)
+    
+    await reqWithAdminPermission(tagPracticeCI_F)
+    
+    await reqWithAdminPermission(clearCategory)
+    await reqWithAdminPermission(clearContentItem)
+  })
+  
+  
+  //user-category
+
+  it('should test user-category', async () => {
+    await clearUser(app, mockUser)
+    const reqWithAdminPermission = requestWithAdminPermission(app, null, mockUser)
+    await reqWithAdminPermission(clearCategory)
+    await reqWithAdminPermission(clearContentItem)
+    
+    await reqWithAdminPermission(userCategoryF)
+    
+    await reqWithAdminPermission(clearCategory)
+    await reqWithAdminPermission(clearContentItem)
+  })
+
+  //
 
   afterAll(async () => {
     await clearUser(app, mockUser)

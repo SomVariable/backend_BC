@@ -188,7 +188,6 @@ export class AuthController {
   @UseGuards(RefreshJwtAuthGuard)
   async refreshToken(@UserParam() { email, sessionKey }: jwtType) {
     const tokens = await this.authService.generateTokens(sessionKey, email);
-
     return tokens;
   }
 }

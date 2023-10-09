@@ -45,6 +45,7 @@ import { GetTagDto } from './dto/get-tag.dto';
 import { TAG_OK } from './constants/tag.constants';
 import { TagsInterceptor } from './interceptors/tags.interceptor';
 import { GetTagsQueryDto } from './dto/get-tags.dto';
+import { GetLatestTagsOkResponse } from './dto/ok-response/get-latest-tags.dto';
 
 @ApiTags('tag')
 @ApiBearerAuth()
@@ -99,6 +100,8 @@ export class TagController {
   }
 
   @Get(`/latest/:practiceId`)
+  @ApiOkResponse({type: GetLatestTagsOkResponse})
+  @UseInterceptors(TagInterceptor)
   async getLatest(@Param('practiceId') practiceId:  number) {
     return await this.tagService.getLatest(practiceId)
   }

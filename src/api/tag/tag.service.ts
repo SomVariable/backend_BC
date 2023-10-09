@@ -3,7 +3,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateTagDto } from './dto/create-tag.dto';
 import { CreateTagInfoDto } from './dto/create-tag-info';
 import { UpdateTagInfoDto } from './dto/update-tag-info';
-import { TAG_NOT_FOUND, strToTag, TagIncludeTranslation } from './constants/tag.constants';
+import { TAG_NOT_FOUND, strToTag, TagIncludeTranslation, TagIncludeContentItem } from './constants/tag.constants';
 import { GetTagDto } from './dto/get-tag.dto';
 
 @Injectable()
@@ -49,6 +49,10 @@ export class TagService {
 
   async getLatest(practiceId: number) {
     return await this.prismaService.tag.findMany({
+      include: {
+        ...TagIncludeContentItem,
+        ...TagIncludeTranslation
+      },
       where: {
         practiceId
       },

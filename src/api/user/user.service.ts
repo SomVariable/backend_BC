@@ -11,7 +11,7 @@ import {
 } from './constants/user.constants';
 import { hashPassword } from 'src/common/helpers/hash-password.helper';
 import { GetUserProfileByNameDto } from './dto/get-user-by-name.dto';
-import { CreateUserCategoryDto, CreateUserPartnerCategoryDto } from './dto/create-user-categody.dto';
+import { CreateUserCategoryDto, CreateUserPartnerCategoryDto } from './dto/create-user-category.dto';
 
 @Injectable()
 export class UserService {
@@ -70,8 +70,9 @@ export class UserService {
     return user;
   }
 
-  async getUsersByName(data: GetUserProfileByNameDto) {
+  async getUsersByName(take, skip, data) {
     const users = await this.prismaService.userTranslation.findMany({
+      take, skip,
       where: {
         OR: [
           {
@@ -85,6 +86,42 @@ export class UserService {
           },
         ],
       },
+    });
+
+    return users;
+  }
+
+  async getUsersByPartnerProfile(take: number, skip: number) {
+    const users = await this.prismaService.partnerProfile.findMany({
+      include: {
+        User: true
+      },
+      take,
+      skip
+    });
+
+    return users;
+  }
+
+  async getUsersByProjectManagerProfile(take: number, skip: number) {
+    const users = await this.prismaService.practiceManagerProfile.findMany({
+      include: {
+        User: true
+      },
+      take,
+      skip
+    });
+
+    return users;
+  }
+
+  async getUsersByEmployeesProfile(take: number, skip: number) {
+    const users = await this.prismaService.employeeProfile.findMany({
+      include: {
+        User: true
+      },
+      take,
+      skip
     });
 
     return users;
@@ -140,6 +177,7 @@ export class UserService {
 
 
   async createPartnerProfile({quote_en, quote_ru, userId, ...data}: CreateUserPartnerCategoryDto) {
+    console.log('Service ', quote_en, quote_ru, userId, data)
     return await this.prismaService.partnerProfile.create({
       data: {
         quote_en, quote_ru,

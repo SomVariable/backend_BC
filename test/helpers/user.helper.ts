@@ -47,6 +47,13 @@ import { QueryPaginationParam } from 'src/common/dto/query-pagination.dto';
 import { GetTagDto } from 'src/api/tag/dto/get-tag.dto';
 import { GetTagsQueryDto } from 'src/api/tag/dto/get-tags.dto';
 import { TagInfoOkResponse } from 'src/api/tag/dto/ok-response/ok-info.dto';
+import { GetLatestTagsOkResponse } from 'src/api/tag/dto/ok-response/get-latest-tags.dto';
+import { CreateUserCategoryDto, CreateUserPartnerCategoryDto } from 'src/api/user/dto/create-user-category.dto';
+import { CreatePartnerOkResponse } from 'src/api/user/dto/ok-response/create-partner-category-ok.dto';
+import { CreateManagerOkResponse } from 'src/api/user/dto/ok-response/create-manager-category-ok-re.dto';
+import { CreateEmployeeOkResponse } from 'src/api/user/dto/ok-response/create-employee-category-ok-re.dto';
+import { GetUsersByPartnerCategoryOkResponse } from 'src/api/user/dto/ok-response/get-users-by-partner-category.dto';
+import { GetUsersByCategoryOkResponse } from 'src/api/user/dto/ok-response/get-users-by-category.dto';
 
 export const clearUser = async (app, mockUser) => {
   const response = await request(app.getHttpServer())
@@ -1185,12 +1192,16 @@ export const updateTagInfo = async (
 
 export const tagF = async (app, _: null, mockUser, adminData: signUpAdminType) => {
   const { responseBody } = adminData
+  
   const practice = await createPractice(app, responseBody)
   const contentItem = await createContentItem(app, adminData.responseBody.jwtToken)
+  
+
   const createTagRes = await createTag(app, responseBody.jwtToken, {
     practiceId: practice.data.id,
     contentItemId: contentItem.data.id
   })
+
   await createTagInfo(app, responseBody.jwtToken, createTagRes.data)
   await updateTagInfo(app, responseBody.jwtToken, createTagRes.data)
 
@@ -1201,4 +1212,183 @@ export const tagF = async (app, _: null, mockUser, adminData: signUpAdminType) =
     practiceId: practice.data.id
   })
   await deleteTag(app, responseBody.jwtToken, createTagRes.data)
+}
+
+export const getLatestTags = async (app, jwtToken: string, practiceId: number, tags: Tag[]) => {
+  const response = await request(app.getHttpServer())
+    .get(`/tag/latest/${practiceId}`)
+    .set('Authorization', `Bearer ${jwtToken}`)
+    .set('User-Agent', 'Mobile')
+    .expect(200);
+
+  const responseBody: GetLatestTagsOkResponse = await JSON.parse(response.text);
+
+  expect(responseBody).toHaveProperty('message');
+  expect(responseBody).toHaveProperty('data');
+  expect(responseBody.data.length).toBe(3);
+}
+
+export const tagPracticeCI_F = async (app, _: null, mockUser, adminData: signUpAdminType) => {
+  const { responseBody } = adminData
+  
+  const practice = await createPractice(app, responseBody)
+  
+  const contentItem_1 = await createContentItem(app, adminData.responseBody.jwtToken)
+  const contentItem_2 = await createContentItem(app, adminData.responseBody.jwtToken)
+  const contentItem_3 = await createContentItem(app, adminData.responseBody.jwtToken)
+  const contentItem_4 = await createContentItem(app, adminData.responseBody.jwtToken)
+
+  const createTagRes_1 = await createTag(app, responseBody.jwtToken, {
+    practiceId: practice.data.id,
+    contentItemId: contentItem_1.data.id
+  })
+  const createTagRes_2 = await createTag(app, responseBody.jwtToken, {
+    practiceId: practice.data.id,
+    contentItemId: contentItem_2.data.id
+  })
+  const createTagRes_3 = await createTag(app, responseBody.jwtToken, {
+    practiceId: practice.data.id,
+    contentItemId: contentItem_3.data.id
+  })
+  const createTagRes_4 = await createTag(app, responseBody.jwtToken, {
+    practiceId: practice.data.id,
+    contentItemId: contentItem_4.data.id
+  })
+
+  const tags = [createTagRes_1.data, createTagRes_2.data, createTagRes_3.data, createTagRes_4.data]
+
+  await getLatestTags(app, adminData.responseBody.jwtToken, practice.data.id, tags)
+
+}
+
+
+export const createPartner = async (
+  app, 
+  jwtToken: string, 
+  dto: CreateUserPartnerCategoryDto) => {
+  const response = await request(app.getHttpServer())
+    .post(`/users/user/user-category/partner`)
+    .set('Authorization', `Bearer ${jwtToken}`)
+    .set('User-Agent', 'Mobile')
+    .send(dto)
+    .expect(201);
+
+  const responseBody: CreatePartnerOkResponse = await JSON.parse(response.text);
+
+  expect(responseBody).toHaveProperty('data');
+  expect(responseBody.data).toHaveProperty('id');
+  expect(responseBody.data).toHaveProperty('quote_en');
+  expect(responseBody.data).toHaveProperty('quote_ru');
+  expect(responseBody.data).toHaveProperty('userId');
+  
+}
+
+export const createManager = async (
+  app, 
+  jwtToken: string, 
+  dto: CreateUserCategoryDto) => {
+  const response = await request(app.getHttpServer())
+    .post(`/users/user/user-category/manager`)
+    .set('Authorization', `Bearer ${jwtToken}`)
+    .set('User-Agent', 'Mobile')
+    .send(dto)
+    .expect(201);
+    
+  const responseBody: CreateManagerOkResponse = await JSON.parse(response.text);
+
+  expect(responseBody).toHaveProperty('data');
+  expect(responseBody.data).toHaveProperty('id');
+  expect(responseBody.data).toHaveProperty('userId');
+}
+
+export const createEmployee = async (app, jwtToken: string, 
+  dto: CreateUserCategoryDto) => {
+  const response = await request(app.getHttpServer())
+    .post(`/users/user/user-category/employee`)
+    .set('Authorization', `Bearer ${jwtToken}`)
+    .set('User-Agent', 'Mobile')
+    .send(dto)
+    .expect(201);
+    
+  const responseBody: CreateEmployeeOkResponse = await JSON.parse(response.text);
+
+  expect(responseBody).toHaveProperty('data');
+  expect(responseBody.data).toHaveProperty('id');
+  expect(responseBody.data).toHaveProperty('userId');
+}
+
+export const getPartners = async (
+  app, 
+  jwtToken: string) => {
+  const response = await request(app.getHttpServer())
+    .get(`/users/by/category/partners`)
+    .set('Authorization', `Bearer ${jwtToken}`)
+    .set('User-Agent', 'Mobile')
+    .expect(200);
+
+  const responseBody: GetUsersByPartnerCategoryOkResponse = await JSON.parse(response.text);
+
+  expect(responseBody).toHaveProperty('data');
+  expect(responseBody).toHaveProperty('limit');
+  expect(responseBody).toHaveProperty('offset');
+  expect(responseBody.data.length).toBeGreaterThan(0);
+  expect(responseBody.data[0]).toHaveProperty('quote_en');
+  expect(responseBody.data[0]).toHaveProperty('quote_ru');
+  expect(responseBody.data[0]).toHaveProperty('userId');
+  
+}
+
+export const getManagers = async (
+  app, 
+  jwtToken: string) => {
+  const response = await request(app.getHttpServer())
+    .get(`/users/by/category/managers`)
+    .set('Authorization', `Bearer ${jwtToken}`)
+    .set('User-Agent', 'Mobile')
+    .expect(200);
+    
+  const responseBody: GetUsersByCategoryOkResponse = await JSON.parse(response.text);
+
+  expect(responseBody).toHaveProperty('data');
+  expect(responseBody).toHaveProperty('limit');
+  expect(responseBody).toHaveProperty('offset');
+  expect(responseBody.data.length).toBeGreaterThan(0);
+  expect(responseBody.data[0]).toHaveProperty('id');
+  expect(responseBody.data[0]).toHaveProperty('userId');
+}
+
+export const getEmployees = async (app, jwtToken: string) => {
+    const response = await request(app.getHttpServer())
+    .get(`/users/by/category/employees`)
+    .set('Authorization', `Bearer ${jwtToken}`)
+    .set('User-Agent', 'Mobile')
+    .expect(200);
+    
+  const responseBody: GetUsersByCategoryOkResponse = await JSON.parse(response.text);
+
+  expect(responseBody).toHaveProperty('data');
+  expect(responseBody).toHaveProperty('limit');
+  expect(responseBody).toHaveProperty('offset');
+  expect(responseBody.data.length).toBeGreaterThan(0);
+  expect(responseBody.data[0]).toHaveProperty('id');
+  expect(responseBody.data[0]).toHaveProperty('userId');
+}
+
+export const userCategoryF = async (app, _: null, mockUser, adminData: signUpAdminType) => {
+  const user = await fullSignUp(app, mockUser)
+  await createPartner(app, adminData.responseBody.jwtToken, {
+    quote_en: "eng",
+    quote_ru: "ru",
+    userId: user.responseBody.person.id
+  })
+  await createManager(app, adminData.responseBody.jwtToken,{
+    userId: user.responseBody.person.id
+  })
+  await createEmployee(app, adminData.responseBody.jwtToken,{
+    userId: user.responseBody.person.id
+  })
+
+  await getPartners(app,  adminData.responseBody.jwtToken)
+  await getManagers(app,  adminData.responseBody.jwtToken)
+  await getEmployees(app,  adminData.responseBody.jwtToken)
 }
