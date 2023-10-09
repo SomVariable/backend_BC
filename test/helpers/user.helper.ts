@@ -924,12 +924,12 @@ export const createContentItem = async (
 
 export const getContentItem = async (
   app,
-  { responseVerifyBody }: fullSignUpType,
+  jwtToken: string,
   contentItem: ContentItem
 ): Promise<GetContentItemOkResponse> => {
   const response = await request(app.getHttpServer())
     .get(`/content-item/${contentItem.id}`)
-    .set('Authorization', `Bearer ${responseVerifyBody.data.jwtToken}`)
+    .set('Authorization', `Bearer ${jwtToken}`)
     .set('User-Agent', 'Desktop')
     .expect(200);
 
@@ -947,12 +947,12 @@ export const getContentItem = async (
 
 export const deleteContentItem = async (
   app,
-  { responseVerifyBody }: fullSignUpType,
+  jwtToken: string,
   contentItem: ContentItem
 ): Promise<DeletedContentItemOkResponse> => {
   const response = await request(app.getHttpServer())
     .delete(`/content-item/${contentItem.id}`)
-    .set('Authorization', `Bearer ${responseVerifyBody.data.jwtToken}`)
+    .set('Authorization', `Bearer ${jwtToken}`)
     .set('User-Agent', 'Desktop')
     .expect(200);
 
@@ -970,7 +970,7 @@ export const deleteContentItem = async (
 
 export const createContentItemInfo = async (
   app,
-  { responseVerifyBody }: fullSignUpType,
+  jwtToken: string,
   contentItem: ContentItem
 ): Promise<CreatedContentItemInfoOkResponse> => {
   const dto: CreateContentItemInfoDto = {
@@ -981,7 +981,7 @@ export const createContentItemInfo = async (
 
   const response = await request(app.getHttpServer())
     .post(`/content-item/${contentItem.id}/translation/ru`)
-    .set('Authorization', `Bearer ${responseVerifyBody.data.jwtToken}`)
+    .set('Authorization', `Bearer ${jwtToken}`)
     .set('User-Agent', 'Desktop')
     .send(dto)
     .expect(201);
@@ -1003,7 +1003,7 @@ export const createContentItemInfo = async (
 
 export const updateContentItemInfo = async (
   app,
-  { responseVerifyBody }: fullSignUpType,
+  jwtToken: string,
   contentItem: ContentItem
 ): Promise<UpdatedContentItemInfoOkResponse> => {
   const dto: UpdateContentItemInfoDto = {
@@ -1014,7 +1014,7 @@ export const updateContentItemInfo = async (
 
   const response = await request(app.getHttpServer())
     .patch(`/content-item/${contentItem.id}/translation/ru`)
-    .set('Authorization', `Bearer ${responseVerifyBody.data.jwtToken}`)
+    .set('Authorization', `Bearer ${jwtToken}`)
     .set('User-Agent', 'Desktop')
     .send(dto)
     .expect(200);
@@ -1035,16 +1035,16 @@ export const updateContentItemInfo = async (
 }
 
 
-export const contentItemF = async (app, data: fullSignUpType, _) => {
-  const createContentItemRes = await createContentItem(app, data.responseVerifyBody.data.jwtToken)
+export const contentItemF = async (app, _, mockUser, data: signUpAdminType) => {
+  const createContentItemRes = await createContentItem(app, data.responseBody.jwtToken)
 
   try {
-    await getContentItem(app, data, createContentItemRes.data)
-    await createContentItemInfo(app, data, createContentItemRes.data)
-    await updateContentItemInfo(app, data, createContentItemRes.data)
-    await deleteContentItem(app, data, createContentItemRes.data)
+    await getContentItem(app, data.responseBody.jwtToken, createContentItemRes.data)
+    await createContentItemInfo(app, data.responseBody.jwtToken, createContentItemRes.data)
+    await updateContentItemInfo(app, data.responseBody.jwtToken, createContentItemRes.data)
+    await deleteContentItem(app, data.responseBody.jwtToken, createContentItemRes.data)
   } catch (error) {
-    await deleteContentItem(app, data, createContentItemRes.data)
+    await deleteContentItem(app, data.responseBody.jwtToken, createContentItemRes.data)
   }
 
 }

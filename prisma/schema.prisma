@@ -147,32 +147,28 @@ model User {
 }
 
 model PartnerProfile {
-  id       Int
+  id       Int @id @default(autoincrement())
   quote_ru String
   quote_en String
 
   User   User @relation(fields: [userId], references: [id])
   userId Int  @unique
 
-  @@id([userId])
 }
 
 model PracticeManagerProfile {
-  id Int @default(autoincrement())
+  id Int @id @default(autoincrement())
 
   User   User @relation(fields: [userId], references: [id])
   userId Int  @unique
 
-  @@id([userId])
 }
 
 model EmployeeProfile {
-  id Int @default(autoincrement())
+  id Int @id @default(autoincrement())
 
   User   User @relation(fields: [userId], references: [id])
   userId Int  @unique
-
-  @@id([userId])
 }
 
 model Education {

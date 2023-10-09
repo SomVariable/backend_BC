@@ -137,8 +137,8 @@ describe('User (e2e)', () => {
   // content-item
 
   it('should test content-item ok response', async () => {
-    const controlFunc = userControl(app, mockUser)
-    await controlFunc(contentItemF)
+    const reqWithAdminPermission = await requestWithAdminPermission(app, null, mockUser)
+    await reqWithAdminPermission(contentItemF)
   })
 
   //tag

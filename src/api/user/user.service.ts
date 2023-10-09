@@ -11,6 +11,7 @@ import {
 } from './constants/user.constants';
 import { hashPassword } from 'src/common/helpers/hash-password.helper';
 import { GetUserProfileByNameDto } from './dto/get-user-by-name.dto';
+import { CreateUserCategoryDto, CreateUserPartnerCategoryDto } from './dto/create-user-categody.dto';
 
 @Injectable()
 export class UserService {
@@ -136,4 +137,46 @@ export class UserService {
       }
     })
   }
+
+
+  async createPartnerProfile({quote_en, quote_ru, userId, ...data}: CreateUserPartnerCategoryDto) {
+    return await this.prismaService.partnerProfile.create({
+      data: {
+        quote_en, quote_ru,
+        User: {
+          connect: {
+            id: userId
+          }
+        },
+        ...data
+      }
+    })
+  }
+
+  async createPracticeManagerProfile({ userId, ...data}: CreateUserCategoryDto) {
+    return await this.prismaService.practiceManagerProfile.create({
+      data: {
+        User: {
+          connect: {
+            id: userId
+          }
+        },
+        ...data
+      }
+    })
+  }
+
+  async createEmployeesProfile({ userId, ...data}: CreateUserCategoryDto) {
+    return await this.prismaService.employeeProfile.create({
+      data: {
+        User: {
+          connect: {
+            id: userId
+          }
+        },
+        ...data
+      }
+    })
+  }
+
 }

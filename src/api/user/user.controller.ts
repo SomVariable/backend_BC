@@ -1,5 +1,6 @@
 import { UserProfileService } from '../user-profile/user-profile.service';
 import {
+  Post,
   Controller,
   Query,
   Get,
@@ -45,6 +46,7 @@ import { RolesDecorator } from '../roles/roles.decorator';
 import { Role } from '@prisma/client';
 import { LocalAuthGuard } from '../auth/guards/local.guard';
 import { GetUserProfileByNameDto } from './dto/get-user-by-name.dto';
+import { CreateUserCategoryDto, CreateUserPartnerCategoryDto } from './dto/create-user-categody.dto';
 
 @ApiTags('user')
 @ApiBearerAuth()
@@ -177,5 +179,28 @@ export class UsersController {
   @UseInterceptors(UserInterceptor)
   async deleteUsers() {
     return await this.userService.removeMany();
+  }
+
+  @Post(`user-category/partner`)
+  async createPartnerProfile(
+    @Body() data: CreateUserPartnerCategoryDto
+  ){
+    return await this.userService.createPartnerProfile(data)
+  }
+
+  @Post(`user-category/manager`)
+  async createPracticeManagerProfile(
+    @Body() data: CreateUserCategoryDto
+  ){
+    return await this.userService.createPracticeManagerProfile(data)
+
+  }
+
+  @Post(`user-category/employee`)
+  async createEmployeesProfile(
+    @Body() data: CreateUserCategoryDto
+  ){
+    return await this.userService.createEmployeesProfile(data)
+
   }
 }
