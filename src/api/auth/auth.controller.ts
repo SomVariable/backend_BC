@@ -64,9 +64,8 @@ export class AuthController {
   async signUp(
     @DeviceType() deviceType: string, 
     @Body() data: CreateUserDto) {
-    const hash = await hashPassword(data.password);
     const user = await this.authService.singUp(
-      { email: data.email, hash },
+      data,
       deviceType,
     );
 
@@ -147,7 +146,7 @@ export class AuthController {
     );
 
     await this.authService.activeUserStatus(email);
-
+    // await this.authService.sendDataToEmail({email, password: ""})
     return tokens;
   }
 

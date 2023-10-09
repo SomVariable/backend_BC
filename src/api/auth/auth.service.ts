@@ -14,6 +14,9 @@ import {
   RefreshJwtConfig,
 } from '../../configuration/jwt.config';
 import { AUTH_BAD_REQUEST, AUTH_NOT_FOUND } from './constants/auth.constants';
+import { CreateUserDto } from './dto/create-person.dto';
+import { MailerService } from '@nestjs-modules/mailer';
+import { hashPassword } from 'src/common/helpers/hash-password.helper';
 
 @Injectable()
 export class AuthService {
@@ -56,14 +59,15 @@ export class AuthService {
     throw new BadRequestException(AUTH_BAD_REQUEST.FIRST_USER);
   }
 
-  async singUp(data: Prisma.UserCreateInput, deviceType: string) {
-    const user = await this.userService.create({ ...data });
+  async singUp(data: CreateUserDto, deviceType: string) {
+    const hash = await hashPassword(data.password);
+    const user = await this.userService.create({ email: data.email, hash });
     const { id, email } = user;
 
     const sessionKey = this.kvStoreService.generateSessionKey(id, deviceType);
 
     await this.kvStoreService.createSession({ id: sessionKey });
-    await this.sendVerificationKey(email, sessionKey);
+    await this.sendSignUpVerification(data, sessionKey);
 
     return user;
   }
@@ -74,6 +78,14 @@ export class AuthService {
     return user;
   }
 
+  async sendSignUpVerification(data: CreateUserDto, sessionKey: string) {
+    const verifyCode = this.verificationService.generateVerificationCode();
+    return await this.verificationService.sendSignUpVerificationCode(
+      data,
+      sessionKey,
+      verifyCode,
+    );
+  }
   async sendVerificationKey(email: string, sessionKey: string) {
     const verifyCode = this.verificationService.generateVerificationCode();
     return await this.verificationService.sendVerificationCode(

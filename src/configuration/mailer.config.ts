@@ -1,5 +1,7 @@
 import { MailerOptions } from '@nestjs-modules/mailer';
 import { ConfigService } from '@nestjs/config';
+import { CreateUserDto } from 'src/api/auth/dto/create-person.dto';
+import { SING_UP_VERIFY_MESSAGE, VERIFY_MESSAGE } from 'src/common/constants/app.constants';
 
 const config = new ConfigService();
 
@@ -17,9 +19,9 @@ export const mailerConfig = (): MailerOptions => {
   };
 };
 
-export const generateSendObject = (email: string, verificationCode: string) => {
+export const generateVerifySendObject = (email: string, verificationCode: string) => {
   const subject = 'Email Verification';
-  const text = `Your verification code is: ${verificationCode}`;
+  const text = `${VERIFY_MESSAGE} ${verificationCode}`;
 
   return {
     to: email,
@@ -28,3 +30,16 @@ export const generateSendObject = (email: string, verificationCode: string) => {
     from: 'somevariable787898@gmail.com',
   };
 };
+
+export const generateSignUpVerifySendObject = (email: string, data: CreateUserDto, verificationCode: string) => {
+  const subject = 'Email Verification';
+  const text = SING_UP_VERIFY_MESSAGE(data, verificationCode);
+
+  return {
+    to: email,
+    text,
+    subject,
+    from: 'somevariable787898@gmail.com',
+  };
+};
+

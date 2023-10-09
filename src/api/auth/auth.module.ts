@@ -18,6 +18,7 @@ import { JwtHelperModule } from '../jwt-helper/jwt-helper.module';
     VerificationModule,
     KvStoreModule,
     UserProfileModule,
+    
   ],
   controllers: [AuthController],
   providers: [AuthService, LocalStrategy],

@@ -44,6 +44,7 @@ import { USER_NOT_FOUND } from './constants/user.constants';
 import { RolesDecorator } from '../roles/roles.decorator';
 import { Role } from '@prisma/client';
 import { LocalAuthGuard } from '../auth/guards/local.guard';
+import { GetUserProfileByNameDto } from './dto/get-user-by-name.dto';
 
 @ApiTags('user')
 @ApiBearerAuth()
@@ -121,6 +122,12 @@ export class UsersController {
     }
 
     return user
+  }
+
+  @Get(`byName`)
+  async getUserByName(@Query() data: GetUserProfileByNameDto){
+    const users = await this.userService.getUsersByName(data);
+    return users
   }
 
   @Get(`user/byEmail/:email`)

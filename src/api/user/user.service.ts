@@ -10,10 +10,11 @@ import {
   UserIncludeTranslation,
 } from './constants/user.constants';
 import { hashPassword } from 'src/common/helpers/hash-password.helper';
+import { GetUserProfileByNameDto } from './dto/get-user-by-name.dto';
 
 @Injectable()
 export class UserService {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(private readonly prismaService: PrismaService) { }
 
   async create(data: Prisma.UserCreateInput) {
     const newUser = await this.prismaService.user.create({
@@ -68,9 +69,29 @@ export class UserService {
     return user;
   }
 
+  async getUsersByName(data: GetUserProfileByNameDto) {
+    const users = await this.prismaService.userTranslation.findMany({
+      where: {
+        OR: [
+          {
+            firstName: { contains: data.firstName },
+          },
+          {
+            surnameName: { contains: data.surnameName },
+          },
+          {
+            middleName: { contains: data.middleName },
+          },
+        ],
+      },
+    });
+
+    return users;
+  }
+
   async updateProperty(id: number, {
-    accountStatus, email, 
-    password, role 
+    accountStatus, email,
+    password, role
   }: UpdateUserDto) {
     await this.findById(id);
 
@@ -78,7 +99,7 @@ export class UserService {
       accountStatus, email, role
     }
 
-    if(password){
+    if (password) {
       updateData['hash'] = await hashPassword(password);
     }
 
@@ -106,7 +127,7 @@ export class UserService {
     return deletedUser;
   }
 
-  async removeMany(){
+  async removeMany() {
     return await this.prismaService.user.deleteMany({
       where: {
         NOT: {

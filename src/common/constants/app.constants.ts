@@ -1,4 +1,7 @@
+import { CreateUserDto } from "src/api/auth/dto/create-person.dto";
 
+export const VERIFY_MESSAGE = 'Pls, verify it. Your verification code is:'
+export const SING_UP_VERIFY_MESSAGE = (data: CreateUserDto, verificationCode: string) => `Your account was successfully created with email: ${data.email}, password: ${data.email}.\b${VERIFY_MESSAGE} ${verificationCode}`
 //enums
 export enum APP_ERRORS { }
 
