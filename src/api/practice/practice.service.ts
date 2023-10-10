@@ -30,13 +30,19 @@ export class PracticeService {
   }
 
   async getPracticeFull(id: number) {
-    return await this.prismaService.practice.findFirst({
+    const practice = await this.prismaService.practice.findFirst({
       include: {
         ...PracticeIncludeTranslation,
         ...PracticeIncludePractices
       },
       where: { id },
     });
+
+    if(!practice){
+      throw new NotFoundException(PRACTICE_NOT_FOUND.MISSING_PRACTICE)
+    }
+
+    return practice
   }
 
   async getPractices(skip: number, take: number) {

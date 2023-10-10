@@ -53,6 +53,7 @@ import { GetUsersByNameOkResponse } from './dto/ok-response/get-users-by-name.dt
 import { CreateEmployeeOkResponse } from './dto/ok-response/create-employee-category-ok-re.dto';
 import { CreatePartnerOkResponse } from './dto/ok-response/create-partner-category-ok.dto';
 import { CreateManagerOkResponse } from './dto/ok-response/create-manager-category-ok-re.dto';
+import { GetUsersByInterceptor } from './interceptors/get-users-by.interceptor';
 
 @ApiTags('user')
 @ApiBearerAuth()
@@ -134,12 +135,15 @@ export class UsersController {
 
   @Get(`by/name`)
   @ApiOkResponse({ type: GetUsersByNameOkResponse })
-  @UseInterceptors(UserInterceptor, BaseUserInterceptor)
+  @UseInterceptors(GetUsersByInterceptor)
   async getUserByName(
-    @Query() {limit, offset, ...data}: GetUserProfileByNameDto,
+    @Query() {limit, offset, name}: GetUserProfileByNameDto,
     ){
-    const users = await this.userService.getUsersByName(limit, offset, data);
-    return users
+    const users = await this.userService.getUsersByName(limit, offset, name);
+    return {
+      data: users,
+      limit, offset
+    }
   }
 
   @Get(`by/category/partners`)

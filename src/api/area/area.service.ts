@@ -21,20 +21,32 @@ export class AreaService {
   }
 
   async getArea(id: number) {
-    return await this.prismaService.area.findFirst({
+    const area = await this.prismaService.area.findFirst({
       include: { CategoryTranslation: true },
       where: { id },
     });
+
+    if(!area){
+      throw new NotFoundException(AREA_NOT_FOUND.MISSING_AREA)
+    }
+
+    return area
   }
 
   async getAreaWithFullData(id: number) {
-    return await this.prismaService.area.findFirst({
+    const area = await this.prismaService.area.findFirst({
       include: {
         ...AreaIncludeTranslation,
         ...AreaIncludePractices
       },
       where: { id },
     })
+
+    if(!area){
+      throw new NotFoundException(AREA_NOT_FOUND.MISSING_AREA)
+    }
+
+    return area
   }
 
   async getAreas(take: number, skip: number) {

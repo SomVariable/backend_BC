@@ -70,19 +70,19 @@ export class UserService {
     return user;
   }
 
-  async getUsersByName(take, skip, data) {
+  async getUsersByName(take: number, skip: number, name: string) {
     const users = await this.prismaService.userTranslation.findMany({
       take, skip,
       where: {
         OR: [
           {
-            firstName: { contains: data.firstName },
+            firstName: { contains: name },
           },
           {
-            surnameName: { contains: data.surnameName },
+            surnameName: { contains: name },
           },
           {
-            middleName: { contains: data.middleName },
+            middleName: { contains: name },
           },
         ],
       },

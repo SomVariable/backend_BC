@@ -1,3 +1,10 @@
+//types
+export type JwtReturnType = {
+  jwtToken: string
+  refreshToken: string
+}
+
+// constants
 export const LOCAL = 'local';
 
 export enum AUTH_OK {

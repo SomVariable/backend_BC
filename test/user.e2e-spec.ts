@@ -160,6 +160,11 @@ describe('User (e2e)', () => {
     await reqWithAdminPermission(clearCategory)
     await reqWithAdminPermission(clearContentItem)
   })
+
+  it('should find user by name|surname|middle name', async () => {
+    const controlFunc = userControl(app, mockUser)
+    await controlFunc(professionalInterestF)
+  })
   
   
   //user-category

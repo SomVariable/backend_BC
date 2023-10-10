@@ -270,7 +270,7 @@ export const fullSignUp = async (app, mockUser: CreateUserDto) => {
 
   const responseBody: SignUpOkResponse = await createUserTest(app, dto)
   const sessionRes = await getSession(app, responseBody.person.id)
-  const responseVerifyBody = await verifyUserSignUp(app, dto.email, sessionRes.data)
+  const responseVerifyBody: VerificationOkResponse = await verifyUserSignUp(app, dto.email, sessionRes.data)
 
   return { responseVerifyBody, sessionRes, responseBody, dto }
 }

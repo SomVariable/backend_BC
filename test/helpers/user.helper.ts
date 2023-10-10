@@ -54,6 +54,9 @@ import { CreateManagerOkResponse } from 'src/api/user/dto/ok-response/create-man
 import { CreateEmployeeOkResponse } from 'src/api/user/dto/ok-response/create-employee-category-ok-re.dto';
 import { GetUsersByPartnerCategoryOkResponse } from 'src/api/user/dto/ok-response/get-users-by-partner-category.dto';
 import { GetUsersByCategoryOkResponse } from 'src/api/user/dto/ok-response/get-users-by-category.dto';
+import { GetUserProfileByNameDto } from 'src/api/user/dto/get-user-by-name.dto';
+import { GetUsersByNameOkResponse } from 'src/api/user/dto/ok-response/get-users-by-name.dto';
+import { CreateUserDto } from 'src/api/auth/dto/create-person.dto';
 
 export const clearUser = async (app, mockUser) => {
   const response = await request(app.getHttpServer())
@@ -1391,4 +1394,55 @@ export const userCategoryF = async (app, _: null, mockUser, adminData: signUpAdm
   await getPartners(app,  adminData.responseBody.jwtToken)
   await getManagers(app,  adminData.responseBody.jwtToken)
   await getEmployees(app,  adminData.responseBody.jwtToken)
+}
+
+// get users by name surname middle name
+
+export const getUserByName = async (app, jwtToken: string, data: GetUserProfileByNameDto) => {
+  const response = await request(app.getHttpServer())
+    .get(`/users/by/name`)
+    .set('Authorization', `Bearer ${jwtToken}`)
+    .set('User-Agent', 'Mobile')
+    .query(data)
+    .expect(200);
+
+  const responseBody: GetUsersByNameOkResponse = await JSON.parse(response.text);
+  
+  expect(responseBody).toHaveProperty('data');
+  expect(responseBody).toHaveProperty('limit');
+  expect(responseBody).toHaveProperty('offset');
+  expect(responseBody.data.length).toBeGreaterThan(0);
+  expect(responseBody.data[0]).toHaveProperty('firstName');
+  expect(responseBody.data[0]).toHaveProperty('langCode');
+  expect(responseBody.data[0]).toHaveProperty('middleName');
+}
+
+export const getUserByNameF = async (app, { responseVerifyBody }: fullSignUpType, mockUser) => {
+  const mockUsers = [
+    mockUser,mockUser,mockUser,
+    mockUser,mockUser,mockUser,
+    mockUser,mockUser,mockUser,
+    mockUser,mockUser, mockUser].map((user: CreateUserDto, index) => {
+      return {
+        ...user,
+        email: `${user.email.substring(user.email.indexOf("@"))}_${index}@gmail.com`
+      }
+    })
+  
+  await fullSignUp(app, mockUsers[0])
+  await fullSignUp(app, mockUsers[1])
+  await fullSignUp(app, mockUsers[2])
+  await fullSignUp(app, mockUsers[3])
+  await fullSignUp(app, mockUsers[4])
+  await fullSignUp(app, mockUsers[5])
+  await fullSignUp(app, mockUsers[6])
+  await fullSignUp(app, mockUsers[7])
+
+  await 
+  
+  getUserByName(app, responseVerifyBody.data.jwtToken, {
+    limit: 10,
+    offset: 0,
+    name: "I"
+  })
 }

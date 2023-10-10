@@ -20,10 +20,16 @@ export class OfferingsService {
   }
 
   async getOffer(id: number) {
-    return await this.prismaService.service.findFirst({
+    const offer =  await this.prismaService.service.findFirst({
       include: { ...ServiceIncludeTranslation },
       where: { id },
     });
+
+    if(!offer){
+      throw new NotFoundException(Offer_NOT_FOUND.MISSING_Offer)
+    }
+
+    return offer
   }
 
   async getOfferWithFullData(id: number){

@@ -6,5 +6,5 @@ export class GetUsersOkResponse {
   @ApiProperty({
     example: USER_EXAMPLES_WITH_TRANSLATION,
   })
-  data: User;
+  data: User[];
 }
