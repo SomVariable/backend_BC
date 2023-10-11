@@ -7,7 +7,7 @@ import { redisConfig } from 'src/configuration/redis.config';
 import * as redisStore from 'cache-manager-redis-store';
 import { RedisClient } from 'redis';
 
-const store: RedisClient = redisStore.create()
+const store = process.env.NODE_ENV === 'test'? redisStore.create() : redisStore
 
 @Module({
   imports: [

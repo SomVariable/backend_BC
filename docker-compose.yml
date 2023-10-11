@@ -22,7 +22,6 @@ services:
       - "s3"
       - "api-migration"
       - "mailhog"
-      - "proxy"
     
   api-migration:
     build:
@@ -96,16 +95,6 @@ services:
       timeout: 5s
       retries: 5
   
-  proxy:
-    image: nginx
-    container_name: im-legal-nginx
-    restart: always
-    ports:
-      - '80:80'
-    volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf # Замените на путь к вашему конфигурационному файлу Nginx
-    networks:
-      - im-legal-network
 
 
 networks:
@@ -115,4 +104,3 @@ networks:
 volumes:
   im-legal-s3:
   im-legal-redis_data:
-  im-legal-proxy: 
