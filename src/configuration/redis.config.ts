@@ -4,7 +4,6 @@ import { ConfigService } from '@nestjs/config';
 const config = new ConfigService();
 
 export const redisConfig = (store: any): RedisClientOptions => {
-
   return {
     store,
     isGlobal: true,

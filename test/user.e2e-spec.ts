@@ -15,18 +15,20 @@ import { createUserTest, fullSignUp, logoutUser, refreshToken, requestWithAdminP
 import { activeSession, blockSession, getSession } from './helpers/kv-store.helper';
 import { verifyUserSignUp } from './helpers/auth.helper';
 import { 
-  avatarF,
-  awardsF,
   clearContentItem,
-  clearUser, contentItemF, createEducation, deleteAnotherF, deleteSelf, 
-  educationCRUD, 
-  educationERRORS, 
+  clearUser, deleteAnotherF, deleteSelf, 
   getAnotherF, getOtherF, 
   getSelf, getSelfBadRequest, getSelfF, 
-  getUserByEmail, professionalInterestF, tagF, tagPracticeCI_F, updateSelf, updateSelfF, userCategoryF } from './helpers/user.helper';
+  getUserByEmail, updateSelf, updateSelfF } from './helpers/user.helper';
 import { UpdateUserDto } from 'src/api/user/dto/update-user.dto';
 import { PrismaClientExceptionFilter } from 'nestjs-prisma';
 import { clearCategory } from './helpers/category.helper';
+import { contentItemF, tagF, tagPracticeCI_F } from './helpers/content-item.helper';
+import { educationCRUD, educationERRORS } from './helpers/education.helper';
+import { avatarF } from './helpers/image.helper';
+import { professionalInterestF } from './helpers/pi.helper';
+import { awardsF } from './helpers/award.helper';
+import { userCategoryF } from './helpers/user-category.helper';
 
 
 const mockUser = {
