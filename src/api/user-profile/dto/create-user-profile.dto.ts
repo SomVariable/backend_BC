@@ -4,10 +4,6 @@ import { PROPERTY_LENGTH } from 'src/common/constants/app.constants';
 
 export class CreateUserProfileDto {
   @ApiProperty()
-  @Length(2)
-  langCode: string;
-
-  @ApiProperty()
   @Length(3, 30)
   firstName?: string;
 

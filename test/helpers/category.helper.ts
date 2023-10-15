@@ -282,7 +282,10 @@ export const createService = async (app, { jwtToken }: FirstUserOkResponse) => {
     return responseBody
 }
 
-export const updateService = async (app, { jwtToken }: FirstUserOkResponse, service: Service, practiceIds: number[] = []) => {
+export const updateService = async (
+    app, { jwtToken }: FirstUserOkResponse, 
+    service: Service, 
+    practiceIds: number[] = []) => {
     const dto: UpdateAreaDto = {
         practicesIds: practiceIds
     }

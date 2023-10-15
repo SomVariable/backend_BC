@@ -14,6 +14,7 @@ import { Role } from '@prisma/client';
 import { FirstUserOkResponse } from 'src/api/auth/dto/ok-response/first-user.dto';
 import { fullSignUpType, signUpAdminType } from 'test/types/test.types';
 import { SignUpOkResponse } from 'src/api/auth/dto/ok-response/sign-up.dto';
+import { UniqueNumberGenerator } from './generrateUniqueNumber.helper';
 
 export const createUserTest = async (
   app: INestApplication,
@@ -59,6 +60,9 @@ export const createAdminTest = async (
 }
 
 export const verifyUserSignUp = async (app, email: string, session) => {
+  expect(email).not.toBeNull()
+  expect(session).not.toBeNull()
+
   const responseVerify = await request(app.getHttpServer())
     .patch('/auth/sign-up/verification')
     .set('User-Agent', 'Mobile')
@@ -194,7 +198,7 @@ export const userVerify = async (app, email: string, session: Session) => {
 export const userControl = (app, mockUser, _?: any) => {
   return async (func: (app, data, mockUser, _?) => void) => {
     const data: fullSignUpType = await fullSignUp(app, {
-      email: mockUser.email,
+      email: `${mockUser.email.replace('@gmail.com', '')}_${UniqueNumberGenerator.generateRandomNumber()}@gmail.com`,
       password: mockUser.password
     })
 
@@ -210,7 +214,7 @@ export const userControl = (app, mockUser, _?: any) => {
 export const requestWithAdminPermission = (app, data, mockUser: CreateUserDto) => {
   return async (func) => {
     const adminData: CreateUserDto = {
-      email: `a${Math.floor(Math.random() * 4000000)}@gmail.com`,
+      email: `a${UniqueNumberGenerator.generateRandomNumber()}@gmail.com`,
       password: STRONG_PASSWORD
     }
     const reqAdminData = await signUpAdmin(app, adminData)
@@ -275,17 +279,8 @@ export const fullSignUp = async (app, mockUser: CreateUserDto) => {
   return { responseVerifyBody, sessionRes, responseBody, dto }
 }
 
-export const fullLogin = async (app, { responseVerifyBody }, mockUser) => {
+export const fullLogin = async (app, { responseVerifyBody, dto }: fullSignUpType, _) => {
   await logoutUser(app, responseVerifyBody.data.jwtToken)
-
-  const dto = new SignInDto();
-  dto.email = mockUser.email;
-  dto.password = mockUser.password;
-
-  const validationErrors = await validate(dto);
-
-  expect(validationErrors).toHaveLength(0);
-
 
   const responseBodySignIn = await signIn(app, dto)
   const responseKvStoreBody = await getSession(app, responseBodySignIn.person.id);
@@ -317,13 +312,13 @@ export const signUpAdmin = async (app, mockUser): Promise<signUpAdminType> => {
 }
 
 
-export const fullLogout = async (app, { responseBody, responseVerifyBody }, mockUser) => {
+export const fullLogout = async (app, { responseBody, responseVerifyBody, dto }: fullSignUpType, _) => {
   await logoutUser(app, responseVerifyBody.data.jwtToken)
-  const responseBodySignIn = await signIn(app, mockUser)
+  const responseBodySignIn = await signIn(app, dto)
   const responseKvStoreBody = await getSession(app, responseBodySignIn.person.id);
   expect(responseKvStoreBody.data).toHaveProperty('status', 'BLOCKED')
 
-  await verifyUserSignIn(app, mockUser.email, responseKvStoreBody.data)
+  await verifyUserSignIn(app, dto.email, responseKvStoreBody.data)
 
   const responseKvStoreWithActiveBody = await getSession(app, responseBodySignIn.person.id);
 

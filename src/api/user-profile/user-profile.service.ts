@@ -7,9 +7,10 @@ import { UpdateUserProfileDto } from './dto/update-user-profile.dto';
 export class UserProfileService {
   constructor(private readonly prismaService: PrismaService) {}
 
-  async create(userId: number, createUserProfileDto: CreateUserProfileDto) {
+  async create(userId: number, langCode: string,  createUserProfileDto: CreateUserProfileDto) {
     return await this.prismaService.userTranslation.create({
       data: {
+        langCode,
         ...createUserProfileDto,
         userId,
       },

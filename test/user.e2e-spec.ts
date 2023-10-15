@@ -29,10 +29,13 @@ import { avatarF } from './helpers/image.helper';
 import { professionalInterestF } from './helpers/pi.helper';
 import { awardsF } from './helpers/award.helper';
 import { userCategoryF } from './helpers/user-category.helper';
+import { userProfileF } from './helpers/user-profile-info.helper';
+import { UniqueNumberGenerator } from './helpers/generrateUniqueNumber.helper';
+import { fullClean } from './helpers/full-clean.helper';
 
 
 const mockUser = {
-  email: `e2e_user_tst@gmail.com`,
+  email: `u@gmail.com`,
   password: '123QWE_qwe!@#13',
   accessToken: '',
   refreshToken: ''
@@ -55,10 +58,10 @@ describe('User (e2e)', () => {
     await app.init();
     await app.listen(3000 + Math.floor(Math.random() * 10 + 1));
 
-    await clearUser(app, mockUser)
-    const reqWithAdminPermission = requestWithAdminPermission(app, null, mockUser)
-    await reqWithAdminPermission(clearCategory)
-    await reqWithAdminPermission(clearContentItem)
+    await fullClean(app)
+    // const reqWithAdminPermission = requestWithAdminPermission(app, null, mockUser)
+    // await reqWithAdminPermission(clearCategory)
+    // await reqWithAdminPermission(clearContentItem)
   });
 
   // // self
@@ -75,7 +78,7 @@ describe('User (e2e)', () => {
 
   it('should delete account', async () => {
     const { responseVerifyBody } = await fullSignUp(app, {
-      email: mockUser.email,
+      email: `ac${UniqueNumberGenerator.generateRandomNumber()}@gmail.com`,
       password: mockUser.password
     })
 
@@ -96,10 +99,10 @@ describe('User (e2e)', () => {
 
   it('should delete other user', async () => {
     const data = await fullSignUp(app, {
-      email: mockUser.email,
+      email: `oth${UniqueNumberGenerator.generateRandomNumber()}@gmail.com`,
       password: mockUser.password
     })
-    const reqWithAdminPermission = await requestWithAdminPermission(app, data.responseBody.person, mockUser)
+    const reqWithAdminPermission = await requestWithAdminPermission(app, data.responseBody.person, data.dto)
     await reqWithAdminPermission(deleteAnotherF)
   })
 
@@ -183,13 +186,17 @@ describe('User (e2e)', () => {
     await reqWithAdminPermission(clearContentItem)
   })
 
-  //
+  // user-profile
+  it('should test user-profile', async () => {
+    const controlFunc = userControl(app, mockUser)
+    await controlFunc(userProfileF)
+  })
 
   afterAll(async () => {
-    await clearUser(app, mockUser)
-    const reqWithAdminPermission = requestWithAdminPermission(app, null, mockUser)
-    await reqWithAdminPermission(clearCategory)
-    await reqWithAdminPermission(clearContentItem)
+    await fullClean(app)
+    // const reqWithAdminPermission = requestWithAdminPermission(app, null, mockUser)
+    // await reqWithAdminPermission(clearCategory)
+    // await reqWithAdminPermission(clearContentItem)
     
     return await app.close()
   })

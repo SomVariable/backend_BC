@@ -226,9 +226,12 @@ export class UsersController {
   }
 
   @Delete(`user/drop`)
-  // @ApiOkResponse({ type: DeletedOkResponse })
-  // @RolesDecorator(Role.ADMIN)
-  // @UseGuards(RolesGuard)
+  @ApiOkResponse({ type: DeletedOkResponse })
+  @RolesDecorator(Role.ADMIN)
+  @UseGuards(
+    AccessJwtAuthGuard, 
+    RolesGuard
+    )
   @UseInterceptors(UserInterceptor)
   async deleteUsers() {
     return await this.userService.removeMany();

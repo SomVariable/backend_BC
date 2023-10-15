@@ -32,7 +32,7 @@ import { LangCodeDto } from 'src/common/dto/translation-param.dto';
 import { UserProfileInterceptor } from './interceptors/user-profile.interceptor';
 import { UserBadRequestErrorResponse } from './dto/user-profile-bad-request-error.dto';
 import { UserNotFoundErrorResponse } from './dto/user-profile-not-found-error.dto';
-import { UserOkResponse } from './dto/ok-response/ok.dto';
+import { UserTranslationOkResponse } from './dto/ok-response/ok.dto';
 import { API_FILE_CONFIG } from '../photo/constants/photo.constants';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { PhotoService } from '../photo/photo.service';
@@ -44,7 +44,7 @@ import { PhotoType } from '@prisma/client';
 @ApiBearerAuth()
 @ApiBadRequestResponse({ type: UserBadRequestErrorResponse })
 @ApiNotFoundResponse({ type: UserNotFoundErrorResponse })
-@ApiOkResponse({ type: UserOkResponse })
+@ApiOkResponse({ type: UserTranslationOkResponse })
 @UseInterceptors(BaseInterceptor, UserProfileInterceptor)
 @UseGuards(AccessJwtAuthGuard, RolesGuard)
 export class UserProfileController {
@@ -53,12 +53,13 @@ export class UserProfileController {
     private readonly photoService: PhotoService,
   ) {}
 
-  @Post()
+  @Post(TRANSLATION_ROUTE)
   async createProfile(
-    @UserParam() jwt_data: jwtType,
+    @Param() langCodeDto: LangCodeDto,
+    @UserParam() jwtData: jwtType,
     @Body() data: CreateUserProfileDto,
   ) {
-    return await this.userProfileService.create(jwt_data.id, data);
+    return await this.userProfileService.create(jwtData.id, langCodeDto.langCode, data);
   }
 
   @Post(`avatar`)

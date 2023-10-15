@@ -14,10 +14,11 @@ import { CreateUserDto } from 'src/api/auth/dto/create-person.dto';
 import { PrismaClientExceptionFilter } from 'nestjs-prisma';
 import { STRONG_PASSWORD } from './constants/test.constants';
 import { areaCRUD, clearCategory, practiceCRUD, serviceCRUD } from './helpers/category.helper';
+import { fullClean } from './helpers/full-clean.helper';
 
 
 const mockUser = {
-  email: `e2e_category_tst@gmail.com`,
+  email: `u@gmail.com`,
   password: '123QWE_qwe!@#13', 
   accessToken: '',
   refreshToken: ''
@@ -38,11 +39,9 @@ describe('AuthController (e2e)', () => {
     app.useGlobalFilters(new PrismaClientExceptionFilter(httpAdapter));
 
     await app.init();
-    await app.listen(3030);
+    await app.listen(3000 + Math.floor(Math.random() * 10 + 22));
 
-    await clearUser(app, mockUser)
-    const reqWithAdminPermission = requestWithAdminPermission(app, null, mockUser)
-    await reqWithAdminPermission(clearCategory)
+    //await fullClean(app)
   });
   
   it('should test area CRUD', async () => {
@@ -61,9 +60,7 @@ describe('AuthController (e2e)', () => {
   });
 
   afterAll(async () => {
-    await clearUser(app, mockUser)
-    const reqWithAdminPermission = requestWithAdminPermission(app, null, mockUser)
-    await reqWithAdminPermission(clearCategory)
+    //await fullClean(app)
     return await app.close()
   })
 

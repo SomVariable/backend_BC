@@ -1,11 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { User } from '@prisma/client';
+import { UserTranslation } from '@prisma/client';
 import {
   USER_PROFILE_OK,
   USER_PROFILE_EXAMPLES,
 } from '../../constants/user-profile.constants';
 
-export class UserOkResponse {
+export class UserTranslationOkResponse {
   @ApiProperty({
     type: USER_PROFILE_OK.OK,
     enum: USER_PROFILE_OK,
@@ -15,5 +15,5 @@ export class UserOkResponse {
   @ApiProperty({
     example: USER_PROFILE_EXAMPLES,
   })
-  data: User;
+  data: UserTranslation;
 }

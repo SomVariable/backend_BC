@@ -13,10 +13,11 @@ import { clearUser, deleteSelf, getSelfBadRequest, getUserByEmail } from './help
 import { CreateUserDto } from 'src/api/auth/dto/create-person.dto';
 import { PrismaClientExceptionFilter } from 'nestjs-prisma';
 import { STRONG_PASSWORD } from './constants/test.constants';
+import { fullClean } from './helpers/full-clean.helper';
 
 
 const mockUser = {
-  email: `e2e_auth_tst_1@gmail.com`,
+  email: `u@gmail.com`,
   password: '123QWE_qwe!@#13', 
   accessToken: '',
   refreshToken: ''
@@ -39,12 +40,12 @@ describe('AuthController (e2e)', () => {
     await app.init();
     await app.listen(3000 + Math.floor(Math.random() * 10 + 12));
 
-    await clearUser(app, mockUser)
+    //await fullClean(app)
   });
   
   it('should sign up new user, and verify it', async () => {
     const {responseBody, responseVerifyBody} = await fullSignUp(app, {
-      email: mockUser.email,
+      email: "shsiupnewusan@gmail.com",
       password: mockUser.password
     })
 
@@ -81,7 +82,7 @@ describe('AuthController (e2e)', () => {
 
   it('should block request because of block session ', async () => {
     const {responseBody, responseVerifyBody} = await fullSignUp(app, {
-      email: mockUser.email,
+      email: "sbrblockbs@gmail.com",
       password: mockUser.password
     })
     
@@ -128,7 +129,7 @@ describe('AuthController (e2e)', () => {
   })
 
   afterAll(async () => {
-    await clearUser(app, mockUser)
+    //await fullClean(app)
     return await app.close()
   })
 

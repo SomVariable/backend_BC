@@ -8,6 +8,14 @@ import { GetUserProfileByNameDto } from 'src/api/user/dto/get-user-by-name.dto';
 import { GetUsersByNameOkResponse } from 'src/api/user/dto/ok-response/get-users-by-name.dto';
 import { CreateUserDto } from 'src/api/auth/dto/create-person.dto';
 
+export const dropUsers = async (app, data, mockUser, reqAdminData: signUpAdminType) => {
+  await request(app.getHttpServer())
+    .delete(`/users/user/drop`)
+    .set('User-Agent', 'Mobile')
+    .set('Authorization', `Bearer ${reqAdminData.responseBody.jwtToken}`)
+    .expect(200)
+}
+
 export const clearUser = async (app, mockUser) => {
   const response = await request(app.getHttpServer())
     .get(`/users/user/byEmail/${mockUser.email}`)
@@ -30,7 +38,6 @@ export const clearContentItem = async (app, data, mockUser, reqAdminData) => {
       .delete(`/content-item`)
       .set('User-Agent', 'Mobile')
       .set('Authorization', token)
-      .expect(200)
 
   return true
 } 

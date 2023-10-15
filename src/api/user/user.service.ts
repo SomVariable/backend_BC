@@ -177,7 +177,6 @@ export class UserService {
 
 
   async createPartnerProfile({quote_en, quote_ru, userId, ...data}: CreateUserPartnerCategoryDto) {
-    console.log('Service ', quote_en, quote_ru, userId, data)
     return await this.prismaService.partnerProfile.create({
       data: {
         quote_en, quote_ru,
