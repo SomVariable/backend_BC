@@ -1,5 +1,4 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Award } from '@prisma/client';
 import { AWARD_EXAMPLES, AWARD_OK } from '../../constants/award.constants';
 
 export class AwardOkResponse {

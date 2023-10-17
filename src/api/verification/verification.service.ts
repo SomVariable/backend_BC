@@ -12,7 +12,11 @@ import {
   VERIFY_KEY_TIMESTAMP,
 } from './constants/constants';
 import { SetVerificationProps } from '../kv-store/kv-types/kv-store.type';
-import { generateSignUpVerifySendObject, generateVerifySendObject } from '../../configuration/mailer.config';
+import {
+  generateRestPasswordSendObject,
+  generateSignUpVerifySendObject,
+  generateVerifySendObject,
+} from '../../configuration/mailer.config';
 import { CreateUserDto } from '../auth/dto/create-person.dto';
 
 @Injectable()
@@ -58,10 +62,28 @@ export class VerificationService {
 
       await this.kvStoreService.setVerificationProps(sessionKey, data);
       const ans = await this.mailerService.sendMail(
-        generateSignUpVerifySendObject(userData.email, userData, verificationKey),
+        generateSignUpVerifySendObject(
+          userData.email,
+          userData,
+          verificationKey,
+        ),
       );
       const { accepted, rejected, messageId } = ans;
       return { accepted, rejected, messageId };
+    } catch (error) {
+      throw new InternalServerErrorException(VERIFICATION_SERVER_ERRORS.FAILED);
+    }
+  }
+
+  async sendNewPassword({ email, password }: CreateUserDto) {
+    try {
+      const ans = await this.mailerService.sendMail(
+        generateRestPasswordSendObject(email, password),
+      );
+      const { rejected } = ans;
+      if (rejected.length > 0) {
+        throw new Error();
+      }
     } catch (error) {
       throw new InternalServerErrorException(VERIFICATION_SERVER_ERRORS.FAILED);
     }

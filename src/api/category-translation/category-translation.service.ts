@@ -9,7 +9,7 @@ export class CategoryTranslationService {
   constructor(private readonly prismaService: PrismaService) {}
 
   async createInfo(id: number, langCode: string, data: CreateCategoryDto) {
-    switch(data.categoryTranslationType){
+    switch (data.categoryTranslationType) {
       case 'AREA':
         return await this.prismaService.categoryTranslation.create({
           data: { areaId: id, langCode, relatedId: id, ...data },

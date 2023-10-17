@@ -74,7 +74,7 @@ export class ContentItemController {
   @UseInterceptors(GetContentItemInterceptor)
   async getContentItems(
     @Query() { limit, offset }: QueryPaginationParam,
-    @UserParam() {id}: jwtType,
+    @UserParam() { id }: jwtType,
   ) {
     return await this.publicationService.getContentItems(id, offset, limit);
   }

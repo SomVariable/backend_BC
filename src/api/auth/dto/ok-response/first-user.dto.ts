@@ -19,5 +19,5 @@ export class FirstUserOkResponse extends AuthOkResponse {
   jwtToken: string;
 
   @ApiProperty({ example: JWT_EXAMPLE })
-  refreshToken: string
+  refreshToken: string;
 }

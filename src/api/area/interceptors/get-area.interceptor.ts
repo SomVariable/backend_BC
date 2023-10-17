@@ -15,7 +15,7 @@ export class GetAreaInterceptor implements NestInterceptor {
       map((data: any) => {
         return {
           data,
-          message: AREA_OK.OK 
+          message: AREA_OK.OK,
         };
       }),
     );

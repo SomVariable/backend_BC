@@ -10,12 +10,14 @@ import {
   UserIncludeTranslation,
 } from './constants/user.constants';
 import { hashPassword } from 'src/common/helpers/hash-password.helper';
-import { GetUserProfileByNameDto } from './dto/get-user-by-name.dto';
-import { CreateUserCategoryDto, CreateUserPartnerCategoryDto } from './dto/create-user-category.dto';
+import {
+  CreateUserCategoryDto,
+  CreateUserPartnerCategoryDto,
+} from './dto/create-user-category.dto';
 
 @Injectable()
 export class UserService {
-  constructor(private readonly prismaService: PrismaService) { }
+  constructor(private readonly prismaService: PrismaService) {}
 
   async create(data: Prisma.UserCreateInput) {
     const newUser = await this.prismaService.user.create({
@@ -72,7 +74,8 @@ export class UserService {
 
   async getUsersByName(take: number, skip: number, name: string) {
     const users = await this.prismaService.userTranslation.findMany({
-      take, skip,
+      take,
+      skip,
       where: {
         OR: [
           {
@@ -94,10 +97,10 @@ export class UserService {
   async getUsersByPartnerProfile(take: number, skip: number) {
     const users = await this.prismaService.partnerProfile.findMany({
       include: {
-        User: true
+        User: true,
       },
       take,
-      skip
+      skip,
     });
 
     return users;
@@ -106,10 +109,10 @@ export class UserService {
   async getUsersByProjectManagerProfile(take: number, skip: number) {
     const users = await this.prismaService.practiceManagerProfile.findMany({
       include: {
-        User: true
+        User: true,
       },
       take,
-      skip
+      skip,
     });
 
     return users;
@@ -118,24 +121,26 @@ export class UserService {
   async getUsersByEmployeesProfile(take: number, skip: number) {
     const users = await this.prismaService.employeeProfile.findMany({
       include: {
-        User: true
+        User: true,
       },
       take,
-      skip
+      skip,
     });
 
     return users;
   }
 
-  async updateProperty(id: number, {
-    accountStatus, email,
-    password, role
-  }: UpdateUserDto) {
+  async updateProperty(
+    id: number,
+    { accountStatus, email, password, role }: UpdateUserDto,
+  ) {
     await this.findById(id);
 
     const updateData: Prisma.UserUpdateInput = {
-      accountStatus, email, role
-    }
+      accountStatus,
+      email,
+      role,
+    };
 
     if (password) {
       updateData['hash'] = await hashPassword(password);
@@ -144,7 +149,7 @@ export class UserService {
     const updatedUser = await this.prismaService.user.update({
       where: { id },
       data: {
-        ...updateData
+        ...updateData,
       },
     });
 
@@ -169,51 +174,58 @@ export class UserService {
     return await this.prismaService.user.deleteMany({
       where: {
         NOT: {
-          role: 'ADMIN'
-        }
-      }
-    })
+          role: 'ADMIN',
+        },
+      },
+    });
   }
 
-
-  async createPartnerProfile({quote_en, quote_ru, userId, ...data}: CreateUserPartnerCategoryDto) {
+  async createPartnerProfile({
+    quote_en,
+    quote_ru,
+    userId,
+    ...data
+  }: CreateUserPartnerCategoryDto) {
     return await this.prismaService.partnerProfile.create({
       data: {
-        quote_en, quote_ru,
+        quote_en,
+        quote_ru,
         User: {
           connect: {
-            id: userId
-          }
+            id: userId,
+          },
         },
-        ...data
-      }
-    })
+        ...data,
+      },
+    });
   }
 
-  async createPracticeManagerProfile({ userId, ...data}: CreateUserCategoryDto) {
+  async createPracticeManagerProfile({
+    userId,
+    ...data
+  }: CreateUserCategoryDto) {
     return await this.prismaService.practiceManagerProfile.create({
       data: {
         User: {
           connect: {
-            id: userId
-          }
+            id: userId,
+          },
         },
-        ...data
-      }
-    })
+        ...data,
+      },
+    });
   }
 
-  async createEmployeesProfile({ userId, ...data}: CreateUserCategoryDto) {
+  async createEmployeesProfile({ userId, ...data }: CreateUserCategoryDto) {
     return await this.prismaService.employeeProfile.create({
       data: {
         User: {
           connect: {
-            id: userId
-          }
+            id: userId,
+          },
         },
-        ...data
-      }
-    })
+        ...data,
+      },
+    });
   }
-
 }

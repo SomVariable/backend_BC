@@ -1,9 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import {
-  PRACTICE_EXAMPLES,
-  PRACTICE_OK,
-} from '../../constants/practice.constants';
-import { Practice } from '@prisma/client';
+import { PRACTICE_OK } from '../../constants/practice.constants';
 
 export class PracticeOkResponse {
   @ApiProperty({

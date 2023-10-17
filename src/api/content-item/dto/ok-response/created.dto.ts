@@ -1,6 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { ContentItemOkResponse } from './ok.dto';
-import { CONTENT_ITEM_EXAMPLES, CONTENT_ITEM_OK } from '../../constants/content-item.constants';
+import {
+  CONTENT_ITEM_EXAMPLES,
+  CONTENT_ITEM_OK,
+} from '../../constants/content-item.constants';
 import { ContentItem } from '@prisma/client';
 
 export class CreatedContentItemOkResponse extends ContentItemOkResponse {
@@ -14,5 +17,5 @@ export class CreatedContentItemOkResponse extends ContentItemOkResponse {
   @ApiProperty({
     example: CONTENT_ITEM_EXAMPLES,
   })
-  data: ContentItem
+  data: ContentItem;
 }

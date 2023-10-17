@@ -14,11 +14,14 @@ import { Role } from '@prisma/client';
 import { FirstUserOkResponse } from 'src/api/auth/dto/ok-response/first-user.dto';
 import { fullSignUpType, signUpAdminType } from 'test/types/test.types';
 import { SignUpOkResponse } from 'src/api/auth/dto/ok-response/sign-up.dto';
-import { UniqueNumberGenerator } from './generrateUniqueNumber.helper';
+import { UniqueNumberGenerator } from './generateUniqueNumber.helper';
+import { ChangePasswordOkResponse } from 'src/api/auth/dto/ok-response/change-password.dto';
+import { ResetPasswordDto } from 'src/api/auth/dto/reset-password.dto';
 
 export const createUserTest = async (
   app: INestApplication,
-  dto: { email: string, password: string }) => {
+  dto: { email: string; password: string },
+) => {
   const responseSignUp = await request(app.getHttpServer())
     .post('/auth/sign-up')
     .set('User-Agent', 'Mobile')
@@ -33,13 +36,13 @@ export const createUserTest = async (
   expect(responseBody.person).toHaveProperty('accountStatus');
   expect(responseBody.person).toHaveProperty('role');
 
-  return responseBody
-}
+  return responseBody;
+};
 
 export const createAdminTest = async (
   app: INestApplication,
-  dto: { email: string, password: string }
-  ) : Promise<FirstUserOkResponse>=> {
+  dto: { email: string; password: string },
+): Promise<FirstUserOkResponse> => {
   const responseSignUp = await request(app.getHttpServer())
     .post('/auth/first-user')
     .set('User-Agent', 'Mobile')
@@ -56,19 +59,19 @@ export const createAdminTest = async (
   expect(responseBody.user).toHaveProperty('accountStatus');
   expect(responseBody.user).toHaveProperty('role', Role.ADMIN);
 
-  return responseBody
-}
+  return responseBody;
+};
 
 export const verifyUserSignUp = async (app, email: string, session) => {
-  expect(email).not.toBeNull()
-  expect(session).not.toBeNull()
+  expect(email).not.toBeNull();
+  expect(session).not.toBeNull();
 
   const responseVerify = await request(app.getHttpServer())
     .patch('/auth/sign-up/verification')
     .set('User-Agent', 'Mobile')
     .send({
       email: email,
-      verifyCode: session.verificationKey
+      verifyCode: session.verificationKey,
     })
     .expect(200);
 
@@ -79,8 +82,8 @@ export const verifyUserSignUp = async (app, email: string, session) => {
   expect(responseVerifyBody.data).toHaveProperty('jwtToken');
   expect(responseVerifyBody.data).toHaveProperty('refreshToken');
 
-  return responseVerifyBody
-}
+  return responseVerifyBody;
+};
 
 export const verifyUserSignIn = async (app, email: string, session) => {
   const responseVerify = await request(app.getHttpServer())
@@ -88,7 +91,7 @@ export const verifyUserSignIn = async (app, email: string, session) => {
     .set('User-Agent', 'Mobile')
     .send({
       email: email,
-      verifyCode: session.verificationKey
+      verifyCode: session.verificationKey,
     })
     .expect(200);
 
@@ -99,8 +102,8 @@ export const verifyUserSignIn = async (app, email: string, session) => {
   expect(responseVerifyBody.data).toHaveProperty('jwtToken');
   expect(responseVerifyBody.data).toHaveProperty('refreshToken');
 
-  return responseVerifyBody
-}
+  return responseVerifyBody;
+};
 
 export const resendVerify = async (app, email: string) => {
   const responseResendVerify = await request(app.getHttpServer())
@@ -111,10 +114,13 @@ export const resendVerify = async (app, email: string) => {
 
   const responseResendVerifyBody = await JSON.parse(responseResendVerify.text);
 
-  expect(responseResendVerifyBody).toHaveProperty('message', AUTH_OK.SEND_VERIFICATION_KEY);
+  expect(responseResendVerifyBody).toHaveProperty(
+    'message',
+    AUTH_OK.SEND_VERIFICATION_KEY,
+  );
 
-  return responseResendVerifyBody
-}
+  return responseResendVerifyBody;
+};
 
 export const refreshToken = async (app, refreshToken: string) => {
   const refreshTokenResponse = await request(app.getHttpServer())
@@ -128,7 +134,7 @@ export const refreshToken = async (app, refreshToken: string) => {
   expect(refreshTokenResponseBody).toHaveProperty('data');
   expect(refreshTokenResponseBody.data).toHaveProperty('jwtToken');
   expect(refreshTokenResponseBody.data).toHaveProperty('refreshToken');
-}
+};
 
 export const logoutUser = async (app, accessToken: string) => {
   const responseLogout = await request(app.getHttpServer())
@@ -144,8 +150,8 @@ export const logoutUser = async (app, accessToken: string) => {
   expect(responseBody.data).toHaveProperty('id');
   expect(responseBody.data).toHaveProperty('status', 'BLOCKED');
 
-  return responseLogout
-}
+  return responseLogout;
+};
 
 export const signIn = async (app, dto: SignInDto) => {
   const responseSignIn = await request(app.getHttpServer())
@@ -159,12 +165,12 @@ export const signIn = async (app, dto: SignInDto) => {
   expect(responseBody).toHaveProperty('message');
   expect(responseBody).toHaveProperty('person');
   expect(responseBody.person).toHaveProperty('id');
-  expect(responseBody.person).toHaveProperty('email')
-  expect(responseBody.person).toHaveProperty('role')
-  expect(responseBody.person).toHaveProperty('accountStatus')
+  expect(responseBody.person).toHaveProperty('email');
+  expect(responseBody.person).toHaveProperty('role');
+  expect(responseBody.person).toHaveProperty('accountStatus');
 
-  return responseBody
-}
+  return responseBody;
+};
 
 export const signIn404 = async (app, dto: SignInDto) => {
   await request(app.getHttpServer())
@@ -172,7 +178,7 @@ export const signIn404 = async (app, dto: SignInDto) => {
     .set('User-Agent', 'Mobile')
     .send(dto)
     .expect(404);
-}
+};
 
 export const userVerify = async (app, email: string, session: Session) => {
   const responseVerify = await request(app.getHttpServer())
@@ -180,7 +186,7 @@ export const userVerify = async (app, email: string, session: Session) => {
     .set('User-Agent', 'Mobile')
     .send({
       email,
-      verifyCode: session.verificationKey
+      verifyCode: session.verificationKey,
     })
     .expect(200);
 
@@ -191,77 +197,92 @@ export const userVerify = async (app, email: string, session: Session) => {
   expect(responseVerifyBody.data).toHaveProperty('jwtToken');
   expect(responseVerifyBody.data).toHaveProperty('refreshToken');
 
-  return responseVerifyBody
-}
-
+  return responseVerifyBody;
+};
 
 export const userControl = (app, mockUser, _?: any) => {
   return async (func: (app, data, mockUser, _?) => void) => {
     const data: fullSignUpType = await fullSignUp(app, {
-      email: `${mockUser.email.replace('@gmail.com', '')}_${UniqueNumberGenerator.generateRandomNumber()}@gmail.com`,
-      password: mockUser.password
-    })
+      email: `${mockUser.email.replace(
+        '@gmail.com',
+        '',
+      )}_${UniqueNumberGenerator.generateRandomNumber()}@gmail.com`,
+      password: mockUser.password,
+    });
 
-    const { responseBody, responseVerifyBody } = data
+    const { responseBody, responseVerifyBody } = data;
 
-    await func(app, data, mockUser, _)
+    await func(app, data, mockUser, _);
 
-    await deleteSelf(app, responseVerifyBody.data.jwtToken)
-    await deleteSession(app, responseBody.person.id)
-  }
-}
+    await deleteSelf(app, responseVerifyBody.data.jwtToken);
+    await deleteSession(app, responseBody.person.id);
+  };
+};
 
-export const requestWithAdminPermission = (app, data, mockUser: CreateUserDto) => {
+export const requestWithAdminPermission = (
+  app,
+  data,
+  mockUser: CreateUserDto,
+) => {
   return async (func) => {
     const adminData: CreateUserDto = {
       email: `a${UniqueNumberGenerator.generateRandomNumber()}@gmail.com`,
-      password: STRONG_PASSWORD
-    }
-    const reqAdminData = await signUpAdmin(app, adminData)
+      password: STRONG_PASSWORD,
+    };
+    const reqAdminData = await signUpAdmin(app, adminData);
 
-    func(app, data, mockUser, reqAdminData)
+    func(app, data, mockUser, reqAdminData);
 
-    await deleteSelf(app, reqAdminData.responseBody.jwtToken)
-    await deleteSession(app, reqAdminData.responseBody.user.id)
-  }
-}
+    await deleteSelf(app, reqAdminData.responseBody.jwtToken);
+    await deleteSession(app, reqAdminData.responseBody.user.id);
+  };
+};
 
 export const usersControl = (
   app,
-  mockUser: { email: string, password: string },
-  length: number = 5) => {
-  let mockUsers = []
+  mockUser: { email: string; password: string },
+  length = 5,
+) => {
+  let mockUsers = [];
 
   for (let userId = 0; userId <= length; userId++) {
-    mockUsers = [...mockUsers, {
-      ...mockUser,
-      email: `${mockUser.email.replace('@gmail.com', '')}_${userId}@gmail.com`
-    }]
+    mockUsers = [
+      ...mockUsers,
+      {
+        ...mockUser,
+        email: `${mockUser.email.replace(
+          '@gmail.com',
+          '',
+        )}_${userId}@gmail.com`,
+      },
+    ];
   }
 
   return async (func: (app, data, mockUser) => void) => {
     const createPromises = mockUsers.map(async (user) => {
       return await fullSignUp(app, {
         email: user.email,
-        password: user.password
+        password: user.password,
       });
     });
 
-    const data = await Promise.all(createPromises)
+    const data = await Promise.all(createPromises);
 
-    await func(app, data, mockUsers)
+    await func(app, data, mockUsers);
 
-    Promise.all([...data].map(async (_) => {
-      return deleteSelf(app, _.responseVerifyBody.data.jwtToken)
-    })
-    )
+    Promise.all(
+      [...data].map(async (_) => {
+        return deleteSelf(app, _.responseVerifyBody.data.jwtToken);
+      }),
+    );
 
-    Promise.all([...data].map(async (_) => {
-      return deleteSession(app, _.responseBody.person.id)
-    })
-    )
-  }
-}
+    Promise.all(
+      [...data].map(async (_) => {
+        return deleteSession(app, _.responseBody.person.id);
+      }),
+    );
+  };
+};
 
 export const fullSignUp = async (app, mockUser: CreateUserDto) => {
   const dto = new CreateUserDto();
@@ -272,29 +293,39 @@ export const fullSignUp = async (app, mockUser: CreateUserDto) => {
 
   expect(validationErrors).toHaveLength(0);
 
-  const responseBody: SignUpOkResponse = await createUserTest(app, dto)
-  const sessionRes = await getSession(app, responseBody.person.id)
-  const responseVerifyBody: VerificationOkResponse = await verifyUserSignUp(app, dto.email, sessionRes.data)
+  const responseBody: SignUpOkResponse = await createUserTest(app, dto);
+  const sessionRes = await getSession(app, responseBody.person.id);
+  const responseVerifyBody: VerificationOkResponse = await verifyUserSignUp(
+    app,
+    dto.email,
+    sessionRes.data,
+  );
 
-  return { responseVerifyBody, sessionRes, responseBody, dto }
-}
+  return { responseVerifyBody, sessionRes, responseBody, dto };
+};
 
-export const fullLogin = async (app, { responseVerifyBody, dto }: fullSignUpType, _) => {
-  await logoutUser(app, responseVerifyBody.data.jwtToken)
+export const fullLogin = async (
+  app,
+  { responseVerifyBody, dto }: fullSignUpType,
+) => {
+  await logoutUser(app, responseVerifyBody.data.jwtToken);
 
-  const responseBodySignIn = await signIn(app, dto)
-  const responseKvStoreBody = await getSession(app, responseBodySignIn.person.id);
-  expect(responseKvStoreBody.data).toHaveProperty('status', 'BLOCKED')
+  const responseBodySignIn = await signIn(app, dto);
+  const responseKvStoreBody = await getSession(
+    app,
+    responseBodySignIn.person.id,
+  );
+  expect(responseKvStoreBody.data).toHaveProperty('status', 'BLOCKED');
 
-  await verifyUserSignIn(app, dto.email, responseKvStoreBody.data)
+  await verifyUserSignIn(app, dto.email, responseKvStoreBody.data);
 
-  const responseKvStoreWithActiveBody = await getSession(app, responseBodySignIn.person.id);
+  const responseKvStoreWithActiveBody = await getSession(
+    app,
+    responseBodySignIn.person.id,
+  );
 
   expect(responseKvStoreWithActiveBody.data).toHaveProperty('status', 'ACTIVE');
-
-}
-
-
+};
 
 export const signUpAdmin = async (app, mockUser): Promise<signUpAdminType> => {
   const dto = new CreateUserDto();
@@ -305,27 +336,35 @@ export const signUpAdmin = async (app, mockUser): Promise<signUpAdminType> => {
 
   expect(validationErrors).toHaveLength(0);
 
-  const responseBody = await createAdminTest(app, dto)
-  const sessionRes = await getSession(app, responseBody.user.id)
+  const responseBody = await createAdminTest(app, dto);
+  const sessionRes = await getSession(app, responseBody.user.id);
 
-  return { sessionRes, responseBody, dto }
-}
+  return { sessionRes, responseBody, dto };
+};
 
+export const fullLogout = async (
+  app,
+  { responseVerifyBody, dto }: fullSignUpType,
+) => {
+  await logoutUser(app, responseVerifyBody.data.jwtToken);
+  const responseBodySignIn = await signIn(app, dto);
+  const responseKvStoreBody = await getSession(
+    app,
+    responseBodySignIn.person.id,
+  );
+  expect(responseKvStoreBody.data).toHaveProperty('status', 'BLOCKED');
 
-export const fullLogout = async (app, { responseBody, responseVerifyBody, dto }: fullSignUpType, _) => {
-  await logoutUser(app, responseVerifyBody.data.jwtToken)
-  const responseBodySignIn = await signIn(app, dto)
-  const responseKvStoreBody = await getSession(app, responseBodySignIn.person.id);
-  expect(responseKvStoreBody.data).toHaveProperty('status', 'BLOCKED')
+  await verifyUserSignIn(app, dto.email, responseKvStoreBody.data);
 
-  await verifyUserSignIn(app, dto.email, responseKvStoreBody.data)
-
-  const responseKvStoreWithActiveBody = await getSession(app, responseBodySignIn.person.id);
+  const responseKvStoreWithActiveBody = await getSession(
+    app,
+    responseBodySignIn.person.id,
+  );
 
   expect(responseKvStoreWithActiveBody.data).toHaveProperty('status', 'ACTIVE');
-}
+};
 
-export const fullReset = async (app, { responseBody, responseVerifyBody }, mockUser) => {
+export const fullReset = async (app, { responseBody, responseVerifyBody }) => {
   const dto = new ResendVerifyKey();
   dto.email = responseBody.person.email;
 
@@ -333,14 +372,85 @@ export const fullReset = async (app, { responseBody, responseVerifyBody }, mockU
 
   expect(validationErrors).toHaveLength(0);
 
-  const responseKvStoreBody = await getSession(app, responseBody.person.id)
+  const responseKvStoreBody = await getSession(app, responseBody.person.id);
 
   await resendVerify(app, dto.email);
 
-  const responseKvStoreWithUpdateVerifyBody = await getSession(app, responseBody.person.id)
+  const responseKvStoreWithUpdateVerifyBody = await getSession(
+    app,
+    responseBody.person.id,
+  );
 
-  expect(responseKvStoreWithUpdateVerifyBody.data.verificationKey)
-    .not.toEqual(responseKvStoreBody.data.verificationKey);
+  expect(responseKvStoreWithUpdateVerifyBody.data.verificationKey).not.toEqual(
+    responseKvStoreBody.data.verificationKey,
+  );
 
   await refreshToken(app, responseVerifyBody.data.refreshToken);
-}
+};
+
+// reset password by admin
+
+export const resetPasswordByAdminOk = async (
+  app,
+  adminToken: string,
+  userId: number,
+) => {
+  const data: ResetPasswordDto = {
+    password: 'TotNewP@a66word',
+  };
+  const resetPasswordResponse = await request(app.getHttpServer())
+    .patch(`/auth/reset-password/${userId}`)
+    .set('User-Agent', 'Mobile')
+    .set('Authorization', `Bearer ${adminToken}`)
+    .send(data)
+    .expect(200);
+  const refreshTokenResponseBody: ChangePasswordOkResponse = await JSON.parse(
+    resetPasswordResponse.text,
+  );
+
+  expect(refreshTokenResponseBody).toHaveProperty(
+    'message',
+    AUTH_OK.PASSWORD_CHANGED,
+  );
+
+  return data;
+};
+
+export const resetPasswordByAdminForbidden = async (app) => {
+  return true;
+};
+
+export const resetPasswordByAdmin404 = async (app) => {
+  return true;
+};
+
+export const resetPasswordByAdminF = async (
+  app,
+  data,
+  mockUser: CreateUserDto,
+  reqAdminData: signUpAdminType,
+) => {
+  const user = await fullSignUp(app, {
+    email: 'test_your_might@gmail.com',
+    password: 'qweQWE123!@#ASD',
+  });
+  const { person } = user.responseBody;
+  try {
+    const { password } = await resetPasswordByAdminOk(
+      app,
+      reqAdminData.responseBody.jwtToken,
+      person.id,
+    );
+    // await logoutUser(app, reqAdminData.responseBody.jwtToken);
+    // console.log('Sign in data', {
+    //   email: person.email,
+    //   password,
+    // });
+    // await signIn(app, {
+    //   email: person.email,
+    //   password,
+    // });
+  } finally {
+    await deleteSelf(app, user.responseVerifyBody.data.jwtToken);
+  }
+};

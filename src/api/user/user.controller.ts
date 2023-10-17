@@ -44,9 +44,11 @@ import { BaseUserInterceptor } from './interceptors/base-user.interceptor';
 import { USER_NOT_FOUND } from './constants/user.constants';
 import { RolesDecorator } from '../roles/roles.decorator';
 import { Role } from '@prisma/client';
-import { LocalAuthGuard } from '../auth/guards/local.guard';
 import { GetUserProfileByNameDto } from './dto/get-user-by-name.dto';
-import { CreateUserCategoryDto, CreateUserPartnerCategoryDto } from './dto/create-user-category.dto';
+import {
+  CreateUserCategoryDto,
+  CreateUserPartnerCategoryDto,
+} from './dto/create-user-category.dto';
 import { GetUsersByCategoryOkResponse } from './dto/ok-response/get-users-by-category.dto';
 import { GetUsersByPartnerCategoryOkResponse } from './dto/ok-response/get-users-by-partner-category.dto';
 import { GetUsersByNameOkResponse } from './dto/ok-response/get-users-by-name.dto';
@@ -63,7 +65,7 @@ import { GetUsersByInterceptor } from './interceptors/get-users-by.interceptor';
 @UseInterceptors(BaseInterceptor, BaseUserInterceptor)
 @Controller('user')
 export class UserController {
-  constructor(private readonly userService: UserService) { }
+  constructor(private readonly userService: UserService) {}
 
   @Get('')
   @ApiOkResponse({ type: GetUserOkResponse })
@@ -75,9 +77,7 @@ export class UserController {
   @Patch()
   @ApiOkResponse({ type: UpdatedOkResponse })
   @UseInterceptors(UserInterceptor)
-  async updateSelf(
-    @UserParam() { id }: jwtType,
-    @Body() body: UpdateUserDto) {
+  async updateSelf(@UserParam() { id }: jwtType, @Body() body: UpdateUserDto) {
     return await this.userService.updateProperty(id, body);
   }
 
@@ -96,7 +96,7 @@ export class UsersController {
   constructor(
     private readonly userService: UserService,
     private readonly userProfileService: UserProfileService,
-  ) { }
+  ) {}
 
   @Get()
   @UseInterceptors(UsersInterceptor, BaseUserInterceptor)
@@ -130,58 +130,67 @@ export class UsersController {
       throw new NotFoundException(USER_NOT_FOUND.MISSING_USER);
     }
 
-    return user
+    return user;
   }
 
   @Get(`by/name`)
   @ApiOkResponse({ type: GetUsersByNameOkResponse })
   @UseInterceptors(GetUsersByInterceptor)
   async getUserByName(
-    @Query() {limit, offset, name}: GetUserProfileByNameDto,
-    ){
+    @Query() { limit, offset, name }: GetUserProfileByNameDto,
+  ) {
     const users = await this.userService.getUsersByName(limit, offset, name);
     return {
       data: users,
-      limit, offset
-    }
+      limit,
+      offset,
+    };
   }
 
   @Get(`by/category/partners`)
   @ApiOkResponse({ type: GetUsersByPartnerCategoryOkResponse })
   @UseInterceptors(UserInterceptor)
-  async getUserByPartner(
-    @Query() {limit, offset}: QueryPaginationParam
-  ){
-    const users = await this.userService.getUsersByPartnerProfile(limit, offset);
+  async getUserByPartner(@Query() { limit, offset }: QueryPaginationParam) {
+    const users = await this.userService.getUsersByPartnerProfile(
+      limit,
+      offset,
+    );
     return {
       data: users,
-      limit, offset
-    }
+      limit,
+      offset,
+    };
   }
 
   @Get(`by/category/managers`)
   @ApiOkResponse({ type: GetUsersByCategoryOkResponse })
   @UseInterceptors(UserInterceptor)
   async getUserByPracticeManager(
-    @Query() {limit, offset}: QueryPaginationParam
-  ){
-    const users = await this.userService.getUsersByProjectManagerProfile(limit, offset);
+    @Query() { limit, offset }: QueryPaginationParam,
+  ) {
+    const users = await this.userService.getUsersByProjectManagerProfile(
+      limit,
+      offset,
+    );
     return {
       data: users,
-      limit, offset
-    }
+      limit,
+      offset,
+    };
   }
 
   @Get(`by/category/employees`)
   @ApiOkResponse({ type: GetUsersByCategoryOkResponse })
-  async getUserByEmployees(
-    @Query() {limit, offset}: QueryPaginationParam
-  ){
-    const users = await this.userService.getUsersByEmployeesProfile(limit, offset);
+  async getUserByEmployees(@Query() { limit, offset }: QueryPaginationParam) {
+    const users = await this.userService.getUsersByEmployeesProfile(
+      limit,
+      offset,
+    );
     return {
       data: users,
-      limit, offset
-    }
+      limit,
+      offset,
+    };
   }
 
   @Get(`user/byEmail/:email`)
@@ -194,7 +203,7 @@ export class UsersController {
       throw new NotFoundException(USER_NOT_FOUND.MISSING_USER);
     }
 
-    return user
+    return user;
   }
 
   @Get(`user/byId/${ID_PARAM}/fullData`)
@@ -206,13 +215,9 @@ export class UsersController {
 
   @Delete(`user/byId/${ID_PARAM}`)
   @ApiOkResponse({ type: DeletedOkResponse })
-  @UseGuards(
-    AccessJwtAuthGuard, 
-  )
+  @UseGuards(AccessJwtAuthGuard)
   @UseInterceptors(UserInterceptor, BaseUserInterceptor)
-  async deleteUser(
-    @Param('id', ParseIntPipe) id: number
-    ) {
+  async deleteUser(@Param('id', ParseIntPipe) id: number) {
     return await this.userService.remove(id);
   }
 
@@ -220,48 +225,38 @@ export class UsersController {
   @UseInterceptors(BaseUserInterceptor)
   async updateUser(
     @Param('id', ParseIntPipe) id: number,
-    @Body() data: UpdateUserDto
+    @Body() data: UpdateUserDto,
   ) {
-    return await this.userService.updateProperty(id, data)
+    return await this.userService.updateProperty(id, data);
   }
 
   @Delete(`user/drop`)
   @ApiOkResponse({ type: DeletedOkResponse })
   @RolesDecorator(Role.ADMIN)
-  @UseGuards(
-    AccessJwtAuthGuard, 
-    RolesGuard
-    )
+  @UseGuards(AccessJwtAuthGuard, RolesGuard)
   @UseInterceptors(UserInterceptor)
   async deleteUsers() {
     return await this.userService.removeMany();
   }
 
   @Post(`user/user-category/partner`)
-  @ApiOkResponse({ type: CreatePartnerOkResponse})
+  @ApiOkResponse({ type: CreatePartnerOkResponse })
   @UseInterceptors(BaseUserInterceptor)
-  async createPartnerProfile(
-    @Body() data: CreateUserPartnerCategoryDto
-  ){
-    return await this.userService.createPartnerProfile(data)
+  async createPartnerProfile(@Body() data: CreateUserPartnerCategoryDto) {
+    return await this.userService.createPartnerProfile(data);
   }
 
   @Post(`user/user-category/manager`)
-  @ApiOkResponse({ type: CreateManagerOkResponse})
+  @ApiOkResponse({ type: CreateManagerOkResponse })
   @UseInterceptors(BaseUserInterceptor)
-  async createPracticeManagerProfile(
-    @Body() data: CreateUserCategoryDto
-  ){
-    return await this.userService.createPracticeManagerProfile(data)
-
+  async createPracticeManagerProfile(@Body() data: CreateUserCategoryDto) {
+    return await this.userService.createPracticeManagerProfile(data);
   }
 
   @Post(`user/user-category/employee`)
-  @ApiOkResponse({ type: CreateEmployeeOkResponse})
+  @ApiOkResponse({ type: CreateEmployeeOkResponse })
   @UseInterceptors(BaseUserInterceptor)
-  async createEmployeesProfile(
-    @Body() data: CreateUserCategoryDto
-  ){
-    return await this.userService.createEmployeesProfile(data)
+  async createEmployeesProfile(@Body() data: CreateUserCategoryDto) {
+    return await this.userService.createEmployeesProfile(data);
   }
 }

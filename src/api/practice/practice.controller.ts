@@ -29,7 +29,6 @@ import { PracticeNotFoundErrorResponse } from './dto/practice-not-found-error.dt
 import { CreatePracticeInterceptor } from './interceptors/create-practice.interceptor';
 import { DeletePracticeInterceptor } from './interceptors/delete-practice.interceptor';
 import { UpdatePracticeInterceptor } from './interceptors/update-practice.interceptor';
-import { PracticeInterceptor } from './interceptors/practice.interceptor';
 import { QueryPaginationParam } from 'src/common/dto/query-pagination.dto';
 import { PracticeOkResponse } from './dto/ok-response/ok.dto';
 import { RolesGuard } from '../auth/guards/roles.guard';
@@ -92,7 +91,7 @@ export class PracticeController {
     @Body() data: UpdatePracticeDto,
   ) {
     const ans = await this.practiceService.update(id, data);
-    return ans 
+    return ans;
   }
 
   @Delete(ID_PARAM)

@@ -1,5 +1,4 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { ContentItem } from '@prisma/client';
 import {
   CONTENT_ITEM_OK,
   CONTENT_ITEM_EXAMPLES,

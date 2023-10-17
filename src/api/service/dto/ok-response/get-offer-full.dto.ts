@@ -1,9 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Offer_WITH_FULL, Offer_WITH_TRANSLATION, ServiceWithFullData } from '../../constants/offer.constants';
-import { Service } from '@prisma/client';
+import {
+  Offer_WITH_FULL,
+  ServiceWithFullData,
+} from '../../constants/offer.constants';
 import { OfferOkResponse } from './ok.dto';
 
-export class GetOfferFullOkResponse extends OfferOkResponse{
+export class GetOfferFullOkResponse extends OfferOkResponse {
   @ApiProperty({
     example: Offer_WITH_FULL,
   })

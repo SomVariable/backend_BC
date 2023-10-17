@@ -38,7 +38,6 @@ import { RolesDecorator } from '../roles/roles.decorator';
 import { Role } from '@prisma/client';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { AreaOkResponse } from './dto/ok-response/ok.dto';
-import { AreaWithTranslation } from './constants/area.constants';
 import { GetAreaFullOkResponse } from './dto/ok-response/get-area-full.dto';
 
 @Controller('area')
@@ -48,7 +47,7 @@ import { GetAreaFullOkResponse } from './dto/ok-response/get-area-full.dto';
 @UseInterceptors(BaseInterceptor)
 export class AreaController {
   constructor(private readonly areaService: AreaService) {}
-  
+
   @Post()
   @RolesDecorator(Role.ADMIN)
   @UseGuards(AccessJwtAuthGuard, RolesGuard)
@@ -117,7 +116,7 @@ export class AreaController {
 
   @Delete()
   @RolesDecorator(Role.ADMIN)
-  @UseGuards( AccessJwtAuthGuard, RolesGuard)
+  @UseGuards(AccessJwtAuthGuard, RolesGuard)
   @ApiOkResponse({ type: AreaOkResponse })
   @UseInterceptors(DeleteAreaInterceptor)
   async deleteMany() {

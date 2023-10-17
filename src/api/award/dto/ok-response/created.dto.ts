@@ -1,6 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { AwardOkResponse } from './ok.dto';
-import { AWARD_OK, AWARD_WITH_TRANSLATION } from '../../constants/award.constants';
+import {
+  AWARD_OK,
+  AWARD_WITH_TRANSLATION,
+} from '../../constants/award.constants';
 import { Award } from '@prisma/client';
 
 export class CreatedAwardOkResponse extends AwardOkResponse {

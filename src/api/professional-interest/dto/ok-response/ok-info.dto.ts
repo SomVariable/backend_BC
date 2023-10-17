@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { ProfessionalInterest, ProfessionalInterestTranslation } from '@prisma/client';
+import { ProfessionalInterestTranslation } from '@prisma/client';
 import {
   P_INTEREST_OK,
   P_INTEREST_EXAMPLES,

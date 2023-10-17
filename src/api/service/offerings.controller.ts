@@ -37,7 +37,6 @@ import { DeleteOfferInterceptor } from './interceptors/delete-area.interceptor';
 import { RolesDecorator } from '../roles/roles.decorator';
 import { Role } from '@prisma/client';
 import { RolesGuard } from '../auth/guards/roles.guard';
-import { OfferOkResponse } from './dto/ok-response/ok.dto';
 
 @Controller('service')
 @ApiTags('service')

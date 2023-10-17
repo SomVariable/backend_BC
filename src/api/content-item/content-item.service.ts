@@ -79,20 +79,19 @@ export class ContentItemService {
   }
 
   async getContentItem(id: number) {
-    const contentItem =  await this.prismaService.contentItem.findFirst({
+    const contentItem = await this.prismaService.contentItem.findFirst({
       include: { ...ContentItemIncludeTranslation },
       where: {
         id,
       },
     });
 
-    if(!contentItem) {
-      throw new NotFoundException(CONTENT_ITEM_NOT_FOUND.MISSING_CONTENT_ITEM)
+    if (!contentItem) {
+      throw new NotFoundException(CONTENT_ITEM_NOT_FOUND.MISSING_CONTENT_ITEM);
     }
 
-    return contentItem
+    return contentItem;
   }
-
 
   async getContentItems(userId: number, skip: number, take: number) {
     return await this.prismaService.contentItem.findMany({
@@ -107,8 +106,8 @@ export class ContentItemService {
   }
 
   async deleteContentItem(id: number) {
-    await this.getContentItem(id)
-    
+    await this.getContentItem(id);
+
     return await this.prismaService.contentItem.delete({
       where: {
         id,

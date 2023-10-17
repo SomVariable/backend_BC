@@ -1,6 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { AREA_WITH_TRANSLATION, AreaWithFullData } from '../../constants/area.constants';
-import { Area } from '@prisma/client';
+import {
+  AREA_WITH_TRANSLATION,
+  AreaWithFullData,
+} from '../../constants/area.constants';
 
 export class GetAreaFullOkResponse {
   @ApiProperty({

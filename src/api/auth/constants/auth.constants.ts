@@ -1,8 +1,8 @@
 //types
 export type JwtReturnType = {
-  jwtToken: string
-  refreshToken: string
-}
+  jwtToken: string;
+  refreshToken: string;
+};
 
 // constants
 export const LOCAL = 'local';

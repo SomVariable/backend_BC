@@ -59,7 +59,11 @@ export class UserProfileController {
     @UserParam() jwtData: jwtType,
     @Body() data: CreateUserProfileDto,
   ) {
-    return await this.userProfileService.create(jwtData.id, langCodeDto.langCode, data);
+    return await this.userProfileService.create(
+      jwtData.id,
+      langCodeDto.langCode,
+      data,
+    );
   }
 
   @Post(`avatar`)

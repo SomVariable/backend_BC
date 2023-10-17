@@ -6,17 +6,17 @@ import {
 } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { PRACTICE_OK } from '../constants/practice.constants';
+import { AUTH_OK } from '../constants/auth.constants';
 
 @Injectable()
-export class GetPracticeInterceptor implements NestInterceptor {
+export class AuthChangePasswordInterceptor implements NestInterceptor {
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     return next.handle().pipe(
-      map((data: any) => {
-        return {
-          message: PRACTICE_OK.OK,
-          data,
+      map(() => {
+        const returnData = {
+          message: AUTH_OK.PASSWORD_CHANGED,
         };
+        return returnData;
       }),
     );
   }

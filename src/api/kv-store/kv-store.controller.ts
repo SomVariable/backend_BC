@@ -7,7 +7,6 @@ import {
   Param,
   Body,
   UseInterceptors,
-  Query,
   ParseIntPipe,
 } from '@nestjs/common';
 import { KvStoreService } from './kv-store.service';
@@ -52,7 +51,7 @@ export class KvStoreController {
 
   @Get(`session/${ID_PARAM}`)
   async getSession(
-    @Param('id', ParseIntPipe) id : number,
+    @Param('id', ParseIntPipe) id: number,
     @DeviceType() deviceType: string,
   ) {
     const session = await this.kvStoreService.generateSessionKey(
@@ -130,5 +129,4 @@ export class KvStoreController {
 
     return await this.kvStoreService.blockSession(session);
   }
-
 }

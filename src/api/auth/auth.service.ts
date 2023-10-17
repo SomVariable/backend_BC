@@ -15,7 +15,6 @@ import {
 } from '../../configuration/jwt.config';
 import { AUTH_BAD_REQUEST, AUTH_NOT_FOUND } from './constants/auth.constants';
 import { CreateUserDto } from './dto/create-person.dto';
-import { MailerService } from '@nestjs-modules/mailer';
 import { hashPassword } from 'src/common/helpers/hash-password.helper';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 
@@ -63,7 +62,7 @@ export class AuthService {
   async singUp(data: CreateUserDto, deviceType: string) {
     const hash = await hashPassword(data.password);
     const user = await this.userService.create({ email: data.email, hash });
-    const { id, email } = user;
+    const { id } = user;
 
     const sessionKey = this.kvStoreService.generateSessionKey(id, deviceType);
 
@@ -143,9 +142,18 @@ export class AuthService {
 
   async resetPassword(id: number, newPasswordDto: ResetPasswordDto) {
     const hash = await hashPassword(newPasswordDto.password);
-    return await this.userService.updateProperty(id, {
-      password: hash
-    })
+    const user = await this.userService.findById(id);
+
+    await this.userService.updateProperty(id, {
+      password: hash,
+    });
+
+    const data = {
+      email: user.email,
+      password: newPasswordDto.password,
+    };
+
+    await this.verificationService.sendNewPassword(data);
   }
 
   async logout(sessionKey: string): Promise<void> {

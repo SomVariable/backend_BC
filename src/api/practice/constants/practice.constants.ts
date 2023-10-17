@@ -1,15 +1,20 @@
-import { Area, CategoryTranslation, Practice, Prisma, Service } from "@prisma/client"
-
+import {
+  Area,
+  CategoryTranslation,
+  Practice,
+  Prisma,
+  Service,
+} from '@prisma/client';
 
 export type PracticeWithTranslation = Practice & {
-  CategoryTranslation: CategoryTranslation[]
-}
+  CategoryTranslation: CategoryTranslation[];
+};
 
 export type PracticeWithFullData = Practice & {
-  CategoryTranslation: CategoryTranslation[]
-  areasIds: Area[],
-  servicesIds: Service[]
-}
+  CategoryTranslation: CategoryTranslation[];
+  areasIds: Area[];
+  servicesIds: Service[];
+};
 
 export const PracticeIncludeTranslation: Prisma.PracticeInclude = {
   CategoryTranslation: true,
@@ -17,7 +22,7 @@ export const PracticeIncludeTranslation: Prisma.PracticeInclude = {
 
 export const PracticeIncludePractices: Prisma.PracticeInclude = {
   areasIds: true,
-  servicesIds: true
+  servicesIds: true,
 };
 
 export enum PRACTICE_OK {

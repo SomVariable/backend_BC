@@ -7,7 +7,7 @@ import {
   Patch,
   UseInterceptors,
   ParseIntPipe,
-  Param
+  Param,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AccessJwtAuthGuard } from '../jwt-helper/guards/access-jwt.guard';
@@ -23,7 +23,6 @@ import { VerifyUser } from './dto/verify-person.dto';
 import { DeviceType } from '../../common/decorators/device-type.decorator';
 import { KvStoreService } from '../kv-store/kv-store.service';
 import { CreateUserDto } from './dto/create-person.dto';
-import { AuthSignUpInterceptor } from './interceptors/sign-up-user.interceptor';
 import { UserParam } from '../../common/decorators/param-user.decorator';
 import { jwtType } from '../jwt-helper/types/jwt-helper.types';
 import { LocalAuthGuard } from './guards/local.guard';
@@ -52,6 +51,8 @@ import { ID_PARAM } from 'src/common/constants/app.constants';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { RolesGuard } from './guards/roles.guard';
 import { RolesDecorator } from '../roles/roles.decorator';
+import { AuthChangePasswordInterceptor } from './interceptors/change-password.interceptor';
+import { ChangePasswordOkResponse } from './dto/ok-response/change-password.dto';
 
 @ApiTags('auth')
 @UseInterceptors(BaseInterceptor, AuthInterceptor)
@@ -65,15 +66,10 @@ export class AuthController {
   ) {}
 
   @ApiOkResponse({ type: SignUpOkResponse })
-  @UseInterceptors( AuthUserInterceptor )
+  @UseInterceptors(AuthUserInterceptor)
   @Post('sign-up')
-  async signUp(
-    @DeviceType() deviceType: string, 
-    @Body() data: CreateUserDto) {
-    const user = await this.authService.singUp(
-      data,
-      deviceType,
-    );
+  async signUp(@DeviceType() deviceType: string, @Body() data: CreateUserDto) {
+    const user = await this.authService.singUp(data, deviceType);
 
     return user;
   }
@@ -103,9 +99,7 @@ export class AuthController {
   @UseInterceptors(AuthUserInterceptor)
   @Post('sign-in')
   @UseGuards(LocalAuthGuard)
-  async signIn(
-    @Body() { email, password }: SignInDto,
-  ) {
+  async signIn(@Body() { email, password }: SignInDto) {
     const user = await this.authService.signIn({ email, password });
 
     return user;
@@ -167,11 +161,12 @@ export class AuthController {
 
     return await this.authService.sendVerificationKey(email, sessionKey);
   }
-  
-  @ApiOkResponse({ type: ResendVerificationOkResponse })
+
+  @ApiOkResponse({ type: ChangePasswordOkResponse })
+  @ApiBearerAuth()
   @RolesDecorator(Role.ADMIN)
   @UseGuards(AccessJwtAuthGuard, RolesGuard)
-  @UseInterceptors(AuthResendVerifyKeyTokenInterceptor)
+  @UseInterceptors(AuthChangePasswordInterceptor)
   @Patch(`reset-password/${ID_PARAM}`)
   async resetPassword(
     @Param('id', ParseIntPipe) id: number,

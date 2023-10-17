@@ -1,7 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { AreaOkResponse } from './ok.dto';
-import { AREA_EXAMPLES, AREA_OK, AreaWithFullData } from '../../constants/area.constants';
-import { Area } from '@prisma/client';
+import {
+  AREA_EXAMPLES,
+  AREA_OK,
+  AreaWithFullData,
+} from '../../constants/area.constants';
 
 export class UpdatedAreaOkResponse extends AreaOkResponse {
   @ApiProperty({

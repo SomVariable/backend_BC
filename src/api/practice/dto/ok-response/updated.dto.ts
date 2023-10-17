@@ -1,7 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { PracticeOkResponse } from './ok.dto';
-import { PRACTICE_EXAMPLES, PRACTICE_OK, PracticeWithFullData } from '../../constants/practice.constants';
-import { Practice } from '@prisma/client';
+import {
+  PRACTICE_EXAMPLES,
+  PRACTICE_OK,
+  PracticeWithFullData,
+} from '../../constants/practice.constants';
 
 export class UpdatedPracticeOkResponse extends PracticeOkResponse {
   @ApiProperty({

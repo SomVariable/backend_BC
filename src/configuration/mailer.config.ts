@@ -1,7 +1,10 @@
 import { MailerOptions } from '@nestjs-modules/mailer';
 import { ConfigService } from '@nestjs/config';
 import { CreateUserDto } from 'src/api/auth/dto/create-person.dto';
-import { SING_UP_VERIFY_MESSAGE, VERIFY_MESSAGE } from 'src/common/constants/app.constants';
+import {
+  SING_UP_VERIFY_MESSAGE,
+  VERIFY_MESSAGE,
+} from 'src/common/constants/app.constants';
 
 const config = new ConfigService();
 
@@ -19,7 +22,10 @@ export const mailerConfig = (): MailerOptions => {
   };
 };
 
-export const generateVerifySendObject = (email: string, verificationCode: string) => {
+export const generateVerifySendObject = (
+  email: string,
+  verificationCode: string,
+) => {
   const subject = 'Email Verification';
   const text = `${VERIFY_MESSAGE} ${verificationCode}`;
 
@@ -31,7 +37,11 @@ export const generateVerifySendObject = (email: string, verificationCode: string
   };
 };
 
-export const generateSignUpVerifySendObject = (email: string, data: CreateUserDto, verificationCode: string) => {
+export const generateSignUpVerifySendObject = (
+  email: string,
+  data: CreateUserDto,
+  verificationCode: string,
+) => {
   const subject = 'Email Verification';
   const text = SING_UP_VERIFY_MESSAGE(data, verificationCode);
 
@@ -43,8 +53,10 @@ export const generateSignUpVerifySendObject = (email: string, data: CreateUserDt
   };
 };
 
-
-export const generateRestPasswordSendObject = (email: string, password: string) => {
+export const generateRestPasswordSendObject = (
+  email: string,
+  password: string,
+) => {
   const subject = 'Email Verification';
   const text = `Password was changed. Your new password is; ${password}`;
 
@@ -55,4 +67,3 @@ export const generateRestPasswordSendObject = (email: string, password: string) 
     from: 'somevariable787898@gmail.com',
   };
 };
-

@@ -6,7 +6,7 @@ import {
   CreateBucketCommand,
   GetObjectCommand,
   DeleteObjectCommand,
-  HeadBucketCommand
+  HeadBucketCommand,
 } from '@aws-sdk/client-s3';
 import { s3Config } from '../../configuration/s3.config';
 import { ERROR_MESSAGE } from './constants/s3-store.constants';

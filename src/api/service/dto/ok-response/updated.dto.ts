@@ -1,7 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { OfferOkResponse } from './ok.dto';
-import { Offer_EXAMPLES, Offer_OK, ServiceWithFullData } from '../../constants/offer.constants';
-import { Service } from '@prisma/client';
+import {
+  Offer_EXAMPLES,
+  Offer_OK,
+  ServiceWithFullData,
+} from '../../constants/offer.constants';
 
 export class UpdatedOfferOkResponse extends OfferOkResponse {
   @ApiProperty({

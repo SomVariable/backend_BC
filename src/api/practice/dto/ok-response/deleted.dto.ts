@@ -1,6 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { PracticeOkResponse } from './ok.dto';
-import { PRACTICE_EXAMPLES, PRACTICE_OK } from '../../constants/practice.constants';
+import {
+  PRACTICE_EXAMPLES,
+  PRACTICE_OK,
+} from '../../constants/practice.constants';
 import { Practice } from '@prisma/client';
 
 export class DeletedPracticeOkResponse extends PracticeOkResponse {

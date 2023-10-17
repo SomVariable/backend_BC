@@ -119,14 +119,13 @@ export const USERS_EXAMPLES_WITH_TRANSLATION = {
   offset: 2,
 };
 
-
 export const CATEGORY_EXAMPLE = {
   id: 999,
-  userId: 888
-}
+  userId: 888,
+};
 
 export const PARTNER_CATEGORY_EXAMPLE = {
   ...CATEGORY_EXAMPLE,
-  quote_ru: "текст",
-  quote_en: "text",
-}
+  quote_ru: 'текст',
+  quote_en: 'text',
+};

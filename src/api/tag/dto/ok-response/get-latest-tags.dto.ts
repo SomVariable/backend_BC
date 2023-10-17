@@ -1,6 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { TAG_OK, TAG_EXAMPLES_WITH_TRANSLATION, TagWithFullData } from '../../constants/tag.constants';
-
+import {
+  TAG_OK,
+  TAG_EXAMPLES_WITH_TRANSLATION,
+  TagWithFullData,
+} from '../../constants/tag.constants';
 
 export class GetLatestTagsOkResponse {
   @ApiProperty({

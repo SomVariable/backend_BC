@@ -9,7 +9,7 @@ import {
   Delete,
   UseGuards,
   UseInterceptors,
-  Query
+  Query,
 } from '@nestjs/common';
 import { TagService } from './tag.service';
 import { CreateTagDto } from './dto/create-tag.dto';
@@ -37,12 +37,8 @@ import { TagBadRequestErrorResponse } from './dto/tag-bad-request-error.dto';
 import { TagNotFoundErrorResponse } from './dto/tag-not-found-error.dto';
 import { TagOkResponse } from './dto/ok-response/ok.dto';
 import { TagInfoOkResponse } from './dto/ok-response/ok-info.dto';
-import { TagsOkResponse } from './dto/ok-response/ok-tags.dto';
 import { GetTagOkResponse } from './dto/ok-response/get-tag.dto';
 import { GetTagsOkResponse } from './dto/ok-response/get-tags.dto';
-import { QueryPaginationParam } from 'src/common/dto/query-pagination.dto';
-import { GetTagDto } from './dto/get-tag.dto';
-import { TAG_OK } from './constants/tag.constants';
 import { TagsInterceptor } from './interceptors/tags.interceptor';
 import { GetTagsQueryDto } from './dto/get-tags.dto';
 import { GetLatestTagsOkResponse } from './dto/ok-response/get-latest-tags.dto';
@@ -59,15 +55,14 @@ export class TagController {
   constructor(private readonly tagService: TagService) {}
 
   @Post()
-  @ApiOkResponse({type: TagOkResponse})
+  @ApiOkResponse({ type: TagOkResponse })
   @UseInterceptors(TagInterceptor)
-  async createTag(
-    @Body() data: CreateTagDto) {
+  async createTag(@Body() data: CreateTagDto) {
     return await this.tagService.create(data);
   }
 
   @Post(TRANSLATION_ROUTE_WITH_ID)
-  @ApiOkResponse({type: TagInfoOkResponse})
+  @ApiOkResponse({ type: TagInfoOkResponse })
   @UseInterceptors(TagInterceptor)
   async createTagInfo(
     @Param() { id, langCode }: TranslationParamDto,
@@ -77,37 +72,35 @@ export class TagController {
   }
 
   @Get(ID_PARAM)
-  @ApiOkResponse({type: GetTagOkResponse})
+  @ApiOkResponse({ type: GetTagOkResponse })
   @UseInterceptors(TagInterceptor)
   async getTag(@Param('id', ParseIntPipe) id: number) {
     return await this.tagService.getTag(id);
   }
 
   @Get()
-  @ApiOkResponse({type: GetTagsOkResponse})
+  @ApiOkResponse({ type: GetTagsOkResponse })
   @UseInterceptors(TagsInterceptor)
-  async getTags(
-    @Query() {limit, offset, ...data}: GetTagsQueryDto
-    ) {
-    const tags = await this.tagService.getTags(limit, offset, data)  
-    const itemCount = await this.tagService.tagsCount()
-    return  {
+  async getTags(@Query() { limit, offset, ...data }: GetTagsQueryDto) {
+    const tags = await this.tagService.getTags(limit, offset, data);
+    const itemCount = await this.tagService.tagsCount();
+    return {
       data: tags,
-      limit, 
-      offset, 
-      itemCount
+      limit,
+      offset,
+      itemCount,
     };
   }
 
   @Get(`/latest/:practiceId`)
-  @ApiOkResponse({type: GetLatestTagsOkResponse})
+  @ApiOkResponse({ type: GetLatestTagsOkResponse })
   @UseInterceptors(TagInterceptor)
-  async getLatest(@Param('practiceId') practiceId:  number) {
-    return await this.tagService.getLatest(practiceId)
+  async getLatest(@Param('practiceId') practiceId: number) {
+    return await this.tagService.getLatest(practiceId);
   }
 
   @Patch(TRANSLATION_ROUTE_WITH_ID)
-  @ApiOkResponse({type: TagInfoOkResponse})
+  @ApiOkResponse({ type: TagInfoOkResponse })
   @UseInterceptors(TagInterceptor)
   async update(
     @Param() { id, langCode }: TranslationParamDto,
@@ -117,7 +110,7 @@ export class TagController {
   }
 
   @Delete(ID_PARAM)
-  @ApiOkResponse({type: TagOkResponse})
+  @ApiOkResponse({ type: TagOkResponse })
   @UseInterceptors(TagInterceptor)
   async delete(@Param('id', ParseIntPipe) id: number) {
     return await this.tagService.delete(id);

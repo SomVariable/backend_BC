@@ -1,6 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Tag, TagTranslation } from '@prisma/client';
-import { TAG_OK, TAG_EXAMPLES, TAG_EXAMPLES_WITH_TRANSLATION } from '../../constants/tag.constants';
+import { TagTranslation } from '@prisma/client';
+import {
+  TAG_OK,
+  TAG_EXAMPLES_WITH_TRANSLATION,
+} from '../../constants/tag.constants';
 
 export class TagInfoOkResponse {
   @ApiProperty({

@@ -26,7 +26,6 @@ import {
 import { CreateEducationInfoDto } from './dto/create-education-info.dto';
 import {
   ID_PARAM,
-  TRANSLATION_ROUTE,
   TRANSLATION_ROUTE_WITH_ID,
 } from 'src/common/constants/app.constants';
 import { BaseInterceptor } from 'src/common/interceptors/data-to-json';
@@ -103,7 +102,11 @@ export class EducationController {
     @Param() { id, langCode }: TranslationParamDto,
     @Body() createEducationDto: CreateEducationInfoDto,
   ) {
-    return await this.educationService.createInfo(id, langCode, createEducationDto);
+    return await this.educationService.createInfo(
+      id,
+      langCode,
+      createEducationDto,
+    );
   }
 
   @Patch(TRANSLATION_ROUTE_WITH_ID)

@@ -6,7 +6,6 @@ import {
 } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { userResponse } from '../types/user.types';
 
 @Injectable()
 export class UsersCountInterceptor implements NestInterceptor {

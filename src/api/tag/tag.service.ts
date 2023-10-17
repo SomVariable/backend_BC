@@ -3,7 +3,12 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateTagDto } from './dto/create-tag.dto';
 import { CreateTagInfoDto } from './dto/create-tag-info';
 import { UpdateTagInfoDto } from './dto/update-tag-info';
-import { TAG_NOT_FOUND, strToTag, TagIncludeTranslation, TagIncludeContentItem } from './constants/tag.constants';
+import {
+  TAG_NOT_FOUND,
+  strToTag,
+  TagIncludeTranslation,
+  TagIncludeContentItem,
+} from './constants/tag.constants';
 import { GetTagDto } from './dto/get-tag.dto';
 
 @Injectable()
@@ -24,11 +29,12 @@ export class TagService {
     }
 
     return await this.prismaService.tagTranslation.create({
-      data: { 
-        tagId, 
-        langCode, 
-        tag: strToTag(data.tag),  
-        ...data },
+      data: {
+        tagId,
+        langCode,
+        tag: strToTag(data.tag),
+        ...data,
+      },
     });
   }
 
@@ -43,7 +49,8 @@ export class TagService {
     return await this.prismaService.tag.findMany({
       include: { ...TagIncludeTranslation },
       where,
-      skip, take
+      skip,
+      take,
     });
   }
 
@@ -51,19 +58,19 @@ export class TagService {
     return await this.prismaService.tag.findMany({
       include: {
         ...TagIncludeContentItem,
-        ...TagIncludeTranslation
+        ...TagIncludeTranslation,
       },
       where: {
-        practiceId
+        practiceId,
       },
       orderBy: {
         created_at: 'desc',
       },
       take: 3,
-    })
+    });
   }
 
-  async tagsCount()  {
+  async tagsCount() {
     return await this.prismaService.tag.count();
   }
 
@@ -82,7 +89,7 @@ export class TagService {
       where: { langCode_tagId: { tagId, langCode } },
       data: {
         tag: strToTag(data.tag),
-        ...data
+        ...data,
       },
     });
   }

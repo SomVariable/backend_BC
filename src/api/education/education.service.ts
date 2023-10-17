@@ -69,11 +69,11 @@ export class EducationService {
       },
     });
 
-    if(!education) {
-      throw new NotFoundException(EDUCATION_NOT_FOUND.MISSING_EDUCATION)
+    if (!education) {
+      throw new NotFoundException(EDUCATION_NOT_FOUND.MISSING_EDUCATION);
     }
 
-    return education
+    return education;
   }
 
   async remove(id: number) {

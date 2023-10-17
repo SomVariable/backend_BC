@@ -1,2 +1,1 @@
-
-export const STRONG_PASSWORD = '123QWE_qwe!@#13'
+export const STRONG_PASSWORD = '123QWE_qwe!@#13';

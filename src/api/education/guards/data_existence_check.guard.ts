@@ -1,7 +1,6 @@
-import { ForbiddenException, NotFoundException } from '@nestjs/common';
+import { NotFoundException } from '@nestjs/common';
 import { PrismaService } from './../../database/prisma.service';
 import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
-import { BAD_REQUEST_ERRORS } from 'src/common/constants/app.constants';
 import { EDUCATION_NOT_FOUND } from '../constants/education.constants';
 
 @Injectable()
@@ -14,7 +13,7 @@ export class EducationExistenceGuard implements CanActivate {
 
     const isEducationExist = await this.prismaService.education.findFirst({
       where: {
-        id: parseInt(id)
+        id: parseInt(id),
       },
     });
 

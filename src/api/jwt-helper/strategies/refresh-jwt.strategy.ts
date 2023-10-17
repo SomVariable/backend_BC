@@ -16,7 +16,7 @@ export class RefreshJwtStrategy extends PassportStrategy(
 ) {
   constructor(
     configService: ConfigService,
-    private readonly KvStoreService: KvStoreService,
+    private readonly kvStoreService: KvStoreService,
   ) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
@@ -26,7 +26,7 @@ export class RefreshJwtStrategy extends PassportStrategy(
   }
 
   async validate(payload: jwtType) {
-    const session = await this.KvStoreService.getSession(payload.sessionKey);
+    const session = await this.kvStoreService.getSession(payload.sessionKey);
 
     if (session?.status === 'BLOCKED') {
       throw new BadRequestException(BLOCKED_SESSION_MESSAGE);

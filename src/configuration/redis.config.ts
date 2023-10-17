@@ -1,4 +1,3 @@
-import * as redisStore from 'cache-manager-redis-store';
 import { RedisClientOptions } from 'redis';
 import { ConfigService } from '@nestjs/config';
 const config = new ConfigService();

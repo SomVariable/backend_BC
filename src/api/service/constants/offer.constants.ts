@@ -1,34 +1,32 @@
-import { CategoryTranslation, Practice, Prisma, Service } from "@prisma/client"
-import { PRACTICE_EXAMPLES } from "src/api/practice/constants/practice.constants"
-
+import { CategoryTranslation, Practice, Prisma, Service } from '@prisma/client';
+import { PRACTICE_EXAMPLES } from 'src/api/practice/constants/practice.constants';
 
 export type ServiceWithTranslation = Service & {
-  CategoryTranslation: CategoryTranslation[]
-}
+  CategoryTranslation: CategoryTranslation[];
+};
 
 export type ServiceWithFullData = Service & {
-  CategoryTranslation: CategoryTranslation[]
-  practicesIds: Practice[],
-
-}
+  CategoryTranslation: CategoryTranslation[];
+  practicesIds: Practice[];
+};
 
 export const ServiceIncludeTranslation: Prisma.ServiceInclude = {
   CategoryTranslation: true,
 };
 
 export const ServiceIncludePractice: Prisma.ServiceInclude = {
-  practicesIds: true
+  practicesIds: true,
 };
 
 export enum Offer_OK {
-  OK = "OK",
+  OK = 'OK',
   CREATED = 'the offer has been successfully established',
   UPDATED = 'the offer has been successfully update',
   DELETED = 'the offer has been successfully deleted',
 }
 
-export enum Offer_BAD_REQUEST { 
-  UPDATE = 'problem with update data'
+export enum Offer_BAD_REQUEST {
+  UPDATE = 'problem with update data',
 }
 
 export enum Offer_NOT_FOUND {
@@ -65,9 +63,9 @@ export const Offer_WITH_TRANSLATION = {
       serviceId: null,
     },
   ],
-}
+};
 
 export const Offer_WITH_FULL = {
   ...Offer_WITH_TRANSLATION,
-  practicesIds: [PRACTICE_EXAMPLES, "...n"],
-}
+  practicesIds: [PRACTICE_EXAMPLES, '...n'],
+};
