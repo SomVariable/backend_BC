@@ -61,7 +61,7 @@ import { GetUsersByInterceptor } from './interceptors/get-users-by.interceptor';
 @ApiBearerAuth()
 @ApiBadRequestResponse({ type: UserBadRequestErrorResponse })
 @ApiNotFoundResponse({ type: UserNotFoundErrorResponse })
-@UseGuards(AccessJwtAuthGuard, RolesGuard)
+@UseGuards(AccessJwtAuthGuard)
 @UseInterceptors(BaseInterceptor, BaseUserInterceptor)
 @Controller('user')
 export class UserController {

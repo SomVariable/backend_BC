@@ -46,7 +46,7 @@ import { PhotoType } from '@prisma/client';
 @ApiNotFoundResponse({ type: UserNotFoundErrorResponse })
 @ApiOkResponse({ type: UserTranslationOkResponse })
 @UseInterceptors(BaseInterceptor, UserProfileInterceptor)
-@UseGuards(AccessJwtAuthGuard, RolesGuard)
+@UseGuards(AccessJwtAuthGuard)
 export class UserProfileController {
   constructor(
     private readonly userProfileService: UserProfileService,

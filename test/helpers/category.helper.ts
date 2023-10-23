@@ -491,17 +491,14 @@ export const areaCRUD = async (
   const createAreaRes = await createArea(app, responseBody);
 
   // first-update
-  console.log('Step 1 ', createAreaRes.data.id);
   const practice_1Res = await createPractice(app, responseBody, {
     areasIds: [createAreaRes.data.id],
     servicesIds: [],
   });
-  console.log('Step 2 ', createAreaRes.data.id);
   const practice_2Res = await createPractice(app, responseBody, {
     areasIds: [createAreaRes.data.id],
     servicesIds: [],
   });
-  console.log('Step 3 ', createAreaRes.data.id);
   const practice_3Res = await createPractice(app, responseBody, {
     areasIds: [createAreaRes.data.id],
     servicesIds: [],
@@ -518,22 +515,18 @@ export const areaCRUD = async (
     createAreaRes.data,
     [],
   );
-  console.log('Step 4 ', createAreaRes.data.id);
   const practice_4Res = await createPractice(app, responseBody, {
     areasIds: [createAreaRes.data.id],
     servicesIds: [],
   });
-  console.log('Step 5 ', createAreaRes.data.id);
   const practice_5Res = await createPractice(app, responseBody, {
     areasIds: [createAreaRes.data.id],
     servicesIds: [],
   });
-  console.log('Step 6 ', createAreaRes.data.id);
   const practice_6Res = await createPractice(app, responseBody, {
     areasIds: [createAreaRes.data.id],
     servicesIds: [],
   });
-  console.log('Step 7 ', createAreaRes.data.id);
   const idArray_2 = [
     practice_4Res.data.id,
     practice_5Res.data.id,

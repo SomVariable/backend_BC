@@ -69,6 +69,10 @@ export class UserService {
       where: { id },
     });
 
+    if (!user) {
+      throw new NotFoundException(USER_NOT_FOUND.MISSING_USER);
+    }
+
     return user;
   }
 

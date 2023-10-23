@@ -7,6 +7,7 @@ import { fullSignUp, requestWithAdminPermission } from './auth.helper';
 import { GetUserProfileByNameDto } from 'src/api/user/dto/get-user-by-name.dto';
 import { GetUsersByNameOkResponse } from 'src/api/user/dto/ok-response/get-users-by-name.dto';
 import { CreateUserDto } from 'src/api/auth/dto/create-person.dto';
+import { GetUserOkResponse } from 'src/api/user/dto/ok-response/get-user.dto';
 
 export const dropUsers = async (
   app,
@@ -254,7 +255,7 @@ export const getUserByEmail = async (app: INestApplication, email: string) => {
     .set('User-Agent', 'Mobile')
     .expect(200);
 
-  const responseBody = await JSON.parse(response.text);
+  const responseBody: GetUserOkResponse = await JSON.parse(response.text);
 
   expect(responseBody).toHaveProperty('message');
   expect(responseBody).toHaveProperty('data');

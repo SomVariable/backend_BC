@@ -1,6 +1,13 @@
-import { Prisma } from '@prisma/client';
+import { Prisma, UserTranslation } from '@prisma/client';
 
 export const LIMIT_USERS = 10;
+export type UserReturnType = {
+  id: number;
+  role: string;
+  email: string;
+  accountStatus: string;
+  UserTranslation: UserTranslation
+}
 
 export enum USER_OK {
   OK = 'OK',
@@ -9,7 +16,7 @@ export enum USER_OK {
   DELETED = 'the user has been successfully deleted',
 }
 
-export enum USER_BAD_REQUEST {}
+export enum USER_BAD_REQUEST { }
 
 export enum USER_NOT_FOUND {
   MISSING_USER = 'missing user',

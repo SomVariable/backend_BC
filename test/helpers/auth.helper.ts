@@ -85,7 +85,7 @@ export const verifyUserSignUp = async (app, email: string, session) => {
   return responseVerifyBody;
 };
 
-export const verifyUserSignIn = async (app, email: string, session) => {
+export const verifyUserSignIn = async (app, email: string, session: Session) => {
   const responseVerify = await request(app.getHttpServer())
     .patch('/auth/login/verification')
     .set('User-Agent', 'Mobile')
@@ -226,12 +226,12 @@ export const requestWithAdminPermission = (
 ) => {
   return async (func) => {
     const adminData: CreateUserDto = {
-      email: `a${UniqueNumberGenerator.generateRandomNumber()}@gmail.com`,
+      email: `${UniqueNumberGenerator.lengthCountControl('a')}@gmail.com`,
       password: STRONG_PASSWORD,
     };
     const reqAdminData = await signUpAdmin(app, adminData);
 
-    func(app, data, mockUser, reqAdminData);
+    await func(app, data, mockUser, reqAdminData);
 
     await deleteSelf(app, reqAdminData.responseBody.jwtToken);
     await deleteSession(app, reqAdminData.responseBody.user.id);
@@ -394,9 +394,10 @@ export const resetPasswordByAdminOk = async (
   app,
   adminToken: string,
   userId: number,
+  newPassword: string,
 ) => {
   const data: ResetPasswordDto = {
-    password: 'TotNewP@a66word',
+    password: newPassword,
   };
   const resetPasswordResponse = await request(app.getHttpServer())
     .patch(`/auth/reset-password/${userId}`)
@@ -412,16 +413,53 @@ export const resetPasswordByAdminOk = async (
     'message',
     AUTH_OK.PASSWORD_CHANGED,
   );
-
-  return data;
 };
 
-export const resetPasswordByAdminForbidden = async (app) => {
-  return true;
+export const resetPasswordByAdmin401 = async (app) => {
+  const newPassword = 'TotNewP@a66word';
+
+  const resetPasswordResponse = await request(app.getHttpServer())
+    .patch(`/auth/reset-password/9999999999999`)
+    .set('User-Agent', 'Mobile')
+    .send({
+      password: newPassword,
+    })
+    .expect(401);
+  const refreshTokenResponseBody: ChangePasswordOkResponse = await JSON.parse(
+    resetPasswordResponse.text,
+  );
+  expect(refreshTokenResponseBody).toHaveProperty('message');
 };
 
-export const resetPasswordByAdmin404 = async (app) => {
-  return true;
+export const resetPasswordForbidden = async (
+  app,
+  { responseVerifyBody }: fullSignUpType,
+) => {
+  const user = await fullSignUp(app, {
+    email: `${UniqueNumberGenerator.lengthCountControl(
+      'test_your_might',
+    )}@gmail.com`,
+    password: 'qweQWE123!@#ASD',
+  });
+  const { person } = user.responseBody;
+  const newPassword = 'TotNewP@a66word';
+  try {
+    const resetPasswordResponse = await request(app.getHttpServer())
+      .patch(`/auth/reset-password/${person.id}`)
+      .set('User-Agent', 'Mobile')
+      .set('Authorization', `Bearer ${responseVerifyBody.data.jwtToken}`)
+      .send({
+        password: newPassword,
+      })
+      .expect(403);
+    const refreshTokenResponseBody: ChangePasswordOkResponse = await JSON.parse(
+      resetPasswordResponse.text,
+    );
+
+    expect(refreshTokenResponseBody).toHaveProperty('message');
+  } finally {
+    await deleteSelf(app, user.responseVerifyBody.data.jwtToken);
+  }
 };
 
 export const resetPasswordByAdminF = async (
@@ -431,26 +469,41 @@ export const resetPasswordByAdminF = async (
   reqAdminData: signUpAdminType,
 ) => {
   const user = await fullSignUp(app, {
-    email: 'test_your_might@gmail.com',
+    email: `t${UniqueNumberGenerator.generateRandomNumber()}@gmail.com`,
     password: 'qweQWE123!@#ASD',
   });
-  const { person } = user.responseBody;
+  const {responseVerifyBody, responseBody, sessionRes} = user
+  const { person } = responseBody;
+  const newPassword = 'TotNewP@a66word';
   try {
-    const { password } = await resetPasswordByAdminOk(
+    await resetPasswordByAdminOk(
       app,
       reqAdminData.responseBody.jwtToken,
       person.id,
+      newPassword,
     );
-    // await logoutUser(app, reqAdminData.responseBody.jwtToken);
-    // console.log('Sign in data', {
-    //   email: person.email,
-    //   password,
-    // });
-    // await signIn(app, {
-    //   email: person.email,
-    //   password,
-    // });
+    await fullLogout(app, {...user, dto: {
+      email: person.email,
+      password: newPassword,
+    }})
   } finally {
     await deleteSelf(app, user.responseVerifyBody.data.jwtToken);
   }
+};
+
+export const resetPasswordByAdmin404 = async (
+  app,
+  data,
+  mockUser: CreateUserDto,
+  reqAdminData: signUpAdminType,
+) => {
+  const newPassword = 'TotNewP@a66word';
+  await request(app.getHttpServer())
+    .patch(`/auth/reset-password/99`)
+    .set('User-Agent', 'Mobile')
+    .set('Authorization', `Bearer ${reqAdminData.responseBody.jwtToken}`)
+    .send({
+      password: newPassword,
+    })
+    .expect(404);
 };

@@ -5,7 +5,6 @@
 /.vscode
 /schemas
 /prisma/dbml
-/test/test-images
 
 # Logs
 logs

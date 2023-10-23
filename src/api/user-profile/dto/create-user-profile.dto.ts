@@ -4,14 +4,17 @@ import { PROPERTY_LENGTH } from 'src/common/constants/app.constants';
 
 export class CreateUserProfileDto {
   @ApiProperty()
+  @IsOptional()
   @Length(3, 30)
   firstName?: string;
 
   @ApiProperty()
+  @IsOptional()
   @Length(3, 30)
   surnameName?: string;
 
   @ApiProperty()
+  @IsOptional()
   @Length(3, 30)
   middleName?: string;
 
@@ -32,6 +35,7 @@ export class CreateUserProfileDto {
   status?: string;
 
   @ApiProperty()
+  @IsOptional()
   @Length(3, 20)
   position?: string;
 }

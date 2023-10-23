@@ -29,13 +29,11 @@ export class AuthService {
 
   async validateUser(email: string, password: string): Promise<User> {
     const user = await this.userService.findBy({ email });
-
     if (!user) {
       throw new NotFoundException(AUTH_NOT_FOUND.MISSING_USER);
     }
 
     const isCompare = await bcrypt.compare(password, user.hash);
-
     if (isCompare) {
       return user;
     }
@@ -141,11 +139,10 @@ export class AuthService {
   }
 
   async resetPassword(id: number, newPasswordDto: ResetPasswordDto) {
-    const hash = await hashPassword(newPasswordDto.password);
     const user = await this.userService.findById(id);
 
     await this.userService.updateProperty(id, {
-      password: hash,
+      password: newPasswordDto.password,
     });
 
     const data = {

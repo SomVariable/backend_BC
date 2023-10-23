@@ -1,3 +1,4 @@
+import { validate } from 'class-validator';
 import { CreateUserProfileDto } from 'src/api/user-profile/dto/create-user-profile.dto';
 import { UserTranslationOkResponse } from 'src/api/user-profile/dto/ok-response/ok.dto';
 import { UpdateUserProfileDto } from 'src/api/user-profile/dto/update-user-profile.dto';
@@ -11,6 +12,9 @@ export const createUserProfile = async (
   params: LangCodeDto,
   jwt: string,
 ) => {
+  const validationErrors = await validate(dto);
+
+  expect(validationErrors).toHaveLength(0);
   const response = await request(app.getHttpServer())
     .post(`/user-profile/translation/${params.langCode}`)
     .set('User-Agent', 'Mobile')
@@ -34,17 +38,19 @@ export const createUserProfile = async (
   expect(responseBody).toHaveProperty('message');
   expect(responseBody).toHaveProperty('data');
   expect(responseBody.data).toHaveProperty('id');
-  expect(responseBody.data).toHaveProperty('description', description);
-  expect(responseBody.data).toHaveProperty('firstName', firstName);
-  expect(responseBody.data).toHaveProperty('middleName', middleName);
-  expect(responseBody.data).toHaveProperty('position', position);
-  expect(responseBody.data).toHaveProperty(
+  if(description) expect(responseBody.data).toHaveProperty('description', description);
+  if(firstName) expect(responseBody.data).toHaveProperty('firstName', firstName);
+  if(middleName) expect(responseBody.data).toHaveProperty('middleName', middleName);
+  if(position) expect(responseBody.data).toHaveProperty('position', position);
+  if(smallDescription) expect(responseBody.data).toHaveProperty(
     'smallDescription',
     smallDescription,
   );
-  expect(responseBody.data).toHaveProperty('status', status);
-  expect(responseBody.data).toHaveProperty('surnameName', surnameName);
-  expect(responseBody.data).toHaveProperty('userId');
+  if(status) expect(responseBody.data).toHaveProperty('status', status);
+  if(surnameName) expect(responseBody.data).toHaveProperty('surnameName', surnameName);
+  if(description) expect(responseBody.data).toHaveProperty('userId');
+
+  return responseBody
 };
 
 export const updateUserProfile = async (
