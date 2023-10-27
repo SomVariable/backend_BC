@@ -24,7 +24,6 @@ import { KVStoreInterceptor } from './interceptors/kv-store.interceptor';
 import { KVStoreOkResponse } from './dto/ok-response/ok.dto';
 import { KVStoreBadRequestErrorResponse } from './dto/kv-store-bad-request-error.dto';
 import { KVStoreNotFoundErrorResponse } from './dto/kv-store-not-found-error.dto';
-import { ID_PARAM } from '../../common/constants/app.constants';
 import { UpdateSessionDto } from './dto/update-session.dto';
 
 @ApiTags('kv-store')
@@ -36,7 +35,7 @@ import { UpdateSessionDto } from './dto/update-session.dto';
 export class KvStoreController {
   constructor(private readonly kvStoreService: KvStoreService) {}
 
-  @Post(`session/${ID_PARAM}`)
+  @Post(`session/:id`)
   @ApiBearerAuth()
   async createSession(
     @Param('id', ParseIntPipe) id: number,
@@ -49,7 +48,7 @@ export class KvStoreController {
     return await this.kvStoreService.createSession({ id: session });
   }
 
-  @Get(`session/${ID_PARAM}`)
+  @Get(`session/:id`)
   async getSession(
     @Param('id', ParseIntPipe) id: number,
     @DeviceType() deviceType: string,
@@ -61,7 +60,7 @@ export class KvStoreController {
     return await this.kvStoreService.getSession(session);
   }
 
-  @Patch(`session/${ID_PARAM}`)
+  @Patch(`session/:id`)
   @ApiBearerAuth()
   async patchSession(
     @Param('id', ParseIntPipe) id: number,
@@ -75,7 +74,7 @@ export class KvStoreController {
     return await this.kvStoreService.updateSession(session, data);
   }
 
-  @Delete(`session/${ID_PARAM}`)
+  @Delete(`session/:id`)
   @ApiBearerAuth()
   async deleteSession(
     @Param('id', ParseIntPipe) id: number,
@@ -89,7 +88,7 @@ export class KvStoreController {
     return await this.kvStoreService.deleteSession(session);
   }
 
-  @Patch(`session/${ID_PARAM}/verification`)
+  @Patch(`session/:id/verification`)
   @ApiBearerAuth()
   async setVerificationProps(
     @Param('id', ParseIntPipe) id: number,
@@ -103,7 +102,7 @@ export class KvStoreController {
     return await this.kvStoreService.setVerificationProps(session, data);
   }
 
-  @Patch(`session/${ID_PARAM}/active`)
+  @Patch(`session/:id/active`)
   async activeSession(
     @Param('id', ParseIntPipe) id: number,
     @DeviceType() deviceType: string,
@@ -116,7 +115,7 @@ export class KvStoreController {
     return await this.kvStoreService.activeSession(session);
   }
 
-  @Patch(`session/${ID_PARAM}/block`)
+  @Patch(`session/:id/block`)
   @ApiBearerAuth()
   async blockSession(
     @Param('id', ParseIntPipe) id: number,

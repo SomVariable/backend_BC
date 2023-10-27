@@ -29,7 +29,7 @@ import { RolesGuard } from '../auth/guards/roles.guard';
 import { UserParam } from 'src/common/decorators/param-user.decorator';
 import { jwtType } from '../jwt-helper/types/jwt-helper.types';
 import { BaseInterceptor } from 'src/common/interceptors/data-to-json';
-import { ID_PARAM } from 'src/common/constants/app.constants';
+
 import { QueryPaginationParam } from 'src/common/dto/query-pagination.dto';
 import { UserBadRequestErrorResponse } from './dto/user-bad-request-error.dto';
 import { UserNotFoundErrorResponse } from './dto/user-not-found-error.dto';
@@ -121,7 +121,7 @@ export class UsersController {
     return await this.userService.getTotalCount();
   }
 
-  @Get(`user/byId/${ID_PARAM}`)
+  @Get(`user/byId/:id`)
   @ApiOkResponse({ type: GetUserOkResponse })
   @UseInterceptors( BaseUserInterceptor, UserInterceptor)
   async findUser(@Param('id', ParseIntPipe) id: number) {
@@ -206,14 +206,14 @@ export class UsersController {
     return user;
   }
 
-  @Get(`user/byId/${ID_PARAM}/fullData`)
+  @Get(`user/byId/:id/fullData`)
   @ApiOkResponse({ type: GetUserOkResponse })
   @UseInterceptors(UserInterceptor, BaseUserInterceptor)
   async findUserWithFullData(@Param('id', ParseIntPipe) id: number) {
     return await this.userService.getUserWithFullData(id);
   }
 
-  @Delete(`user/byId/${ID_PARAM}`)
+  @Delete(`user/byId/:id`)
   @ApiOkResponse({ type: DeletedOkResponse })
   @UseGuards(AccessJwtAuthGuard)
   @UseInterceptors(BaseUserInterceptor, UserInterceptor )
@@ -221,7 +221,7 @@ export class UsersController {
     return await this.userService.remove(id);
   }
 
-  @Patch(`user/byId/${ID_PARAM}`)
+  @Patch(`user/byId/:id`)
   @UseInterceptors(BaseUserInterceptor)
   async updateUser(
     @Param('id', ParseIntPipe) id: number,

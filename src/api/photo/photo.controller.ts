@@ -18,7 +18,7 @@ import { ApiBearerAuth, ApiBody, ApiConsumes, ApiTags } from '@nestjs/swagger';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { PHOTO_TYPE_PATH } from './constants/photo.constants';
 import { CreatePhotoBodyDto } from './dto/create-photo.dto';
-import { ID_PARAM } from 'src/common/constants/app.constants';
+
 import { AccessJwtAuthGuard } from '../jwt-helper/guards/access-jwt.guard';
 import { imageFileFilter } from './helpers/fileFilters.helper';
 import { PhotoType } from '@prisma/client';
@@ -51,7 +51,7 @@ export class PhotoController {
     return await this.photoService.create(file, body);
   }
 
-  @Get(`${ID_PARAM}/${PHOTO_TYPE_PATH}`)
+  @Get(`:id/${PHOTO_TYPE_PATH}`)
   async fileInfo(
     @Param('id', ParseIntPipe) id: number,
     @Param('photoType') photoType: PhotoType,
@@ -70,7 +70,7 @@ export class PhotoController {
     return stream.pipe(res);
   }
 
-  @Get(`${ID_PARAM}/${PHOTO_TYPE_PATH}/file-info`)
+  @Get(`:id/${PHOTO_TYPE_PATH}/file-info`)
   async getFileInfo(
     @Param('id', ParseIntPipe) id: number,
     @Param('photoType') photoType: PhotoType,
@@ -78,7 +78,7 @@ export class PhotoController {
     return await this.photoService.findOne(id, photoType);
   }
 
-  @Delete(`${ID_PARAM}/${PHOTO_TYPE_PATH}`)
+  @Delete(`:id/${PHOTO_TYPE_PATH}`)
   async deleteFileInfo(
     @Param('id', ParseIntPipe) id: number,
     @Param('photoType') photoType: PhotoType,

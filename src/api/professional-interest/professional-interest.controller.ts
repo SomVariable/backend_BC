@@ -17,8 +17,7 @@ import { UserParam } from 'src/common/decorators/param-user.decorator';
 import { jwtType } from 'src/api/jwt-helper/types/jwt-helper.types';
 import { TranslationParamDto } from 'src/common/dto/translation-param.dto';
 import { PIAccessToDataGuard } from './guards/access-to-data.guard';
-import {
-  ID_PARAM,
+import {  
   TRANSLATION_ROUTE_WITH_ID,
 } from 'src/common/constants/app.constants';
 import {
@@ -68,7 +67,7 @@ export class ProfessionalInterestController {
     );
   }
 
-  @Get(ID_PARAM)
+  @Get(':id')
   @ApiOkResponse({ type: PInterestOkResponse })
   @UseGuards(PIAccessToDataGuard)
   async getInterest(@Param('id') id: number) {
@@ -95,7 +94,7 @@ export class ProfessionalInterestController {
     );
   }
 
-  @Delete(ID_PARAM)
+  @Delete(':id')
   @ApiOkResponse({ type: PInterestOkResponse })
   @UseGuards(PIAccessToDataGuard)
   async deleteInterest(@Param('id', ParseIntPipe) id: number) {

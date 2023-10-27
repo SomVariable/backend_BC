@@ -14,7 +14,6 @@ import {
 import { TagService } from './tag.service';
 import { CreateTagDto } from './dto/create-tag.dto';
 import {
-  ID_PARAM,
   TRANSLATION_ROUTE_WITH_ID,
 } from 'src/common/constants/app.constants';
 import { CreateTagInfoDto } from './dto/create-tag-info';
@@ -71,7 +70,7 @@ export class TagController {
     return await this.tagService.createInfo(id, langCode, data);
   }
 
-  @Get(ID_PARAM)
+  @Get(':id')
   @ApiOkResponse({ type: GetTagOkResponse })
   @UseInterceptors(TagInterceptor)
   async getTag(@Param('id', ParseIntPipe) id: number) {
@@ -109,7 +108,7 @@ export class TagController {
     return await this.tagService.updateTagInfo(id, langCode, data);
   }
 
-  @Delete(ID_PARAM)
+  @Delete(':id')
   @ApiOkResponse({ type: TagOkResponse })
   @UseInterceptors(TagInterceptor)
   async delete(@Param('id', ParseIntPipe) id: number) {

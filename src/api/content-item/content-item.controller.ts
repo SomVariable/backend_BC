@@ -20,7 +20,6 @@ import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { AccessJwtAuthGuard } from '../jwt-helper/guards/access-jwt.guard';
 import { TranslationParamDto } from 'src/common/dto/translation-param.dto';
 import {
-  ID_PARAM,
   TRANSLATION_ROUTE_WITH_ID,
 } from 'src/common/constants/app.constants';
 import { ContentItemAccessToDataGuard } from './guards/access-to-data.guard';
@@ -60,7 +59,7 @@ export class ContentItemController {
     return await this.publicationService.create(data);
   }
 
-  @Get(ID_PARAM)
+  @Get(':id')
   @ApiOkResponse({ type: CreatedContentItemOkResponse })
   @ApiOkResponse({ type: GetContentItemOkResponse })
   @UseInterceptors(GetContentItemInterceptor)
@@ -79,7 +78,7 @@ export class ContentItemController {
     return await this.publicationService.getContentItems(id, offset, limit);
   }
 
-  @Patch(ID_PARAM)
+  @Patch(':id')
   @ApiOkResponse({ type: UpdateContentItemInterceptor })
   @RolesDecorator(Role.ADMIN, Role.REPORTER)
   @UseInterceptors(UpdateContentItemInterceptor)
@@ -91,7 +90,7 @@ export class ContentItemController {
     return await this.publicationService.update(id, body);
   }
 
-  @Delete(ID_PARAM)
+  @Delete(':id')
   @ApiOkResponse({ type: DeletedContentItemOkResponse })
   @RolesDecorator(Role.ADMIN, Role.REPORTER)
   @UseGuards(RolesGuard)

@@ -28,7 +28,6 @@ export type PAGINATION_TYPE = {
   offset: number;
 };
 
-export const ID_PARAM = ':id';
 export const TRANSLATION_ROUTE = ':translation/:langCode';
 export const TRANSLATION_ROUTE_WITH_ID = ':id/translation/:langCode';
 export const UNIQUE_MESSAGE = {

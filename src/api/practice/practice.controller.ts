@@ -23,7 +23,7 @@ import {
 } from '@nestjs/swagger';
 import { AccessJwtAuthGuard } from '../jwt-helper/guards/access-jwt.guard';
 import { BaseInterceptor } from 'src/common/interceptors/data-to-json';
-import { ID_PARAM } from 'src/common/constants/app.constants';
+
 import { PracticeBadRequestErrorResponse } from './dto/practice-bad-request-error.dto';
 import { PracticeNotFoundErrorResponse } from './dto/practice-not-found-error.dto';
 import { CreatePracticeInterceptor } from './interceptors/create-practice.interceptor';
@@ -67,21 +67,21 @@ export class PracticeController {
     return await this.practiceService.getPractices(offset, limit);
   }
 
-  @Get(ID_PARAM)
+  @Get(':id')
   @ApiOkResponse({ type: GetPracticesOkResponse })
   @UseInterceptors(GetPracticeInterceptor)
   async getPractice(@Param('id', ParseIntPipe) id: number) {
     return await this.practiceService.getPractice(id);
   }
 
-  @Get(`${ID_PARAM}/full`)
+  @Get(`:id/full`)
   @ApiOkResponse({ type: GetPracticeFullOkResponse })
   @UseInterceptors(GetPracticeInterceptor)
   async getPracticeFull(@Param('id', ParseIntPipe) id: number) {
     return await this.practiceService.getPracticeFull(id);
   }
 
-  @Patch(ID_PARAM)
+  @Patch(':id')
   @RolesDecorator(Role.ADMIN)
   @UseGuards(AccessJwtAuthGuard, RolesGuard)
   @ApiOkResponse({ type: UpdatedPracticeOkResponse })
@@ -94,7 +94,7 @@ export class PracticeController {
     return ans;
   }
 
-  @Delete(ID_PARAM)
+  @Delete(':id')
   @RolesDecorator(Role.ADMIN)
   @UseGuards(AccessJwtAuthGuard, RolesGuard)
   @ApiOkResponse({ type: DeletedPracticeOkResponse })

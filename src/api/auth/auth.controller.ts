@@ -47,7 +47,7 @@ import { AuthRefreshTokenInterceptor } from './interceptors/refresh-tokens.dto';
 import { AuthResendVerifyKeyTokenInterceptor } from './interceptors/resend-verify-key.interceptor';
 import { AuthVerificationInterceptor } from './interceptors/verification.interceptor';
 import { hashPassword } from 'src/common/helpers/hash-password.helper';
-import { ID_PARAM } from 'src/common/constants/app.constants';
+
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { RolesGuard } from './guards/roles.guard';
 import { RolesDecorator } from '../roles/roles.decorator';
@@ -167,7 +167,7 @@ export class AuthController {
   @RolesDecorator(Role.ADMIN)
   @UseGuards(AccessJwtAuthGuard, RolesGuard)
   @UseInterceptors(AuthChangePasswordInterceptor)
-  @Patch(`reset-password/${ID_PARAM}`)
+  @Patch(`reset-password/:id`)
   async resetPassword(
     @Param('id', ParseIntPipe) id: number,
     @Body() data: ResetPasswordDto,

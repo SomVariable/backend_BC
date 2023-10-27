@@ -31,7 +31,6 @@ import { jwtType } from 'src/api/jwt-helper/types/jwt-helper.types';
 import { TranslationParamDto } from 'src/common/dto/translation-param.dto';
 import { CreateNewsTranslationBodyDto } from './dto/create-news-translation.dto';
 import {
-  ID_PARAM,
   TRANSLATION_ROUTE,
 } from 'src/common/constants/app.constants';
 import { NewsInterceptor } from './interceptors/news.interceptor';
@@ -69,7 +68,7 @@ export class NewsController {
     return await this.newsService.create(createNewsDto);
   }
 
-  @Post(`${ID_PARAM}/preview`)
+  @Post(`:id/preview`)
   @ApiConsumes('multipart/form-data')
   @ApiBody(API_FILE_CONFIG)
   @RolesDecorator(Role.ADMIN, Role.REPORTER)
@@ -100,7 +99,7 @@ export class NewsController {
     return await this.newsService.findAll(offset, limit, jwtData.id, 'user');
   }
 
-  @Get(`/byTag/${ID_PARAM}`)
+  @Get(`/byTag/:id`)
   async findAllByTag(
     @Param('id', ParseIntPipe) id: number,
     @Query() { limit, offset }: QueryPaginationParam,
@@ -108,12 +107,12 @@ export class NewsController {
     return await this.newsService.findAll(offset, limit, id, 'tag');
   }
 
-  @Get(ID_PARAM)
+  @Get(':id')
   async findOne(@Param('id', ParseIntPipe) id: number) {
     return await this.newsService.findOne(id);
   }
 
-  @Delete(ID_PARAM)
+  @Delete(':id')
   @RolesDecorator(Role.ADMIN, Role.REPORTER)
   @UseGuards(RolesGuard, AccessJwtAuthGuard)
   async remove(@Param('id', ParseIntPipe) id: number) {

@@ -21,7 +21,7 @@ import {
 import { AccessJwtAuthGuard } from '../jwt-helper/guards/access-jwt.guard';
 import { BaseInterceptor } from 'src/common/interceptors/data-to-json';
 import { CreateOfferDto } from './dto/create-offer.dto';
-import { ID_PARAM } from 'src/common/constants/app.constants';
+
 import { UpdateOfferDto } from './dto/update-offer.dto';
 import { OfferBadRequestErrorResponse } from './dto/offer-bad-request-error.dto';
 import { OfferNotFoundErrorResponse } from './dto/offer-not-found-error.dto';
@@ -63,14 +63,14 @@ export class OfferingsController {
     return await this.offeringsService.getOfferings();
   }
 
-  @Get(ID_PARAM)
+  @Get(':id')
   @ApiOkResponse({ type: GetOfferOkResponse })
   @UseInterceptors(GetOfferInterceptor)
   async getOffer(@Param('id', ParseIntPipe) id: number) {
     return await this.offeringsService.getOffer(id);
   }
 
-  @Patch(ID_PARAM)
+  @Patch(':id')
   @RolesDecorator(Role.ADMIN)
   @UseGuards(AccessJwtAuthGuard, RolesGuard)
   @ApiOkResponse({ type: UpdatedOfferOkResponse })
@@ -91,7 +91,7 @@ export class OfferingsController {
     return await this.offeringsService.deleteMany();
   }
 
-  @Delete(ID_PARAM)
+  @Delete(':id')
   @RolesDecorator(Role.ADMIN)
   @UseGuards(AccessJwtAuthGuard, RolesGuard)
   @ApiOkResponse({ type: DeletedOfferOkResponse })

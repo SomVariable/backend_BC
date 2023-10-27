@@ -22,7 +22,6 @@ import { UserParam } from 'src/common/decorators/param-user.decorator';
 import { jwtType } from 'src/api/jwt-helper/types/jwt-helper.types';
 import { AwardAccessToDataGuard } from './guards/access-to-data.guard';
 import {
-  ID_PARAM,
   TRANSLATION_ROUTE,
   TRANSLATION_ROUTE_WITH_ID,
 } from 'src/common/constants/app.constants';
@@ -83,7 +82,7 @@ export class AwardController {
     );
   }
 
-  @Get(ID_PARAM)
+  @Get(':id')
   @ApiOkResponse({ type: GetAwardOkResponse })
   @UseInterceptors(GetAwardInterceptor)
   @UseGuards(AwardAccessToDataGuard)
@@ -91,7 +90,7 @@ export class AwardController {
     return await this.awardService.getAward(id);
   }
 
-  @Delete(ID_PARAM)
+  @Delete(':id')
   @ApiOkResponse({ type: DeletedAwardOkResponse })
   @UseInterceptors(UpdateAwardInterceptor)
   @UseGuards(AwardAccessToDataGuard)

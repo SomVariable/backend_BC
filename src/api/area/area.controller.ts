@@ -22,7 +22,6 @@ import {
 } from '@nestjs/swagger';
 import { AccessJwtAuthGuard } from '../jwt-helper/guards/access-jwt.guard';
 import { BaseInterceptor } from 'src/common/interceptors/data-to-json';
-import { ID_PARAM } from 'src/common/constants/app.constants';
 import { CreateAreaInterceptor } from './interceptors/create-area.interceptor';
 import { GetAreaInterceptor } from './interceptors/get-area.interceptor';
 import { UpdateAreaInterceptor } from './interceptors/update-area.interceptor';
@@ -64,21 +63,21 @@ export class AreaController {
     return await this.areaService.getAreas(limit, offset);
   }
 
-  @Get(ID_PARAM)
+  @Get(':id')
   @ApiOkResponse({ type: GetAreaOkResponse })
   @UseInterceptors(GetAreaInterceptor)
   async getArea(@Param('id', ParseIntPipe) id: number) {
     return await this.areaService.getArea(id);
   }
 
-  @Get(`${ID_PARAM}/full`)
+  @Get(`:id/full`)
   @ApiOkResponse({ type: GetAreaFullOkResponse })
   @UseInterceptors(GetAreaInterceptor)
   async getAreaWithFullData(@Param('id', ParseIntPipe) id: number) {
     return await this.areaService.getAreaWithFullData(id);
   }
 
-  @Patch(ID_PARAM)
+  @Patch(':id')
   @RolesDecorator(Role.ADMIN)
   @UseGuards(AccessJwtAuthGuard, RolesGuard)
   @ApiOkResponse({ type: UpdatedAreaOkResponse })
@@ -90,7 +89,7 @@ export class AreaController {
     return await this.areaService.update(id, data);
   }
 
-  @Patch(`${ID_PARAM}/add`)
+  @Patch(`:id/add`)
   @RolesDecorator(Role.ADMIN)
   @UseGuards(AccessJwtAuthGuard, RolesGuard)
   @ApiOkResponse({ type: UpdatedAreaOkResponse })
@@ -102,7 +101,7 @@ export class AreaController {
     return await this.areaService.addArea(id, data);
   }
 
-  @Patch(`${ID_PARAM}/delete`)
+  @Patch(`:id/delete`)
   @RolesDecorator(Role.ADMIN)
   @UseGuards(AccessJwtAuthGuard, RolesGuard)
   @ApiOkResponse({ type: UpdatedAreaOkResponse })
@@ -123,7 +122,7 @@ export class AreaController {
     return await this.areaService.deleteMany();
   }
 
-  @Delete(ID_PARAM)
+  @Delete(':id')
   @RolesDecorator(Role.ADMIN)
   @UseGuards(AccessJwtAuthGuard, RolesGuard)
   @ApiOkResponse({ type: DeletedAreaOkResponse })

@@ -25,7 +25,6 @@ import {
 } from '@nestjs/swagger';
 import { CreateEducationInfoDto } from './dto/create-education-info.dto';
 import {
-  ID_PARAM,
   TRANSLATION_ROUTE_WITH_ID,
 } from 'src/common/constants/app.constants';
 import { BaseInterceptor } from 'src/common/interceptors/data-to-json';
@@ -68,14 +67,14 @@ export class EducationController {
     return await this.educationService.create(jwtData.id, createEducationDto);
   }
 
-  @Get(ID_PARAM)
+  @Get(':id')
   @UseGuards(EducationExistenceGuard, EducationAccessToDataGuard)
   @UseInterceptors(EducationGetInterceptor)
   async getEducation(@Param('id', ParseIntPipe) id: number) {
     return await this.educationService.findOne(id);
   }
 
-  @Patch(ID_PARAM)
+  @Patch(':id')
   @ApiOkResponse({ type: UpdatedOkResponse })
   @UseGuards(EducationExistenceGuard, EducationAccessToDataGuard)
   @UseInterceptors(EducationUpdateInterceptor)
@@ -86,7 +85,7 @@ export class EducationController {
     return await this.educationService.update(id, createEducationDto);
   }
 
-  @Delete(ID_PARAM)
+  @Delete(':id')
   @ApiOkResponse({ type: DeletedOkResponse })
   @UseGuards(EducationExistenceGuard, EducationAccessToDataGuard)
   @UseInterceptors(EducationDeleteInterceptor)
