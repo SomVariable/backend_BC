@@ -366,9 +366,6 @@ describe('AuthController (e2e)', () => {
     await reqWithAdminPermission(filterUsersByNameF);
   })
 
-  it('', () => {
-    console.log(true)
-  })
   afterAll(async () => {
     await fullClean(app);
     return await app.close();

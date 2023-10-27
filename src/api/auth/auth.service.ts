@@ -2,6 +2,7 @@ import {
   Injectable,
   BadRequestException,
   NotFoundException,
+  Logger,
 } from '@nestjs/common';
 import { AccountStatus, Prisma, User } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
@@ -20,6 +21,8 @@ import { ResetPasswordDto } from './dto/reset-password.dto';
 
 @Injectable()
 export class AuthService {
+  private readonly logger = new Logger(AuthService.name);
+  
   constructor(
     private jwtHelperService: JwtHelperService,
     private userService: UserService,
@@ -28,6 +31,7 @@ export class AuthService {
   ) {}
 
   async validateUser(email: string, password: string): Promise<User> {
+    this.logger.verbose(`start validate user. input data is: email: ${email} password: ${password}`)
     const user = await this.userService.findBy({ email });
     if (!user) {
       throw new NotFoundException(AUTH_NOT_FOUND.MISSING_USER);

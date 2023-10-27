@@ -6,6 +6,9 @@ export type UserReturnType = {
   role: string;
   email: string;
   accountStatus: string;
+}
+
+export type UserReturnTypeWithProfile = UserReturnType & {
   UserTranslation: UserTranslation
 }
 

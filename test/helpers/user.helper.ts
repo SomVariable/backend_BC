@@ -8,6 +8,7 @@ import { GetUserProfileByNameDto } from 'src/api/user/dto/get-user-by-name.dto';
 import { GetUsersByNameOkResponse } from 'src/api/user/dto/ok-response/get-users-by-name.dto';
 import { CreateUserDto } from 'src/api/auth/dto/create-person.dto';
 import { GetUserOkResponse } from 'src/api/user/dto/ok-response/get-user.dto';
+import { GetUsersOkResponse } from 'src/api/user/dto/ok-response/get-users.dto';
 
 export const dropUsers = async (
   app,
@@ -121,6 +122,7 @@ export const getUsers = async (app, users) => {
     expect(responseUsersBody.data).toHaveProperty('limit');
     expect(responseUsersBody.data).toHaveProperty('offset');
     expect(responseUsersBody.data).toHaveProperty('users');
+    expect(responseUsersBody.data.users[0]).not.toHaveProperty('hash');
 
     return responseUsersBody;
   } catch (error) {

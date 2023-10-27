@@ -39,7 +39,7 @@ import { BaseInterceptor } from 'src/common/interceptors/data-to-json';
 import { NewsBadRequestErrorResponse } from './dto/news-bad-request-error.dto';
 import { NewsNotFoundErrorResponse } from './dto/news-not-found-error.dto';
 import { NewsOkResponse } from './dto/ok-response/ok.dto';
-import { NewsAccessToDataGuard } from './guards/news_access.guard';
+import { NewsAccessToDataGuard } from './guards/news-access-to-data.guard';
 import { QueryPaginationParam } from 'src/common/dto/query-pagination.dto';
 import { AccessJwtAuthGuard } from '../jwt-helper/guards/access-jwt.guard';
 import { API_FILE_CONFIG } from '../photo/constants/photo.constants';

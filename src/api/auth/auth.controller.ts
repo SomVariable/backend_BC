@@ -185,4 +185,5 @@ export class AuthController {
     const tokens = await this.authService.generateTokens(sessionKey, email);
     return tokens;
   }
+
 }

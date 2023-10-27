@@ -28,7 +28,6 @@ export class AccessJwtStrategy extends PassportStrategy(
   async validate(payload: jwtType) {
     const session = await this.kvStoreService.getSession(payload.sessionKey);
     if (session?.status === 'BLOCKED') {
-      console.log('Problem with session ', payload, session)
       throw new BadRequestException(BLOCKED_SESSION_MESSAGE);
     }
     

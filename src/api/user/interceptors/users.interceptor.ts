@@ -12,12 +12,11 @@ import { usersResponse } from '../types/user.types';
 export class UsersInterceptor implements NestInterceptor {
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     return next.handle().pipe(
-      map((data: usersResponse) => {
+      map(({...data}: usersResponse) => {
         const { users } = data;
 
         const updatedUsers = users?.map((user) => {
           const { accountStatus, email, id, role, UserTranslation } = user;
-
           return {
             accountStatus,
             UserTranslation,

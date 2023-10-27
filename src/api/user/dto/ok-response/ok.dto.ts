@@ -12,5 +12,5 @@ export class UserOkResponse {
   @ApiProperty({
     example: USER_EXAMPLES,
   })
-  data: User;
+  data: any;
 }

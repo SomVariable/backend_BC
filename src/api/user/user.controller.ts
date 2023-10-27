@@ -99,7 +99,7 @@ export class UsersController {
   ) {}
 
   @Get()
-  @UseInterceptors(UsersInterceptor, BaseUserInterceptor)
+  @UseInterceptors(BaseUserInterceptor, UsersInterceptor)
   @ApiOkResponse({ type: GetUsersOkResponse })
   async findUsers(@Query() { limit, offset }: QueryPaginationParam) {
     const users = await this.userService.findUsers(offset, limit);
@@ -116,14 +116,14 @@ export class UsersController {
 
   @Get('count')
   @ApiOkResponse({ type: GetUsersCountOkResponse })
-  @UseInterceptors(UsersCountInterceptor, BaseUserInterceptor)
+  @UseInterceptors(BaseUserInterceptor, UsersCountInterceptor)
   async usersCount() {
     return await this.userService.getTotalCount();
   }
 
   @Get(`user/byId/${ID_PARAM}`)
   @ApiOkResponse({ type: GetUserOkResponse })
-  @UseInterceptors(UserInterceptor, BaseUserInterceptor)
+  @UseInterceptors( BaseUserInterceptor, UserInterceptor)
   async findUser(@Param('id', ParseIntPipe) id: number) {
     const user = await this.userService.findById(id);
     if (!user) {
@@ -216,7 +216,7 @@ export class UsersController {
   @Delete(`user/byId/${ID_PARAM}`)
   @ApiOkResponse({ type: DeletedOkResponse })
   @UseGuards(AccessJwtAuthGuard)
-  @UseInterceptors(UserInterceptor, BaseUserInterceptor)
+  @UseInterceptors(BaseUserInterceptor, UserInterceptor )
   async deleteUser(@Param('id', ParseIntPipe) id: number) {
     return await this.userService.remove(id);
   }
