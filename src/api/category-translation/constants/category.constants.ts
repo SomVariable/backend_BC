@@ -7,6 +7,7 @@ export enum CATEGORY_INFO_OK {
 
 export enum CATEGORY_INFO_BAD_REQUEST {}
 
+
 export enum CATEGORY_INFO_NOT_FOUND {
   MISSING_CATEGORY_INFO = 'missing category',
 }
