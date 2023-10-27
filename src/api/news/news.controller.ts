@@ -30,9 +30,6 @@ import { UserParam } from 'src/common/decorators/param-user.decorator';
 import { jwtType } from 'src/api/jwt-helper/types/jwt-helper.types';
 import { TranslationParamDto } from 'src/common/dto/translation-param.dto';
 import { CreateNewsTranslationBodyDto } from './dto/create-news-translation.dto';
-import {
-  TRANSLATION_ROUTE,
-} from 'src/common/constants/app.constants';
 import { NewsInterceptor } from './interceptors/news.interceptor';
 import { BaseInterceptor } from 'src/common/interceptors/data-to-json';
 import { NewsBadRequestErrorResponse } from './dto/news-bad-request-error.dto';
@@ -119,7 +116,7 @@ export class NewsController {
     return await this.newsService.remove(id);
   }
 
-  @Post(TRANSLATION_ROUTE)
+  @Post(':translation/:langCode')
   @RolesDecorator(Role.ADMIN, Role.REPORTER)
   @UseGuards(RolesGuard, AccessJwtAuthGuard, NewsAccessToDataGuard)
   async addNewsInfo(
@@ -129,7 +126,7 @@ export class NewsController {
     return await this.newsService.addNewsInfo(paramData, bodyData);
   }
 
-  @Patch(TRANSLATION_ROUTE)
+  @Patch(':translation/:langCode')
   @RolesDecorator(Role.ADMIN, Role.REPORTER)
   @UseGuards(RolesGuard, AccessJwtAuthGuard, NewsAccessToDataGuard)
   async update(

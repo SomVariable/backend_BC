@@ -19,9 +19,6 @@ import { UpdateContentItemInfoDto } from './dto/update-content-item-info.dto';
 import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { AccessJwtAuthGuard } from '../jwt-helper/guards/access-jwt.guard';
 import { TranslationParamDto } from 'src/common/dto/translation-param.dto';
-import {
-  TRANSLATION_ROUTE_WITH_ID,
-} from 'src/common/constants/app.constants';
 import { ContentItemAccessToDataGuard } from './guards/access-to-data.guard';
 import { BaseInterceptor } from 'src/common/interceptors/data-to-json';
 import { CreatedContentItemOkResponse } from './dto/ok-response/created.dto';
@@ -108,7 +105,7 @@ export class ContentItemController {
     return await this.publicationService.drop();
   }
 
-  @Post(TRANSLATION_ROUTE_WITH_ID)
+  @Post(':id/translation/:langCode')
   @ApiOkResponse({ type: CreatedContentItemInfoOkResponse })
   @RolesDecorator(Role.ADMIN, Role.REPORTER)
   @UseGuards(RolesGuard)
@@ -120,7 +117,7 @@ export class ContentItemController {
     return await this.publicationService.createInfo(id, langCode, data);
   }
 
-  @Patch(TRANSLATION_ROUTE_WITH_ID)
+  @Patch(':id/translation/:langCode')
   @ApiOkResponse({ type: UpdatedContentItemInfoOkResponse })
   @RolesDecorator(Role.ADMIN, Role.REPORTER)
   @UseGuards(RolesGuard)

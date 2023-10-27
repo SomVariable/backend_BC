@@ -13,9 +13,6 @@ import {
 } from '@nestjs/common';
 import { TagService } from './tag.service';
 import { CreateTagDto } from './dto/create-tag.dto';
-import {
-  TRANSLATION_ROUTE_WITH_ID,
-} from 'src/common/constants/app.constants';
 import { CreateTagInfoDto } from './dto/create-tag-info';
 import { TranslationParamDto } from 'src/common/dto/translation-param.dto';
 import { UpdateTagInfoDto } from './dto/update-tag-info';
@@ -60,7 +57,7 @@ export class TagController {
     return await this.tagService.create(data);
   }
 
-  @Post(TRANSLATION_ROUTE_WITH_ID)
+  @Post(':id/translation/:langCode')
   @ApiOkResponse({ type: TagInfoOkResponse })
   @UseInterceptors(TagInterceptor)
   async createTagInfo(
@@ -98,7 +95,7 @@ export class TagController {
     return await this.tagService.getLatest(practiceId);
   }
 
-  @Patch(TRANSLATION_ROUTE_WITH_ID)
+  @Patch(':id/translation/:langCode')
   @ApiOkResponse({ type: TagInfoOkResponse })
   @UseInterceptors(TagInterceptor)
   async update(

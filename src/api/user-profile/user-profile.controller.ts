@@ -27,7 +27,6 @@ import { AccessJwtAuthGuard } from '../jwt-helper/guards/access-jwt.guard';
 import { UserParam } from 'src/common/decorators/param-user.decorator';
 import { jwtType } from '../jwt-helper/types/jwt-helper.types';
 import { BaseInterceptor } from 'src/common/interceptors/data-to-json';
-import { TRANSLATION_ROUTE } from 'src/common/constants/app.constants';
 import { LangCodeDto } from 'src/common/dto/translation-param.dto';
 import { UserProfileInterceptor } from './interceptors/user-profile.interceptor';
 import { UserBadRequestErrorResponse } from './dto/user-profile-bad-request-error.dto';
@@ -53,7 +52,7 @@ export class UserProfileController {
     private readonly photoService: PhotoService,
   ) {}
 
-  @Post(TRANSLATION_ROUTE)
+  @Post(':translation/:langCode')
   async createProfile(
     @Param() langCodeDto: LangCodeDto,
     @UserParam() jwtData: jwtType,
@@ -91,7 +90,7 @@ export class UserProfileController {
     return await this.userProfileService.findAll(id);
   }
 
-  @Get(TRANSLATION_ROUTE)
+  @Get(':translation/:langCode')
   async findOne(
     @Param() { langCode }: LangCodeDto,
     @UserParam() { id }: jwtType,
@@ -99,7 +98,7 @@ export class UserProfileController {
     return await this.userProfileService.findOne(id, langCode);
   }
 
-  @Patch(TRANSLATION_ROUTE)
+  @Patch(':translation/:langCode')
   async updateByLang(
     @Param() { langCode }: LangCodeDto,
     @UserParam() { id }: jwtType,

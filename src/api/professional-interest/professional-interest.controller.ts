@@ -17,9 +17,6 @@ import { UserParam } from 'src/common/decorators/param-user.decorator';
 import { jwtType } from 'src/api/jwt-helper/types/jwt-helper.types';
 import { TranslationParamDto } from 'src/common/dto/translation-param.dto';
 import { PIAccessToDataGuard } from './guards/access-to-data.guard';
-import {  
-  TRANSLATION_ROUTE_WITH_ID,
-} from 'src/common/constants/app.constants';
 import {
   ApiBadRequestResponse,
   ApiBearerAuth,
@@ -53,7 +50,7 @@ export class ProfessionalInterestController {
     return await this.professionalInterestService.create(jwtData.id);
   }
 
-  @Post(TRANSLATION_ROUTE_WITH_ID)
+  @Post(':id/translation/:langCode')
   @ApiOkResponse({ type: PInterestInfoOkResponse })
   @UseGuards(PIAccessToDataGuard)
   async createInfo(
@@ -80,7 +77,7 @@ export class ProfessionalInterestController {
     return await this.professionalInterestService.findOne(jwtData.id);
   }
 
-  @Patch(TRANSLATION_ROUTE_WITH_ID)
+  @Patch(':id/translation/:langCode')
   @ApiOkResponse({ type: PInterestInfoOkResponse })
   @UseGuards(PIAccessToDataGuard)
   async updateInfo(

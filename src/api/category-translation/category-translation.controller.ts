@@ -8,10 +8,8 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { CategoryTranslationService } from './category-translation.service';
-import { TRANSLATION_ROUTE_WITH_ID } from 'src/common/constants/app.constants';
 import { CreateCategoryDto } from '../area/dto/create-category.dto';
 import { TranslationParamDto } from 'src/common/dto/translation-param.dto';
-import { TRANSLATION_ROUTE_WITH_CATEGORY_TYPE } from './constants/category.constants';
 import { CategoryDto } from './dto/category-pram.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 import {
@@ -49,7 +47,7 @@ export class CategoryTranslationController {
     private readonly categoryTranslationService: CategoryTranslationService,
   ) {}
 
-  @Post(TRANSLATION_ROUTE_WITH_ID)
+  @Post(':id/translation/:langCode')
   @RolesDecorator(Role.ADMIN)
   @UseGuards(AccessJwtAuthGuard, RolesGuard)
   @ApiOkResponse({ type: CategoryTranslationCreatedOkResponse })
@@ -61,7 +59,7 @@ export class CategoryTranslationController {
     return await this.categoryTranslationService.createInfo(id, langCode, data);
   }
 
-  @Patch(TRANSLATION_ROUTE_WITH_CATEGORY_TYPE)
+  @Patch(':id/translation/:langCode/:categoryTranslationType')
   @RolesDecorator(Role.ADMIN)
   @UseGuards(AccessJwtAuthGuard, RolesGuard)
   @ApiOkResponse({ type: CategoryTranslationUpdatedOkResponse })

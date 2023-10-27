@@ -22,10 +22,6 @@ import { UserParam } from 'src/common/decorators/param-user.decorator';
 import { jwtType } from 'src/api/jwt-helper/types/jwt-helper.types';
 import { AwardAccessToDataGuard } from './guards/access-to-data.guard';
 import {
-  TRANSLATION_ROUTE,
-  TRANSLATION_ROUTE_WITH_ID,
-} from 'src/common/constants/app.constants';
-import {
   ApiBadRequestResponse,
   ApiBearerAuth,
   ApiNotFoundResponse,
@@ -66,7 +62,7 @@ export class AwardController {
     return await this.awardService.create(jwtData.id);
   }
 
-  @Get(TRANSLATION_ROUTE)
+  @Get(':translation/:langCode')
   @ApiOkResponse({ type: GetAwardsOkResponse })
   @UseInterceptors(GetAwardInterceptor)
   async getAwards(
@@ -98,7 +94,7 @@ export class AwardController {
     return await this.awardService.delete(id);
   }
 
-  @Post(TRANSLATION_ROUTE_WITH_ID)
+  @Post(':id/translation/:langCode')
   @ApiOkResponse({ type: CreatedInfoAwardOkResponse })
   @UseInterceptors(CreateAwardInfoInterceptor)
   @UseGuards(AwardAccessToDataGuard)
@@ -109,7 +105,7 @@ export class AwardController {
     return await this.awardService.createInfo(id, langCode, data);
   }
 
-  @Patch(TRANSLATION_ROUTE_WITH_ID)
+  @Patch(':id/translation/:langCode')
   @UseInterceptors(UpdateAwardInfoInterceptor)
   @ApiOkResponse({ type: UpdatedInfoAwardOkResponse })
   async UpdateInfo(

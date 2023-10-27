@@ -24,9 +24,6 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { CreateEducationInfoDto } from './dto/create-education-info.dto';
-import {
-  TRANSLATION_ROUTE_WITH_ID,
-} from 'src/common/constants/app.constants';
 import { BaseInterceptor } from 'src/common/interceptors/data-to-json';
 import { AccessJwtAuthGuard } from '../jwt-helper/guards/access-jwt.guard';
 import { EducationInterceptor } from './interceptors/education.interceptor';
@@ -93,7 +90,7 @@ export class EducationController {
     return await this.educationService.remove(educationId);
   }
 
-  @Post(TRANSLATION_ROUTE_WITH_ID)
+  @Post(':id/translation/:langCode')
   @ApiOkResponse({ type: UpdatedOkResponse })
   @UseInterceptors(EducationCreateInfoInterceptor)
   @UseGuards(EducationExistenceGuard, EducationAccessToDataGuard)
@@ -108,7 +105,7 @@ export class EducationController {
     );
   }
 
-  @Patch(TRANSLATION_ROUTE_WITH_ID)
+  @Patch(':id/translation/:langCode')
   @UseGuards(EducationExistenceGuard, EducationAccessToDataGuard)
   @UseInterceptors(EducationUpdateInfoInterceptor)
   async updateInfo(
