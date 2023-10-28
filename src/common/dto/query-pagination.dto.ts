@@ -1,12 +1,18 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
-import { IsOptional, Max, Min } from 'class-validator';
+import { Transform, Type } from 'class-transformer';
+import { IsOptional, Max, Min, Validate } from 'class-validator';
+import { MAX_LIMIT } from '../constants/app.constants';
 
 export class QueryPaginationParam {
   @ApiPropertyOptional()
   @Type(() => Number)
-  @Max(100)
   @IsOptional()
+  @Transform(({ value }) => {
+    if (value > MAX_LIMIT) {
+      return MAX_LIMIT;
+    } 
+    return value
+  })
   limit? = 10;
 
   @ApiPropertyOptional()

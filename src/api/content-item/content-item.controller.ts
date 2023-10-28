@@ -57,7 +57,6 @@ export class ContentItemController {
   }
 
   @Get(':id')
-  @ApiOkResponse({ type: CreatedContentItemOkResponse })
   @ApiOkResponse({ type: GetContentItemOkResponse })
   @UseInterceptors(GetContentItemInterceptor)
   async getContentItem(@Param('id', ParseIntPipe) id: number) {

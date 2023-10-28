@@ -53,6 +53,7 @@ import { RolesGuard } from './guards/roles.guard';
 import { RolesDecorator } from '../roles/roles.decorator';
 import { AuthChangePasswordInterceptor } from './interceptors/change-password.interceptor';
 import { ChangePasswordOkResponse } from './dto/ok-response/change-password.dto';
+import { AdminInterceptor } from './interceptors/admin.interceptor';
 
 @ApiTags('auth')
 @UseInterceptors(BaseInterceptor, AuthInterceptor)
@@ -75,7 +76,7 @@ export class AuthController {
   }
 
   @ApiOkResponse({ type: FirstUserOkResponse })
-  @UseInterceptors(AuthUserInterceptor)
+  @UseInterceptors(AdminInterceptor)
   @Post('first-user')
   async addFirstUser(
     @DeviceType() deviceType: string,

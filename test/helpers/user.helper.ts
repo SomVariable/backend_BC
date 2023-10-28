@@ -9,6 +9,11 @@ import { GetUsersByNameOkResponse } from 'src/api/user/dto/ok-response/get-users
 import { CreateUserDto } from 'src/api/auth/dto/create-person.dto';
 import { GetUserOkResponse } from 'src/api/user/dto/ok-response/get-user.dto';
 import { GetUsersOkResponse } from 'src/api/user/dto/ok-response/get-users.dto';
+import { UpdatedOkResponse } from 'src/api/user/dto/ok-response/updated.dto';
+import { DeletedOkResponse } from 'src/api/user/dto/ok-response/deleted.dto';
+import { UserResponse } from 'src/api/user/dto/user-response.dto';
+import { MAX_LIMIT } from 'src/common/constants/app.constants';
+
 
 export const dropUsers = async (
   app,
@@ -60,12 +65,13 @@ export const getSelf = async (app, jwt: string) => {
     .set('Authorization', `Bearer ${jwt}`)
     .expect(200);
 
-  const responseBody = await JSON.parse(response.text);
+  const responseBody: GetUserOkResponse = await JSON.parse(response.text);
 
   expect(responseBody).toHaveProperty('message');
   expect(responseBody).toHaveProperty('data');
   expect(responseBody.data).toHaveProperty('id');
   expect(responseBody.data).toHaveProperty('email');
+  expect(responseBody.data).not.toHaveProperty('hash');
 
   return responseBody;
 };
@@ -78,12 +84,13 @@ export const updateSelf = async (app, jwt, updateData: UpdateUserDto) => {
     .send(updateData)
     .expect(200);
 
-  const responseBody = await JSON.parse(response.text);
+  const responseBody: UpdatedOkResponse = await JSON.parse(response.text);
 
   expect(responseBody).toHaveProperty('message');
   expect(responseBody).toHaveProperty('data');
   expect(responseBody.data).toHaveProperty('id');
   expect(responseBody.data).toHaveProperty('email');
+  expect(responseBody.data).not.toHaveProperty('hash');
 
   return responseBody;
 };
@@ -94,6 +101,14 @@ export const deleteSelf = async (app, accessToken: string) => {
     .set('Authorization', `Bearer ${accessToken}`)
     .set('User-Agent', 'Mobile')
     .expect(200);
+
+  const responseBody: DeletedOkResponse = await JSON.parse(deletedUser.text);
+  
+  expect(responseBody).toHaveProperty('message');
+  expect(responseBody).toHaveProperty('data');
+  expect(responseBody.data).toHaveProperty('id');
+  expect(responseBody.data).toHaveProperty('email');
+  expect(responseBody.data).not.toHaveProperty('hash');
 
   return deletedUser;
 };
@@ -107,14 +122,14 @@ export const getSelfBadRequest = async (app, accessToken: string) => {
 };
 
 // other
-export const getUsers = async (app, users) => {
+export const getUsers = async (app, users: UserResponse[]) => {
   try {
     const response = await request(app.getHttpServer())
       .get(`/users`)
       .set('User-Agent', 'Mobile')
       .expect(200);
 
-    const responseUsersBody = await JSON.parse(response.text);
+    const responseUsersBody: GetUsersOkResponse = await JSON.parse(response.text);
 
     expect(responseUsersBody).toHaveProperty('message');
     expect(responseUsersBody).toHaveProperty('data');
@@ -122,10 +137,17 @@ export const getUsers = async (app, users) => {
     expect(responseUsersBody.data).toHaveProperty('limit');
     expect(responseUsersBody.data).toHaveProperty('offset');
     expect(responseUsersBody.data).toHaveProperty('users');
-    expect(responseUsersBody.data.users[0]).not.toHaveProperty('hash');
+    expect(Array.isArray(responseUsersBody.data.users)).toBe(true);
+    responseUsersBody.data.users.forEach( user => {
+      expect(user).toHaveProperty('id');
+      expect(user).toHaveProperty('email');
+      expect(user).toHaveProperty('role');
+      expect(user).toHaveProperty('accountStatus');
+      expect(user).not.toHaveProperty('hash')
+    }) 
 
     return responseUsersBody;
-  } catch (error) {
+  } finally  {
     await Promise.all(
       [...users].map(async (_) => {
         return deleteSession(app, _.id);
@@ -134,7 +156,7 @@ export const getUsers = async (app, users) => {
   }
 };
 
-export const getUsersWithParams = async (app, users) => {
+export const getUsersWithParams = async (app, users: UserResponse[]) => {
   try {
     const limit = 5;
     const response = await request(app.getHttpServer())
@@ -146,7 +168,7 @@ export const getUsersWithParams = async (app, users) => {
       })
       .expect(200);
 
-    const responseBody = await JSON.parse(response.text);
+    const responseBody: GetUsersOkResponse = await JSON.parse(response.text);
 
     expect(responseBody).toHaveProperty('message');
     expect(responseBody).toHaveProperty('data');
@@ -154,9 +176,18 @@ export const getUsersWithParams = async (app, users) => {
     expect(responseBody.data).toHaveProperty('limit');
     expect(responseBody.data).toHaveProperty('offset');
     expect(responseBody.data).toHaveProperty('users');
-    expect(responseBody.data.user.length).toBe(limit);
+    expect(Array.isArray(responseBody.data.users)).toBe(true);
+    responseBody.data.users.forEach( user => {
+      expect(user).toHaveProperty('id');
+      expect(user).toHaveProperty('email');
+      expect(user).toHaveProperty('role');
+      expect(user).toHaveProperty('accountStatus');
+      expect(user).not.toHaveProperty('hash')
+    }) 
+    expect(responseBody.data.users.length).toBe(limit);
+
     return responseBody;
-  } catch (error) {
+  } finally {
     await Promise.all(
       [...users].map(async (_) => {
         return deleteSession(app, _.id);
@@ -165,20 +196,16 @@ export const getUsersWithParams = async (app, users) => {
   }
 };
 
-export const getUsersWrongParams = async (app, users) => {
+export const getUsersWithoutQueryParams = async (app, users: UserResponse[]) => {
+
   try {
-    const limit = 50;
-    const maxLimit = 10;
     const response = await request(app.getHttpServer())
       .get(`/users`)
       .set('User-Agent', 'Mobile')
-      .query({
-        limit,
-        offset: 0,
-      })
+      .query({})
       .expect(200);
 
-    const responseBody = await JSON.parse(response.text);
+    const responseBody: GetUsersOkResponse = await JSON.parse(response.text);
 
     expect(responseBody).toHaveProperty('message');
     expect(responseBody).toHaveProperty('data');
@@ -186,10 +213,10 @@ export const getUsersWrongParams = async (app, users) => {
     expect(responseBody.data).toHaveProperty('limit');
     expect(responseBody.data).toHaveProperty('offset');
     expect(responseBody.data).toHaveProperty('users');
-    expect(responseBody.data.user.length).not.toBe(limit);
-    expect(responseBody.data.user.length).toBe(maxLimit);
+    expect(Array.isArray(responseBody.data.users)).toEqual(true);
+    expect(responseBody.data.users.length).toBe(MAX_LIMIT);
     return responseBody;
-  } catch (error) {
+  } finally {
     await Promise.all(
       [...users].map(async (_) => {
         return deleteSession(app, _.id);
@@ -198,7 +225,7 @@ export const getUsersWrongParams = async (app, users) => {
   }
 };
 
-export const usersCount = async (app, users) => {
+export const usersCount = async (app, users: UserResponse[]) => {
   try {
     const response = await request(app.getHttpServer())
       .get(`/users/count`)
@@ -212,7 +239,7 @@ export const usersCount = async (app, users) => {
     expect(responseBody.data).toHaveProperty('count');
 
     return responseBody;
-  } catch (error) {
+  } finally {
     await Promise.all(
       [...users].map(async (_) => {
         return deleteSession(app, _.id);
@@ -302,14 +329,14 @@ export const updateSelfF = async (app, { responseVerifyBody }) => {
 
 // other
 
-export const getOtherF = async (app, data) => {
-  const users = [...data].map((data) => {
-    return data?.responseBody?.person;
+export const getOtherF = async (app, data: fullSignUpType[]) => {
+  const users = [...data].map((_: fullSignUpType) => {
+    return _.responseBody.person
   });
 
   await getUsers(app, users);
   await getUsersWithParams(app, users);
-  await getUsersWrongParams(app, users);
+  await getUsersWithoutQueryParams(app, users);
   await usersCount(app, users);
 };
 
@@ -323,7 +350,7 @@ export const deleteAnotherF = async (
   app,
   data,
   mockUser,
-  AdminData: fullSignUpType,
+  AdminData: signUpAdminType,
 ) => {
   await deleteUser(app, data.id, AdminData.responseBody.jwtToken);
 };

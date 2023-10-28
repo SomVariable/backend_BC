@@ -13,6 +13,8 @@ export enum BAD_REQUEST_ERRORS {
   FORBIDDEN = 'You do not have access',
 }
 
+export const MAX_LIMIT = 10
+
 export enum PROPERTY_LENGTH {
   TITLE = 30,
   SMALL_DESCRIPTION = 100,

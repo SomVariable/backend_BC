@@ -18,7 +18,7 @@ export class AuthUserInterceptor implements NestInterceptor {
           'id' in data &&
           'email' in data &&
           'role' in data &&
-          'accountStatus'
+          'accountStatus' in data
         ) {
           const { id, email, role, accountStatus } = data;
           const returnData = {

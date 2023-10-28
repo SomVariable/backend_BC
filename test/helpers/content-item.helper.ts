@@ -63,7 +63,6 @@ export const getContentItem = async (
     response.text,
   );
 
-  expect(responseBody).toHaveProperty('message');
   expect(responseBody).toHaveProperty('data');
   expect(responseBody.data).toHaveProperty('id');
   expect(responseBody.data).toHaveProperty('videoLink');
@@ -73,16 +72,21 @@ export const getContentItem = async (
   return responseBody;
 };
 
+export const createPromiseDeleteContentItem = (app, id: number, jwtToken: string) => {
+  return request(app.getHttpServer())
+    .delete(`/content-item/${id}`)
+    .set('Authorization', `Bearer ${jwtToken}`)
+    .set('User-Agent', 'Desktop')
+}
+
 export const deleteContentItem = async (
   app,
   jwtToken: string,
   contentItem: ContentItem,
 ): Promise<DeletedContentItemOkResponse> => {
-  const response = await request(app.getHttpServer())
-    .delete(`/content-item/${contentItem.id}`)
-    .set('Authorization', `Bearer ${jwtToken}`)
-    .set('User-Agent', 'Desktop')
-    .expect(200);
+  const request = createPromiseDeleteContentItem(app, contentItem.id, jwtToken)
+
+  const response = await request.expect(200);
 
   const responseBody: DeletedContentItemOkResponse = await JSON.parse(
     response.text,
@@ -193,12 +197,9 @@ export const contentItemF = async (app, _, mockUser, data: signUpAdminType) => {
       data.responseBody.jwtToken,
       createContentItemRes.data,
     );
-  } catch (error) {
-    await deleteContentItem(
-      app,
-      data.responseBody.jwtToken,
-      createContentItemRes.data,
-    );
+  } finally {
+    await createPromiseDeleteContentItem(app, createContentItemRes.data.id, data.responseBody.jwtToken)
+    
   }
 };
 

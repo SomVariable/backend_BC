@@ -35,6 +35,8 @@ export const createUserTest = async (
   expect(responseBody.person).toHaveProperty('email');
   expect(responseBody.person).toHaveProperty('accountStatus');
   expect(responseBody.person).toHaveProperty('role');
+  expect(responseBody.person).not.toHaveProperty('hash');
+
 
   return responseBody;
 };
@@ -58,6 +60,7 @@ export const createAdminTest = async (
   expect(responseBody.user).toHaveProperty('email');
   expect(responseBody.user).toHaveProperty('accountStatus');
   expect(responseBody.user).toHaveProperty('role', Role.ADMIN);
+  expect(responseBody.user).not.toHaveProperty('hash');
 
   return responseBody;
 };
@@ -241,8 +244,9 @@ export const requestWithAdminPermission = (
 export const usersControl = (
   app,
   mockUser: { email: string; password: string },
-  length = 5,
+  length = 15,
 ) => {
+
   let mockUsers = [];
 
   for (let userId = 0; userId <= length; userId++) {
@@ -266,21 +270,22 @@ export const usersControl = (
       });
     });
 
-    const data = await Promise.all(createPromises);
-
-    await func(app, data, mockUsers);
-
-    Promise.all(
-      [...data].map(async (_) => {
-        return deleteSelf(app, _.responseVerifyBody.data.jwtToken);
-      }),
-    );
-
-    Promise.all(
-      [...data].map(async (_) => {
-        return deleteSession(app, _.responseBody.person.id);
-      }),
-    );
+    const data: fullSignUpType[] = await Promise.all(createPromises);
+    try {
+      await func(app, data, mockUsers);
+    } finally {
+      Promise.all(
+        [...data].map(async (_) => {
+          return deleteSelf(app, _.responseVerifyBody.data.jwtToken);
+        }),
+      );
+  
+      Promise.all(
+        [...data].map(async (_) => {
+          return deleteSession(app, _.responseBody.person.id);
+        }),
+      );
+    }
   };
 };
 

@@ -18,11 +18,11 @@ export class UsersInterceptor implements NestInterceptor {
         const updatedUsers = users?.map((user) => {
           const { accountStatus, email, id, role, UserTranslation } = user;
           return {
-            accountStatus,
-            UserTranslation,
-            email,
             id,
+            email,
+            accountStatus,
             role,
+            UserTranslation,
           };
         });
         return { ...data, users: updatedUsers };
