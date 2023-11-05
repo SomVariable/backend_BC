@@ -100,8 +100,10 @@ export class AuthController {
   @UseInterceptors(AuthUserInterceptor)
   @Post('sign-in')
   @UseGuards(LocalAuthGuard)
-  async signIn(@Body() { email, password }: SignInDto) {
-    const user = await this.authService.signIn({ email, password });
+  async signIn(
+    @Body() dto: SignInDto,
+    @DeviceType() deviceType: string) {
+    const user = await this.authService.signIn(dto, deviceType);
 
     return user;
   }

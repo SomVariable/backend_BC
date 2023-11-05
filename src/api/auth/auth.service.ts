@@ -67,15 +67,16 @@ export class AuthService {
     const { id } = user;
 
     const sessionKey = this.kvStoreService.generateSessionKey(id, deviceType);
-
     await this.kvStoreService.createSession({ id: sessionKey });
     await this.sendSignUpVerification(data, sessionKey);
 
     return user;
   }
 
-  async signIn({ email, password }: { email: string; password: string }) {
+  async signIn({ email, password }: CreateUserDto, deviceType: string) {
     const user = await this.validateUser(email, password);
+    const sessionKey = this.kvStoreService.generateSessionKey(user.id, deviceType);
+    await this.sendVerificationKey(email, sessionKey);
 
     return user;
   }

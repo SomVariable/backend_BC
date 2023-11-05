@@ -1,12 +1,18 @@
 import { RedisClientOptions } from 'redis';
 import { ConfigService } from '@nestjs/config';
-const config = new ConfigService();
+import { Injectable } from '@nestjs/common';
+import { CacheModuleOptions, CacheOptionsFactory } from '@nestjs/cache-manager';
 
-export const redisConfig = (): RedisClientOptions => {
-  return {
-    store: config.get('store'),
-    isGlobal: true,
-    host: config.get('REDIS_HOST'),
-    port: config.get('REDIS_PORT'),
-  };
-};
+@Injectable()
+export class RedisConfigService implements CacheOptionsFactory{
+  constructor(private readonly configService: ConfigService) {}
+
+  createCacheOptions(): CacheModuleOptions {
+    return {
+      store: this.configService.get('store'),
+      isGlobal: true,
+      host: this.configService.get('REDIS_HOST'),
+      port: this.configService.get('REDIS_PORT'),
+    };
+  }
+}
